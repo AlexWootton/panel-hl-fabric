@@ -76,7 +76,36 @@ gitpod automations task start benchmark
 - Optimization guidance
 - Historical comparison data
 
-### 4. clean-all
+### 4. clean-integration-tests
+
+**Purpose**: Clean integration test artifacts (compiled test binaries).
+
+**Trigger**: manual
+
+**Usage**:
+```bash
+gitpod automations task start clean-integration-tests
+```
+
+**What it does**:
+1. Finds all `*.test` binaries in `integration/` directory
+2. Removes test binaries (~600MB total)
+3. Cleans test data in `core/chaincode/platforms/golang/testdata/pkg/`
+4. Reports number of files cleaned
+
+**When to use**:
+- After running integration tests
+- To free up disk space
+- Before committing (test binaries shouldn't be committed)
+
+**Benefits**:
+- Recovers ~600MB of disk space
+- Keeps workspace clean
+- Fast execution (< 1 second)
+
+**Note**: The `run-integration-tests` automation automatically cleans up after itself, so manual cleanup is only needed if tests were run via `make integration-test` directly.
+
+### 5. clean-all
 
 **Purpose**: Complete cleanup of workspace, build artifacts, and Docker resources.
 
@@ -89,13 +118,15 @@ gitpod automations task start clean-all
 
 **What it does**:
 1. Runs `make clean-all` to remove build artifacts
-2. Stops any running test networks
-3. Prunes Docker system (removes unused images, containers, volumes)
+2. Cleans integration test binaries
+3. Stops any running test networks
+4. Prunes Docker system (removes unused images, containers, volumes)
 
 **Benefits**:
 - Fresh start capability
 - Disk space recovery
 - Troubleshooting aid
+- Comprehensive cleanup
 
 ## Why No Service for Fabric Network?
 
@@ -125,7 +156,7 @@ gitpod automations task start stop-test-network
 
 ## Complete Task List
 
-After these additions, the complete automation suite includes **12 tasks**:
+After these additions, the complete automation suite includes **13 tasks**:
 
 ### Automatic (1)
 - `build-fabric` - Build binaries on devcontainer start
@@ -144,10 +175,25 @@ After these additions, the complete automation suite includes **12 tasks**:
 - `benchmark` - Run performance benchmarks ⭐ NEW
 - `check-code` - Run code quality checks
 
-### Utilities (1)
+### Utilities (2)
+- `clean-integration-tests` - Clean integration test binaries ⭐ NEW
 - `clean-all` - Clean all artifacts and Docker ⭐ NEW
 
 **Note**: A `fabric-network` service was considered but removed after validation. See "Why No Service for Fabric Network?" section above.
+
+## Integration Test Cleanup
+
+Integration tests create compiled test binaries (`*.test` files) that can consume significant disk space (~600MB). The automation system handles cleanup in multiple ways:
+
+### Automatic Cleanup
+The `run-integration-tests` automation automatically cleans up test artifacts after completion, whether tests pass or fail. This ensures the workspace stays clean without manual intervention.
+
+### Manual Cleanup Options
+1. **`clean-integration-tests`** - Fast, targeted cleanup of test binaries only (~1 second)
+2. **`clean-all`** - Comprehensive cleanup including test binaries, build artifacts, and Docker resources
+
+### Why No Lifecycle Hooks?
+Ona automations don't currently support lifecycle hooks (like `onComplete` or `onFailure`). Instead, cleanup is handled within the task command itself using proper exit code handling to ensure cleanup runs even if tests fail.
 
 ## Usage Examples
 

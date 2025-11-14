@@ -39,6 +39,7 @@ This is the Hyperledger Fabric repository - an enterprise-grade, distributed led
 - `gitpod automations task start check-code` - Run code quality checks
 
 #### Utilities
+- `gitpod automations task start clean-integration-tests` - Clean test binaries (~600MB)
 - `gitpod automations task start clean-all` - Clean all artifacts and Docker resources
 - `gitpod automations task list` - List all available tasks
 - See `.gitpod/TRIGGERS.md` for automation trigger details

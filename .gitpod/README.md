@@ -41,10 +41,13 @@ That's it! See [TRIGGERS.md](./TRIGGERS.md) for details on automation triggers a
 #### Development & Testing
 - **build-docker**: Build Fabric Docker images
 - **test-unit**: Run unit tests
-- **run-integration-tests**: Run full integration test suite
+- **run-integration-tests**: Run full integration test suite (auto-cleans artifacts after)
 - **benchmark**: Run performance benchmarks
 - **check-code**: Run linting and code checks
-- **clean-all**: Clean all build artifacts and Docker resources
+
+#### Cleanup
+- **clean-integration-tests**: Clean integration test binaries (*.test files, ~600MB)
+- **clean-all**: Clean all build artifacts, test binaries, and Docker resources
 
 See [TRIGGERS.md](./TRIGGERS.md) for detailed explanation of trigger configuration.
 

@@ -132,7 +132,16 @@ tasks:
       echo "Running integration tests..."
       echo "This may take 15-30 minutes..."
       make integration-test
-      echo "✅ Integration tests complete"
+      EXIT_CODE=$?
+      echo "Cleaning up integration test artifacts..."
+      find integration/ -name "*.test" -type f -delete 2>/dev/null || true
+      find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
+      if [ $EXIT_CODE -eq 0 ]; then
+        echo "✅ Integration tests complete and artifacts cleaned"
+      else
+        echo "⚠️  Integration tests failed (exit code: $EXIT_CODE) but artifacts cleaned"
+        exit $EXIT_CODE
+      fi
 
   benchmark:
     name: "benchmark"
@@ -146,15 +155,36 @@ tasks:
       go test -bench=. -benchmem ./common/... 2>&1 | tee benchmark-results.txt
       echo "✅ Benchmark complete. Results saved to benchmark-results.txt"
 
+  clean-integration-tests:
+    name: "clean-integration-tests"
+    description: "Clean integration test artifacts (*.test binaries)"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Cleaning integration test artifacts..."
+      TEST_COUNT=$(find integration/ -name "*.test" -type f 2>/dev/null | wc -l)
+      if [ "$TEST_COUNT" -gt 0 ]; then
+        echo "Found $TEST_COUNT test binaries to clean..."
+        find integration/ -name "*.test" -type f -delete 2>/dev/null || true
+        find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
+        echo "✅ Cleaned $TEST_COUNT test binaries"
+      else
+        echo "No integration test artifacts found"
+      fi
+
   clean-all:
     name: "clean-all"
-    description: "Clean all build artifacts and Docker resources"
+    description: "Clean all build artifacts, test binaries, and Docker resources"
     triggeredBy:
       - manual
     command: |
       cd /workspaces/fabric
       echo "Cleaning build artifacts..."
       make clean-all
+      echo "Cleaning integration test artifacts..."
+      find integration/ -name "*.test" -type f -delete 2>/dev/null || true
+      find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
       echo "Stopping any running test networks..."
       if [ -d "/workspaces/fabric-samples/test-network" ]; then
         cd /workspaces/fabric-samples/test-network
