@@ -1,0 +1,100 @@
+tasks:
+  build-fabric:
+    name: "build-fabric"
+    description: "Build all Hyperledger Fabric native binaries"
+    triggeredBy:
+      - postDevcontainerStart
+    command: |
+      cd /workspaces/fabric
+      echo "Building Fabric binaries..."
+      make native
+      echo "✅ Build complete. Binaries available in build/bin/"
+      ls -lh build/bin/
+
+  setup-test-network:
+    name: "setup-test-network"
+    description: "Download fabric-samples repository with test network"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces
+      if [ ! -d "fabric-samples" ]; then
+        echo "Cloning fabric-samples repository..."
+        git clone https://github.com/hyperledger/fabric-samples.git
+        cd fabric-samples
+        echo "✅ fabric-samples cloned successfully"
+      else
+        echo "fabric-samples already exists"
+        cd fabric-samples
+        git pull
+      fi
+      echo "Test network available at: /workspaces/fabric-samples/test-network"
+
+  setup-docker-images:
+    name: "setup-docker-images"
+    description: "Pull required Docker images for Fabric testing"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Pulling Docker images..."
+      make docker-thirdparty
+      echo "✅ Docker images ready"
+
+  start-test-network:
+    name: "start-test-network"
+    description: "Start the Fabric test network with a channel"
+    triggeredBy:
+      - manual
+    dependsOn:
+      - setup-test-network
+      - setup-docker-images
+    command: |
+      cd /workspaces/fabric-samples/test-network
+      echo "Starting Fabric test network..."
+      ./network.sh up createChannel
+      echo "✅ Test network is running with channel 'mychannel'"
+      echo "Run 'cd /workspaces/fabric-samples/test-network && ./network.sh down' to stop"
+
+  stop-test-network:
+    name: "stop-test-network"
+    description: "Stop and clean up the Fabric test network"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric-samples/test-network
+      echo "Stopping Fabric test network..."
+      ./network.sh down
+      echo "✅ Test network stopped and cleaned up"
+
+  build-docker:
+    name: "build-docker"
+    description: "Build Fabric Docker images"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Building Fabric Docker images..."
+      make docker
+      echo "✅ Docker images built"
+      docker images | grep hyperledger/fabric
+
+  test-unit:
+    name: "test-unit"
+    description: "Run Fabric unit tests"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Running unit tests..."
+      make unit-test
+
+  check-code:
+    name: "check-code"
+    description: "Run basic code checks and linting"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Running code checks..."
+      make basic-checks

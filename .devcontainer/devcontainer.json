@@ -1,0 +1,30 @@
+// The Dev Container format allows you to configure your environment. At the heart of it
+// is a Docker image or Dockerfile which controls the tools available in your environment.
+//
+// See https://aka.ms/devcontainer.json for more information.
+{
+	"name": "Hyperledger Fabric Dev",
+	"build": {
+		"context": ".",
+		"dockerfile": "Dockerfile"
+	},
+	// Features add additional features to your environment. See https://containers.dev/features
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"moby": true,
+			"dockerDashComposeVersion": "v2"
+		}
+	},
+	// Configure tool-specific properties
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"golang.go"
+			]
+		}
+	},
+	// Set environment variables
+	"remoteEnv": {
+		"FABRIC_CFG_PATH": "${containerWorkspaceFolder}/sampleconfig"
+	}
+}
