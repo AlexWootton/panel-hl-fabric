@@ -4,6 +4,16 @@
 
 This document explains the trigger configuration for Fabric development automations and the rationale behind each choice.
 
+## Quick Summary
+
+**What Changed**: Added intelligent trigger configuration to make standing up a test network simple and fast, without imposing on developers who don't want it.
+
+**Key Improvements**:
+- ✅ Automatic binary building after container rebuilds
+- ✅ One-command test network startup with dependency management
+- ✅ All resource-intensive tasks remain manual
+- ✅ Clean shutdown with proper cleanup
+
 ## Trigger Types
 
 Ona supports three trigger types:

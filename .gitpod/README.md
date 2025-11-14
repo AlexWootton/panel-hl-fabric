@@ -1,106 +1,79 @@
 # Hyperledger Fabric Development Environment
 
-This directory contains configuration for running Hyperledger Fabric in a Gitpod/Ona development environment.
+Complete guide for developing Hyperledger Fabric in Gitpod/Ona.
 
 ## Quick Start
 
 ### 1. Environment Startup
-When you start the environment, Fabric binaries are **automatically built** via the `build-fabric` automation (triggered by `postDevcontainerStart`). This takes ~2-3 minutes.
+When you start the environment, Fabric binaries are **automatically built** (~2-3 minutes).
 
-### 2. Start Test Network (One Command!)
+### 2. Start Test Network
 ```bash
-# This single command will:
-# - Clone fabric-samples (if needed)
-# - Pull required Docker images (if needed)
-# - Start the network with a channel
+# One command to start everything:
 gitpod automations task start start-test-network
 ```
 
-### 3. Stop Test Network
+This automatically:
+- Clones fabric-samples (if needed)
+- Pulls required Docker images
+- Starts the network with a channel
+
+### 3. Deploy Chaincode (Optional)
 ```bash
-# Clean up when done
+gitpod automations task start deploy-chaincode
+```
+
+### 4. Stop Test Network
+```bash
 gitpod automations task start stop-test-network
 ```
 
-That's it! See [TRIGGERS.md](./TRIGGERS.md) for details on automation triggers and design philosophy.
-
 ## Available Automations
 
-### Automatic Tasks
-- **build-fabric**: Build all Fabric native binaries (runs automatically on devcontainer start)
+### Network Management
+| Task | Description | Trigger |
+|------|-------------|---------|
+| `start-test-network` | Start Fabric test network with channel | Manual |
+| `stop-test-network` | Stop and clean up test network | Manual |
+| `deploy-chaincode` | Deploy sample chaincode | Manual |
+| `setup-test-network` | Clone fabric-samples repository | Manual |
+| `setup-docker-images` | Pull required Docker images | Manual |
 
-### Manual Tasks
+### Development & Testing
+| Task | Description | Trigger |
+|------|-------------|---------|
+| `build-fabric` | Build all Fabric native binaries | **Automatic** (on start) |
+| `build-docker` | Build Fabric Docker images | Manual |
+| `test-unit` | Run unit tests | Manual |
+| `run-integration-tests` | Run integration tests (~15-30 min) | Manual |
+| `benchmark` | Run performance benchmarks | Manual |
+| `check-code` | Run linting and code checks | Manual |
 
-#### Network Management
-- **start-test-network**: Start Fabric test network with channel (handles all dependencies)
-- **stop-test-network**: Stop and clean up test network
-- **deploy-chaincode**: Deploy sample chaincode to running network
-- **setup-test-network**: Clone fabric-samples repository
-- **setup-docker-images**: Pull required Docker images (CouchDB, etc.)
+### Cleanup
+| Task | Description | Trigger |
+|------|-------------|---------|
+| `clean-integration-tests` | Clean test binaries (~600MB) | Manual |
+| `clean-all` | Clean all artifacts and Docker | Manual |
 
-#### Development & Testing
-- **build-docker**: Build Fabric Docker images
-- **test-unit**: Run unit tests
-- **run-integration-tests**: Run full integration test suite (auto-cleans artifacts after)
-- **benchmark**: Run performance benchmarks
-- **check-code**: Run linting and code checks
-
-#### Cleanup
-- **clean-integration-tests**: Clean integration test binaries (*.test files, ~600MB)
-- **clean-all**: Clean all build artifacts, test binaries, and Docker resources
-
-See [TRIGGERS.md](./TRIGGERS.md) for detailed explanation of trigger configuration.
-
-### Running Tasks
+### Task Commands
 ```bash
-# List all available tasks
+# List all tasks
 gitpod automations task list
 
 # Start a task
 gitpod automations task start <task-name>
 
-# View task logs
+# View logs
 gitpod automations task logs <task-name>
 
-# List task executions
+# List executions
 gitpod automations task list-executions <task-name>
-```
-
-## Running the Test Network
-
-### Option 1: Using Automations (Recommended)
-
-```bash
-# Start network with channel
-gitpod automations task start start-test-network
-
-# Deploy sample chaincode
-gitpod automations task start deploy-chaincode
-
-# Stop network
-gitpod automations task start stop-test-network
-```
-
-### Option 2: Manual Commands
-
-```bash
-cd /workspaces/fabric-samples/test-network
-
-# Bring up the network
-./network.sh up createChannel
-
-# Deploy chaincode
-./network.sh deployCC -ccn basic -ccp ../asset-transfer-basic/chaincode-go -ccl go
-
-# Bring down the network
-./network.sh down
 ```
 
 ## Development Workflow
 
 ### Building Changes
 ```bash
-cd /workspace/fabric
 make native          # Build binaries
 make docker          # Build Docker images
 ```
@@ -108,104 +81,168 @@ make docker          # Build Docker images
 ### Testing
 ```bash
 make unit-test       # Run unit tests
-make integration-test # Run integration tests (requires Docker images)
-```
-
-### Code Quality
-```bash
+make integration-test # Run integration tests (requires Docker)
 make basic-checks    # Run linting, license checks, etc.
-make linter          # Run code linter
 ```
 
-## Environment Variables
+### Using the Test Network
 
-- `FABRIC_CFG_PATH`: Points to `/workspace/fabric/sampleconfig` for configuration files
-- `GOPATH`: Set to `/home/vscode/go`
-- `PATH`: Includes `$GOPATH/bin` for Go tools
+#### Option 1: Automation (Recommended)
+```bash
+gitpod automations task start start-test-network
+gitpod automations task start deploy-chaincode
+# ... develop and test ...
+gitpod automations task start stop-test-network
+```
 
-## Available Tools
+#### Option 2: Manual
+```bash
+cd /workspaces/fabric-samples/test-network
+./network.sh up createChannel
+./network.sh deployCC -ccn basic -ccp ../asset-transfer-basic/chaincode-go -ccl go
+# ... develop and test ...
+./network.sh down
+```
 
-The dev container includes:
-- **Go** (1.25.3) - Go programming language
+## Environment Details
+
+### Installed Tools
+- **Go 1.25.3** - Matches project requirements
+- **Docker** - Container runtime (Docker-in-Docker)
+- **Docker Compose v2** - Multi-container orchestration
 - **Make** - Build automation
 - **Git** - Version control
-- **Docker** - Container runtime (via Docker-in-Docker)
-- **Docker Compose** - Multi-container orchestration
-- **GitHub CLI (gh)** - GitHub command-line tool
-- **curl, jq** - HTTP and JSON utilities
+- **GitHub CLI (gh)** - Pre-authenticated
+- **SoftHSM2** - PKCS#11 testing
+- **Build tools** - gcc, g++, make
 
-### Using GitHub CLI
+### Environment Variables
+- `FABRIC_CFG_PATH`: `/workspaces/fabric/sampleconfig`
+- `GOPATH`: `/home/vscode/go`
+- `PATH`: Includes `$GOPATH/bin` and `/usr/local/go/bin`
+- `PKCS11_LIB`: Auto-detected SoftHSM2 library path
+- `PKCS11_PIN`: `98765432`
+- `PKCS11_LABEL`: `ForFabric`
+
+### Key Directories
+- `/workspaces/fabric` - Fabric source code
+- `/workspaces/fabric/build/bin` - Built binaries
+- `/workspaces/fabric-samples` - Sample applications and test network
+- `/workspaces/fabric/sampleconfig` - Configuration files
+
+## Automation Details
+
+### Why Automatic Binary Building?
+The `build-fabric` task runs automatically on environment start because:
+- Ensures binaries are always fresh after container rebuilds
+- Takes 2-3 minutes - acceptable startup cost
+- Required for most development workflows
+- Prevents "binary not found" errors
+
+### Why Manual Test Network?
+The test network is **not** started automatically because:
+- Not all developers need it
+- Consumes significant resources
+- Different workflows have different needs
+- One command (`start-test-network`) makes it easy when needed
+
+See [TRIGGERS.md](./TRIGGERS.md) for detailed trigger design philosophy.
+
+## Common Tasks
+
+### Run Code Checks
+```bash
+gitpod automations task start check-code
+# Or manually:
+make basic-checks
+```
+
+### Run Unit Tests
+```bash
+gitpod automations task start test-unit
+# Or manually:
+make unit-test
+```
+
+### Run Integration Tests
+```bash
+gitpod automations task start run-integration-tests
+# Or manually:
+make integration-test
+```
+
+### Clean Up Artifacts
+```bash
+# Clean integration test binaries (~600MB)
+gitpod automations task start clean-integration-tests
+
+# Clean everything
+gitpod automations task start clean-all
+```
+
+## GitHub CLI
 
 The GitHub CLI is pre-installed and **automatically authenticated** using your Git credentials.
 
 ```bash
-# Create a PR (no authentication needed!)
-gh pr create --title "Your PR title" --body "PR description"
+# Create a PR
+gh pr create --title "Your PR title" --body "Description"
 
 # View PRs
 gh pr list
 
 # Check out a PR
 gh pr checkout <number>
-
-# View PR details
-gh pr view <number>
 ```
 
-**Note**: Authentication is handled automatically via the `postStartCommand` in `.devcontainer/devcontainer.json`. The setup script extracts your GitHub token from the Git credential helper and sets the `GH_TOKEN` environment variable.
+See [../.devcontainer/GITHUB_CLI_AUTH.md](../.devcontainer/GITHUB_CLI_AUTH.md) for details.
 
 ## Troubleshooting
 
-### Docker Issues
+### Docker Not Available
 ```bash
-# Check Docker status
 docker info
-
-# Restart Docker (if needed)
+# If fails, restart Docker:
 sudo systemctl restart docker
 ```
 
-### Build Issues
+### Binaries Not Found
 ```bash
-# Clean build artifacts
-make clean
+# Check if build completed:
+ls -la build/bin/
 
-# Clean everything including persistent state
-make clean-all
-
-# Rebuild from scratch
-make clean-all && make native
+# Rebuild if needed:
+make native
 ```
 
 ### Test Network Issues
 ```bash
-cd /workspaces/fabric-samples/test-network
+# Check if network is running:
+docker ps
 
-# Bring down network and clean up
-./network.sh down
-
-# Remove all containers and volumes
-docker rm -f $(docker ps -aq)
-docker volume prune -f
+# Clean up and restart:
+gitpod automations task start stop-test-network
+gitpod automations task start start-test-network
 ```
 
-### Integration Test Issues
+### Integration Tests Fail
+```bash
+# Ensure ginkgo is built:
+make gotool.ginkgo
 
-**Problem**: `ginkgo: command not found`
+# Ensure Docker images are available:
+make docker-thirdparty
+```
 
-**Solution**: Ginkgo is built automatically by the Makefile when running integration tests:
+## Additional Documentation
 
-1. Run `make integration-test` - this automatically builds ginkgo via `integration-test-prereqs`
-2. Or build ginkgo explicitly: `make gotool.ginkgo`
-3. Ensure PATH includes Go bin directory (already configured in dev container):
-   ```bash
-   export PATH=$PATH:$GOPATH/bin
-   ```
-
-The ginkgo version is managed in `tools/go.mod` and built on-demand, matching the CI and Vagrant approach.
+- **[TRIGGERS.md](./TRIGGERS.md)** - Detailed automation trigger design and philosophy
+- **[../.devcontainer/README.md](../.devcontainer/README.md)** - Dev container configuration
+- **[../.devcontainer/DEPENDENCY_ALIGNMENT.md](../.devcontainer/DEPENDENCY_ALIGNMENT.md)** - Dependency alignment with Vagrant/CI
+- **[../.devcontainer/GITHUB_CLI_AUTH.md](../.devcontainer/GITHUB_CLI_AUTH.md)** - GitHub CLI authentication
 
 ## Resources
 
 - [Fabric Documentation](https://hyperledger-fabric.readthedocs.io/)
 - [Test Network Tutorial](https://hyperledger-fabric.readthedocs.io/en/latest/test_network.html)
-- [Fabric Samples](https://github.com/hyperledger/fabric-samples)
+- [Contributing Guide](../CONTRIBUTING.md)
