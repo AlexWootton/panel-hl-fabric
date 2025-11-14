@@ -7,12 +7,22 @@ This directory contains the Dev Container configuration for Hyperledger Fabric d
 - **`devcontainer.json`** - Dev Container configuration
 - **`Dockerfile`** - Custom image with required tools
 
+## Dependency Alignment
+
+This dev container configuration is aligned with:
+- **Vagrant setup** (`vagrant/` directory) - Same Go version, build tools, and SoftHSM2
+- **CI workflows** (`.github/workflows/`) - Uses `go-version-file: go.mod` approach
+- **Project requirements** (`go.mod`) - Go 1.25.3 with toolchain directive
+
+All three environments now provide consistent tooling for Fabric development.
+
 ## Installed Tools
 
 ### Core Development Tools
-- **Go 1.25.3** - Go programming language
+- **Go 1.25.3** - Go programming language (matches go.mod requirement)
 - **Make** - Build automation tool
 - **Git** - Version control system
+- **Build Essential** - GCC, G++, and other build tools
 
 ### Container & Orchestration
 - **Docker** - Container runtime (via Docker-in-Docker feature)
@@ -21,9 +31,14 @@ This directory contains the Dev Container configuration for Hyperledger Fabric d
 ### GitHub Integration
 - **GitHub CLI (gh)** - GitHub command-line tool for PR management
 
+### Security & Cryptography
+- **SoftHSM2** - Software implementation of HSM for PKCS#11 testing
+
 ### Utilities
 - **curl** - HTTP client
 - **jq** - JSON processor
+- **file** - File type identification (required by code checks)
+- **unzip** - Archive extraction
 
 ## Features
 
@@ -36,7 +51,10 @@ Enabled via the `ghcr.io/devcontainers/features/docker-in-docker:2` feature:
 ### Environment Variables
 - `FABRIC_CFG_PATH`: Points to `${containerWorkspaceFolder}/sampleconfig`
 - `GOPATH`: Set to `/home/vscode/go`
-- `PATH`: Includes `$GOPATH/bin` for Go tools (ginkgo, etc.)
+- `PATH`: Includes `$GOPATH/bin` and `/usr/local/go/bin` for Go tools
+- `PKCS11_LIB`: Path to SoftHSM2 library (auto-detected)
+- `PKCS11_PIN`: PIN for PKCS#11 token (98765432)
+- `PKCS11_LABEL`: Label for PKCS#11 token (ForFabric)
 
 ### VS Code Extensions
 - **golang.go** - Go language support

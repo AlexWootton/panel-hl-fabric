@@ -1,15 +1,33 @@
+# Copyright IBM Corp All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+
 FROM mcr.microsoft.com/devcontainers/base:ubuntu-24.04
 
-# Install required tools for Hyperledger Fabric development
+# Set Go version to match go.mod requirement
+ARG GO_VERSION=1.25.3
+
+# Install essential build tools and utilities
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
-    golang-go \
-    make \
-    git \
+    apt-transport-https \
+    build-essential \
+    ca-certificates \
     curl \
+    file \
+    g++ \
+    git \
     jq \
+    make \
+    softhsm2 \
+    unzip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Go from official source to match project requirements
+RUN curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" | tar -xz -C /usr/local \
+    && ln -sf /usr/local/go/bin/go /usr/local/bin/go \
+    && ln -sf /usr/local/go/bin/gofmt /usr/local/bin/gofmt
 
 # Install GitHub CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
@@ -19,3 +37,19 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | d
     && apt-get install -y gh \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Setup SoftHSM for PKCS11 tests
+RUN mkdir -p /var/lib/softhsm/tokens \
+    && chmod -R 777 /var/lib/softhsm
+
+# Configure environment for vscode user
+USER vscode
+RUN mkdir -p ~/.config/softhsm2 \
+    && cp /usr/share/softhsm/softhsm2.conf ~/.config/softhsm2/ \
+    && softhsm2-util --init-token --slot 0 --label "ForFabric" --so-pin 1234 --pin 98765432 || true
+
+# Set environment variables for PKCS11
+ENV PKCS11_PIN=98765432 \
+    PKCS11_LABEL="ForFabric"
+
+USER root
