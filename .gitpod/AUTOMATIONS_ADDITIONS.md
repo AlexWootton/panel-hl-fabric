@@ -41,19 +41,19 @@ gitpod automations task start run-integration-tests
 ```
 
 **What it does**:
-1. Ensures ginkgo test framework is installed
-2. Ensures Docker images are available (via dependency)
-3. Runs `make integration-test`
+1. Ensures Docker images are available (via dependency)
+2. Runs `make integration-test` (which builds ginkgo and other prerequisites automatically)
+3. Cleans up test artifacts after completion
 4. Reports results
 
 **Duration**: 15-30 minutes
 
-**Technical Note**: The automation automatically installs the ginkgo test framework if not present. The dev container configuration also adds `$GOPATH/bin` to PATH to ensure Go tools are accessible.
+**Technical Note**: The Makefile's `integration-test-prereqs` target automatically builds ginkgo from `tools/go.mod` when needed. This matches the CI and Vagrant approach.
 
 **Benefits**:
 - Comprehensive testing before commits
-- Automatic prerequisite setup (including ginkgo)
-- CI/CD-ready
+- Automatic prerequisite setup via Makefile
+- Consistent with CI/CD workflow
 
 ### 3. benchmark
 

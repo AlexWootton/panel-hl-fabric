@@ -193,20 +193,16 @@ docker volume prune -f
 
 **Problem**: `ginkgo: command not found`
 
-**Solution**: The dev container is configured to add `$GOPATH/bin` to PATH. If you encounter this error:
+**Solution**: Ginkgo is built automatically by the Makefile when running integration tests:
 
-1. The `run-integration-tests` automation automatically installs ginkgo
-2. For manual testing, ensure PATH includes Go bin directory:
+1. Run `make integration-test` - this automatically builds ginkgo via `integration-test-prereqs`
+2. Or build ginkgo explicitly: `make gotool.ginkgo`
+3. Ensure PATH includes Go bin directory (already configured in dev container):
    ```bash
-   export GOPATH=/home/vscode/go
    export PATH=$PATH:$GOPATH/bin
    ```
-3. Install ginkgo manually if needed:
-   ```bash
-   go install github.com/onsi/ginkgo/v2/ginkgo@latest
-   ```
 
-**Note**: After rebuilding the dev container, the PATH will be automatically configured.
+The ginkgo version is managed in `tools/go.mod` and built on-demand, matching the CI and Vagrant approach.
 
 ## Resources
 

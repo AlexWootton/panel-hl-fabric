@@ -126,13 +126,6 @@ tasks:
       - setup-docker-images
     command: |
       cd /workspaces/fabric
-      echo "Ensuring ginkgo is installed..."
-      export GOPATH=/home/vscode/go
-      export PATH=$PATH:$GOPATH/bin
-      if ! command -v ginkgo &> /dev/null; then
-        echo "Installing ginkgo..."
-        go install github.com/onsi/ginkgo/v2/ginkgo@latest
-      fi
       echo "Running integration tests..."
       echo "This may take 15-30 minutes..."
       make integration-test
