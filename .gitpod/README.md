@@ -46,9 +46,6 @@ That's it! See [TRIGGERS.md](./TRIGGERS.md) for details on automation triggers a
 - **check-code**: Run linting and code checks
 - **clean-all**: Clean all build artifacts and Docker resources
 
-### Services
-- **fabric-network**: Continuously running test network (alternative to start/stop tasks)
-
 See [TRIGGERS.md](./TRIGGERS.md) for detailed explanation of trigger configuration.
 
 ### Running Tasks
@@ -81,18 +78,7 @@ gitpod automations task start deploy-chaincode
 gitpod automations task start stop-test-network
 ```
 
-### Option 2: Using Service (Continuous Running)
-
-```bash
-# Start the service
-gitpod automations service start fabric-network
-
-# Service keeps network running continuously
-# Stop the service when done
-gitpod automations service stop fabric-network
-```
-
-### Option 3: Manual Commands
+### Option 2: Manual Commands
 
 ```bash
 cd /workspaces/fabric-samples/test-network

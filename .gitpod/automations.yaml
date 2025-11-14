@@ -163,29 +163,3 @@ tasks:
       echo "Cleaning Docker resources..."
       docker system prune -f
       echo "✅ Cleanup complete"
-
-services:
-  fabric-network:
-    name: "Fabric Test Network"
-    description: "Continuously running test network for development"
-    triggeredBy:
-      - manual
-    commands:
-      start: |
-        cd /workspaces/fabric-samples/test-network
-        echo "Starting Fabric test network service..."
-        ./network.sh up createChannel
-        echo "✅ Fabric network service is running"
-      ready: |
-        if docker ps | grep -q "peer0.org1.example.com"; then
-          echo "Fabric network is ready"
-          exit 0
-        else
-          echo "Fabric network is not ready yet"
-          exit 1
-        fi
-      stop: |
-        cd /workspaces/fabric-samples/test-network
-        echo "Stopping Fabric test network service..."
-        ./network.sh down
-        echo "✅ Fabric network service stopped"

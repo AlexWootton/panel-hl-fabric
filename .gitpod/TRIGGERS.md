@@ -187,7 +187,7 @@ gitpod automations task start start-test-network
 
 ## Implemented Additions
 
-The following tasks and service have been implemented based on developer feedback:
+The following tasks have been implemented based on developer feedback:
 
 ### Additional Tasks
 
@@ -216,43 +216,34 @@ The following tasks and service have been implemented based on developer feedbac
    - **Actions**: Removes build artifacts, stops networks, prunes Docker
    - **Usage**: `gitpod automations task start clean-all`
 
-### Fabric Network Service
+### Why No Service for Fabric Network?
 
-A **`fabric-network` service** ✅ has been added for developers who want a continuously running test network:
+A `fabric-network` service was initially considered but **removed after validation** because the service model is not appropriate for the Fabric test network.
 
-```yaml
-services:
-  fabric-network:
-    name: "Fabric Test Network"
-    description: "Continuously running test network for development"
-    triggeredBy:
-      - manual
-    commands:
-      start: ./network.sh up createChannel
-      ready: docker ps | grep -q "peer0.org1.example.com"
-      stop: ./network.sh down
+**Problem Identified**:
+- The `network.sh up createChannel` script is a setup tool, not a long-running daemon
+- The script completes and exits with code 0 after starting Docker containers
+- Ona services expect a foreground process that stays running
+- The service stops immediately even though the network containers keep running
+- This creates confusion: service shows "STOPPED" but network is actually running
+
+**Technical Details**:
+```
+Service Start → network.sh up createChannel → Containers start → Script exits
+                                                                    ↓
+                                              Service stops (exitCode=0)
+                                                                    ↓
+                                              Containers keep running ✓
 ```
 
-**Usage**:
-```bash
-# Start the service
-gitpod automations service start fabric-network
+**Why Tasks Are Better**:
+- `start-test-network` task: Starts network and exits cleanly
+- Network containers continue running independently
+- `stop-test-network` task: Stops network when needed
+- Clear lifecycle: start → network runs → stop
+- No confusion about service state vs network state
 
-# Check status
-gitpod automations service list
-
-# Stop the service
-gitpod automations service stop fabric-network
-```
-
-**When to use**:
-- **Service**: When you want the network running continuously during development
-- **Tasks**: When you want explicit control over network lifecycle
-
-**Pros**: Network stays running, no need to restart between tests
-**Cons**: Consumes resources continuously
-
-**Recommendation**: Use tasks for most workflows, service for intensive development sessions.
+**Recommendation**: Use `start-test-network` and `stop-test-network` tasks. The network stays running between tasks, providing the same benefit as a service would, but with clearer semantics.
 
 ## Conclusion
 

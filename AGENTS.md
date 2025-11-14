@@ -31,7 +31,6 @@ This is the Hyperledger Fabric repository - an enterprise-grade, distributed led
 - `gitpod automations task start start-test-network` - Start test network (one command!)
 - `gitpod automations task start deploy-chaincode` - Deploy sample chaincode
 - `gitpod automations task start stop-test-network` - Stop test network
-- `gitpod automations service start fabric-network` - Start network as service (continuous)
 
 #### Testing & Quality
 - `gitpod automations task start test-unit` - Run unit tests
