@@ -23,11 +23,24 @@ This is the Hyperledger Fabric repository - an enterprise-grade, distributed led
 - `make spelling` - Check for spelling errors
 
 ### Using Ona Automations
+
+#### Automatic
 - Binaries are **automatically built** on environment start
+
+#### Network Management
 - `gitpod automations task start start-test-network` - Start test network (one command!)
+- `gitpod automations task start deploy-chaincode` - Deploy sample chaincode
 - `gitpod automations task start stop-test-network` - Stop test network
+- `gitpod automations service start fabric-network` - Start network as service (continuous)
+
+#### Testing & Quality
 - `gitpod automations task start test-unit` - Run unit tests
+- `gitpod automations task start run-integration-tests` - Run integration tests
+- `gitpod automations task start benchmark` - Run performance benchmarks
 - `gitpod automations task start check-code` - Run code quality checks
+
+#### Utilities
+- `gitpod automations task start clean-all` - Clean all artifacts and Docker resources
 - `gitpod automations task list` - List all available tasks
 - See `.gitpod/TRIGGERS.md` for automation trigger details
 

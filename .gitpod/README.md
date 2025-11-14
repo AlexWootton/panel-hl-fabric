@@ -30,13 +30,24 @@ That's it! See [TRIGGERS.md](./TRIGGERS.md) for details on automation triggers a
 - **build-fabric**: Build all Fabric native binaries (runs automatically on devcontainer start)
 
 ### Manual Tasks
+
+#### Network Management
 - **start-test-network**: Start Fabric test network with channel (handles all dependencies)
 - **stop-test-network**: Stop and clean up test network
+- **deploy-chaincode**: Deploy sample chaincode to running network
 - **setup-test-network**: Clone fabric-samples repository
 - **setup-docker-images**: Pull required Docker images (CouchDB, etc.)
+
+#### Development & Testing
 - **build-docker**: Build Fabric Docker images
 - **test-unit**: Run unit tests
+- **run-integration-tests**: Run full integration test suite
+- **benchmark**: Run performance benchmarks
 - **check-code**: Run linting and code checks
+- **clean-all**: Clean all build artifacts and Docker resources
+
+### Services
+- **fabric-network**: Continuously running test network (alternative to start/stop tasks)
 
 See [TRIGGERS.md](./TRIGGERS.md) for detailed explanation of trigger configuration.
 
@@ -57,16 +68,37 @@ gitpod automations task list-executions <task-name>
 
 ## Running the Test Network
 
-Once setup is complete:
+### Option 1: Using Automations (Recommended)
 
 ```bash
-cd /workspace/fabric-samples/test-network
+# Start network with channel
+gitpod automations task start start-test-network
+
+# Deploy sample chaincode
+gitpod automations task start deploy-chaincode
+
+# Stop network
+gitpod automations task start stop-test-network
+```
+
+### Option 2: Using Service (Continuous Running)
+
+```bash
+# Start the service
+gitpod automations service start fabric-network
+
+# Service keeps network running continuously
+# Stop the service when done
+gitpod automations service stop fabric-network
+```
+
+### Option 3: Manual Commands
+
+```bash
+cd /workspaces/fabric-samples/test-network
 
 # Bring up the network
-./network.sh up
-
-# Create a channel
-./network.sh createChannel
+./network.sh up createChannel
 
 # Deploy chaincode
 ./network.sh deployCC -ccn basic -ccp ../asset-transfer-basic/chaincode-go -ccl go

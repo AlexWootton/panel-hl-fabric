@@ -185,36 +185,74 @@ gitpod automations task start start-test-network
 - `build-fabric` will rebuild on every restart
 - This is acceptable as Desktop restarts are less frequent
 
-## Future Considerations
+## Implemented Additions
 
-### Potential Additions
+The following tasks and service have been implemented based on developer feedback:
 
-1. **`deploy-chaincode` task** - Deploy sample chaincode to test network
-2. **`run-integration-tests` task** - Run full integration test suite
-3. **`benchmark` task** - Run performance benchmarks
-4. **`clean-all` task** - Clean all build artifacts and Docker resources
+### Additional Tasks
 
-### Potential Service
+1. **`deploy-chaincode`** ✅ - Deploy sample chaincode to test network
+   - **Trigger**: manual
+   - **Dependencies**: start-test-network
+   - **Purpose**: One-command chaincode deployment
+   - **Usage**: `gitpod automations task start deploy-chaincode`
 
-A **`fabric-network` service** could be added to keep a test network running continuously:
+2. **`run-integration-tests`** ✅ - Run full integration test suite
+   - **Trigger**: manual
+   - **Dependencies**: setup-docker-images
+   - **Purpose**: Comprehensive integration testing
+   - **Duration**: 15-30 minutes
+   - **Usage**: `gitpod automations task start run-integration-tests`
+
+3. **`benchmark`** ✅ - Run performance benchmarks
+   - **Trigger**: manual
+   - **Purpose**: Performance testing and optimization
+   - **Output**: Results saved to benchmark-results.txt
+   - **Usage**: `gitpod automations task start benchmark`
+
+4. **`clean-all`** ✅ - Clean all build artifacts and Docker resources
+   - **Trigger**: manual
+   - **Purpose**: Complete cleanup of workspace
+   - **Actions**: Removes build artifacts, stops networks, prunes Docker
+   - **Usage**: `gitpod automations task start clean-all`
+
+### Fabric Network Service
+
+A **`fabric-network` service** ✅ has been added for developers who want a continuously running test network:
 
 ```yaml
 services:
   fabric-network:
     name: "Fabric Test Network"
-    description: "Continuously running test network"
+    description: "Continuously running test network for development"
     triggeredBy:
-      - manual  # Only start if developer wants it
+      - manual
     commands:
-      start: cd /workspaces/fabric-samples/test-network && ./network.sh up createChannel
+      start: ./network.sh up createChannel
       ready: docker ps | grep -q "peer0.org1.example.com"
-      stop: cd /workspaces/fabric-samples/test-network && ./network.sh down
+      stop: ./network.sh down
 ```
 
-**Pros**: Network stays running, no need to restart
-**Cons**: Consumes resources continuously, may not be needed
+**Usage**:
+```bash
+# Start the service
+gitpod automations service start fabric-network
 
-**Decision**: Keep as tasks for now, can add service later if needed.
+# Check status
+gitpod automations service list
+
+# Stop the service
+gitpod automations service stop fabric-network
+```
+
+**When to use**:
+- **Service**: When you want the network running continuously during development
+- **Tasks**: When you want explicit control over network lifecycle
+
+**Pros**: Network stays running, no need to restart between tests
+**Cons**: Consumes resources continuously
+
+**Recommendation**: Use tasks for most workflows, service for intensive development sessions.
 
 ## Conclusion
 

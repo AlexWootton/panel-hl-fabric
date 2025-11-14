@@ -98,3 +98,87 @@ tasks:
       cd /workspaces/fabric
       echo "Running code checks..."
       make basic-checks
+
+  deploy-chaincode:
+    name: "deploy-chaincode"
+    description: "Deploy sample chaincode to the test network"
+    triggeredBy:
+      - manual
+    dependsOn:
+      - start-test-network
+    command: |
+      cd /workspaces/fabric-samples/test-network
+      echo "Deploying asset-transfer-basic chaincode..."
+      ./network.sh deployCC -ccn basic -ccp ../asset-transfer-basic/chaincode-go -ccl go
+      echo "✅ Chaincode deployed successfully"
+      echo "Test with: cd /workspaces/fabric-samples/test-network && peer chaincode invoke ..."
+
+  run-integration-tests:
+    name: "run-integration-tests"
+    description: "Run Fabric integration tests"
+    triggeredBy:
+      - manual
+    dependsOn:
+      - setup-docker-images
+    command: |
+      cd /workspaces/fabric
+      echo "Running integration tests..."
+      echo "This may take 15-30 minutes..."
+      make integration-test
+      echo "✅ Integration tests complete"
+
+  benchmark:
+    name: "benchmark"
+    description: "Run performance benchmarks"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Running performance benchmarks..."
+      echo "This will run benchmarks for key packages..."
+      go test -bench=. -benchmem ./common/... 2>&1 | tee benchmark-results.txt
+      echo "✅ Benchmark complete. Results saved to benchmark-results.txt"
+
+  clean-all:
+    name: "clean-all"
+    description: "Clean all build artifacts and Docker resources"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Cleaning build artifacts..."
+      make clean-all
+      echo "Stopping any running test networks..."
+      if [ -d "/workspaces/fabric-samples/test-network" ]; then
+        cd /workspaces/fabric-samples/test-network
+        ./network.sh down 2>/dev/null || true
+      fi
+      echo "Cleaning Docker resources..."
+      docker system prune -f
+      echo "✅ Cleanup complete"
+
+services:
+  fabric-network:
+    name: "Fabric Test Network"
+    description: "Continuously running test network for development"
+    triggeredBy:
+      - manual
+    commands:
+      start: |
+        cd /workspaces/fabric-samples/test-network
+        echo "Starting Fabric test network service..."
+        ./network.sh up createChannel
+        echo "✅ Fabric network service is running"
+      ready: |
+        if docker ps | grep -q "peer0.org1.example.com"; then
+          echo "Fabric network is ready"
+          exit 0
+        else
+          echo "Fabric network is not ready yet"
+          exit 1
+        fi
+      stop: |
+        cd /workspaces/fabric-samples/test-network
+        echo "Stopping Fabric test network service..."
+        ./network.sh down
+        echo "✅ Fabric network service stopped"
