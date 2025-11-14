@@ -41,15 +41,18 @@ gitpod automations task start run-integration-tests
 ```
 
 **What it does**:
-1. Ensures Docker images are available (via dependency)
-2. Runs `make integration-test`
-3. Reports results
+1. Ensures ginkgo test framework is installed
+2. Ensures Docker images are available (via dependency)
+3. Runs `make integration-test`
+4. Reports results
 
 **Duration**: 15-30 minutes
 
+**Technical Note**: The automation automatically installs the ginkgo test framework if not present. The dev container configuration also adds `$GOPATH/bin` to PATH to ensure Go tools are accessible.
+
 **Benefits**:
 - Comprehensive testing before commits
-- Automatic prerequisite setup
+- Automatic prerequisite setup (including ginkgo)
 - CI/CD-ready
 
 ### 3. benchmark

@@ -25,6 +25,8 @@
 	},
 	// Set environment variables
 	"remoteEnv": {
-		"FABRIC_CFG_PATH": "${containerWorkspaceFolder}/sampleconfig"
+		"FABRIC_CFG_PATH": "${containerWorkspaceFolder}/sampleconfig",
+		"GOPATH": "/home/vscode/go",
+		"PATH": "${containerEnv:PATH}:/home/vscode/go/bin"
 	}
 }

@@ -157,7 +157,7 @@ make clean-all && make native
 
 ### Test Network Issues
 ```bash
-cd /workspace/fabric-samples/test-network
+cd /workspaces/fabric-samples/test-network
 
 # Bring down network and clean up
 ./network.sh down
@@ -166,6 +166,25 @@ cd /workspace/fabric-samples/test-network
 docker rm -f $(docker ps -aq)
 docker volume prune -f
 ```
+
+### Integration Test Issues
+
+**Problem**: `ginkgo: command not found`
+
+**Solution**: The dev container is configured to add `$GOPATH/bin` to PATH. If you encounter this error:
+
+1. The `run-integration-tests` automation automatically installs ginkgo
+2. For manual testing, ensure PATH includes Go bin directory:
+   ```bash
+   export GOPATH=/home/vscode/go
+   export PATH=$PATH:$GOPATH/bin
+   ```
+3. Install ginkgo manually if needed:
+   ```bash
+   go install github.com/onsi/ginkgo/v2/ginkgo@latest
+   ```
+
+**Note**: After rebuilding the dev container, the PATH will be automatically configured.
 
 ## Resources
 
