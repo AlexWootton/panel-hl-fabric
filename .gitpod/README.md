@@ -130,23 +130,9 @@ cd /workspaces/fabric-samples/test-network
 - `/workspaces/fabric-samples` - Sample applications and test network
 - `/workspaces/fabric/sampleconfig` - Configuration files
 
-## Automation Details
+## Why These Triggers?
 
-### Why Automatic Binary Building?
-The `build-fabric` task runs automatically on environment start because:
-- Ensures binaries are always fresh after container rebuilds
-- Takes 2-3 minutes - acceptable startup cost
-- Required for most development workflows
-- Prevents "binary not found" errors
-
-### Why Manual Test Network?
-The test network is **not** started automatically because:
-- Not all developers need it
-- Consumes significant resources
-- Different workflows have different needs
-- One command (`start-test-network`) makes it easy when needed
-
-See [TRIGGERS.md](./TRIGGERS.md) for detailed trigger design philosophy.
+For detailed explanation of why certain tasks are automatic vs manual, see [TRIGGERS.md](./TRIGGERS.md).
 
 ## Common Tasks
 
