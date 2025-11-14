@@ -28,5 +28,7 @@
 		"FABRIC_CFG_PATH": "${containerWorkspaceFolder}/sampleconfig",
 		"GOPATH": "/home/vscode/go",
 		"PATH": "${containerEnv:PATH}:/home/vscode/go/bin"
-	}
+	},
+	// Run setup script on container start
+	"postStartCommand": "bash ${containerWorkspaceFolder}/.devcontainer/setup-gh-token.sh"
 }

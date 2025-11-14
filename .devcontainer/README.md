@@ -56,16 +56,17 @@ gitpod environment devcontainer rebuild
 
 ## GitHub CLI Authentication
 
-The GitHub CLI is pre-installed but requires authentication:
+The GitHub CLI is pre-installed and **automatically authenticated** using your Git credentials.
 
-```bash
-# Authenticate with GitHub
-gh auth login
+### Automatic Setup
 
-# Follow the prompts to authenticate via browser or token
-```
+On container start, a setup script automatically:
+1. Extracts your GitHub token from Git credential helper
+2. Sets the `GH_TOKEN` environment variable
+3. Configures your shell profile for future sessions
 
-Once authenticated, you can:
+No manual authentication required! You can immediately use:
+
 ```bash
 # Create a PR
 gh pr create --title "Your PR title" --body "Description"
@@ -79,6 +80,20 @@ gh pr checkout <number>
 # View PR details
 gh pr view <number>
 ```
+
+### Troubleshooting
+
+If `gh` commands fail with authentication errors:
+
+```bash
+# Run the setup script manually
+bash ${containerWorkspaceFolder}/.devcontainer/setup-gh-token.sh
+
+# Or reload your shell
+exec bash
+```
+
+The setup script is located at `.devcontainer/setup-gh-token.sh` and runs automatically via `postStartCommand`.
 
 ## Customization
 

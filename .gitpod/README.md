@@ -133,13 +133,10 @@ The dev container includes:
 
 ### Using GitHub CLI
 
-The GitHub CLI is pre-installed. To use it:
+The GitHub CLI is pre-installed and **automatically authenticated** using your Git credentials.
 
 ```bash
-# Authenticate (required once)
-gh auth login
-
-# Create a PR
+# Create a PR (no authentication needed!)
 gh pr create --title "Your PR title" --body "PR description"
 
 # View PRs
@@ -147,7 +144,12 @@ gh pr list
 
 # Check out a PR
 gh pr checkout <number>
+
+# View PR details
+gh pr view <number>
 ```
+
+**Note**: Authentication is handled automatically via the `postStartCommand` in `.devcontainer/devcontainer.json`. The setup script extracts your GitHub token from the Git credential helper and sets the `GH_TOKEN` environment variable.
 
 ## Troubleshooting
 
