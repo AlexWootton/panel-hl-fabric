@@ -117,6 +117,37 @@ make linter          # Run code linter
 ## Environment Variables
 
 - `FABRIC_CFG_PATH`: Points to `/workspace/fabric/sampleconfig` for configuration files
+- `GOPATH`: Set to `/home/vscode/go`
+- `PATH`: Includes `$GOPATH/bin` for Go tools
+
+## Available Tools
+
+The dev container includes:
+- **Go** (1.25.3) - Go programming language
+- **Make** - Build automation
+- **Git** - Version control
+- **Docker** - Container runtime (via Docker-in-Docker)
+- **Docker Compose** - Multi-container orchestration
+- **GitHub CLI (gh)** - GitHub command-line tool
+- **curl, jq** - HTTP and JSON utilities
+
+### Using GitHub CLI
+
+The GitHub CLI is pre-installed. To use it:
+
+```bash
+# Authenticate (required once)
+gh auth login
+
+# Create a PR
+gh pr create --title "Your PR title" --body "PR description"
+
+# View PRs
+gh pr list
+
+# Check out a PR
+gh pr checkout <number>
+```
 
 ## Troubleshooting
 
