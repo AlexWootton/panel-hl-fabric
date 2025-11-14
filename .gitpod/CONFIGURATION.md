@@ -49,7 +49,7 @@ gitpod automations task list
 **Files Created**:
 - `AGENTS.md` - Project guidelines for Ona Agent
 - `.gitpod/README.md` - Detailed setup and usage instructions
-- `SETUP_SUMMARY.md` - This file
+- `CONFIGURATION.md` - This file
 
 ## Quick Start
 

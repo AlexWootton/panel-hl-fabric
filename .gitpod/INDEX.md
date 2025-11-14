@@ -6,18 +6,18 @@ This directory contains all documentation related to the Ona (Gitpod) developmen
 
 **New to this environment?** Start here:
 1. Read [README.md](./README.md) - Quick start and setup guide
-2. Review [SETUP_SUMMARY.md](./SETUP_SUMMARY.md) - Quick reference
+2. Review [CONFIGURATION.md](./CONFIGURATION.md) - Quick reference
 
 ## Documentation Files
 
 ### Getting Started
 - **[README.md](./README.md)** - Quick start guide, available tools, and basic usage
-- **[SETUP_SUMMARY.md](./SETUP_SUMMARY.md)** - Quick reference for setup and common commands
+- **[CONFIGURATION.md](./CONFIGURATION.md)** - Quick reference for setup and common commands
 
 ### Automation System
 - **[TRIGGERS.md](./TRIGGERS.md)** - Comprehensive guide to automation triggers and design philosophy
-- **[TRIGGERS_SUMMARY.md](./TRIGGERS_SUMMARY.md)** - Executive summary of trigger configuration
-- **[AUTOMATIONS_ADDITIONS.md](./AUTOMATIONS_ADDITIONS.md)** - Details about additional automation features
+- **[TRIGGERS_RATIONALE.md](./TRIGGERS_RATIONALE.md)** - Executive summary of trigger configuration
+- **[AUTOMATION_TASKS.md](./AUTOMATION_TASKS.md)** - Details about additional automation features
 - **[automations.yaml](./automations.yaml)** - Automation task definitions
 
 ### Technical Reports
@@ -28,7 +28,7 @@ This directory contains all documentation related to the Ona (Gitpod) developmen
 
 Located in `../.devcontainer/`:
 - **[README.md](../.devcontainer/README.md)** - Dev container configuration and tools
-- **[GH_AUTH_SETUP.md](../.devcontainer/GH_AUTH_SETUP.md)** - GitHub CLI automatic authentication guide
+- **[GITHUB_CLI_AUTH.md](../.devcontainer/GITHUB_CLI_AUTH.md)** - GitHub CLI automatic authentication guide
 - **[Dockerfile](../.devcontainer/Dockerfile)** - Container image definition
 - **[devcontainer.json](../.devcontainer/devcontainer.json)** - Dev container configuration
 - **[setup-gh-token.sh](../.devcontainer/setup-gh-token.sh)** - Automatic authentication script
@@ -42,13 +42,13 @@ Located in repository root:
 
 ### Setting Up Your Environment
 1. [README.md](./README.md) - Environment overview
-2. [SETUP_SUMMARY.md](./SETUP_SUMMARY.md) - Setup steps
+2. [CONFIGURATION.md](./CONFIGURATION.md) - Setup steps
 3. [../.devcontainer/README.md](../.devcontainer/README.md) - Dev container details
 
 ### Using Automations
 1. [README.md](./README.md#available-automations) - Available tasks
 2. [TRIGGERS.md](./TRIGGERS.md) - How triggers work
-3. [AUTOMATIONS_ADDITIONS.md](./AUTOMATIONS_ADDITIONS.md) - Additional features
+3. [AUTOMATION_TASKS.md](./AUTOMATION_TASKS.md) - Additional features
 
 ### Understanding Design Decisions
 1. [TRIGGERS.md](./TRIGGERS.md) - Trigger design philosophy
@@ -56,7 +56,7 @@ Located in repository root:
 3. [VERIFICATION_RESULTS.md](./VERIFICATION_RESULTS.md) - Testing methodology
 
 ### GitHub CLI Integration
-1. [../.devcontainer/GH_AUTH_SETUP.md](../.devcontainer/GH_AUTH_SETUP.md) - Complete authentication guide
+1. [../.devcontainer/GITHUB_CLI_AUTH.md](../.devcontainer/GITHUB_CLI_AUTH.md) - Complete authentication guide
 2. [README.md](./README.md#using-github-cli) - Quick usage
 3. [../.devcontainer/README.md](../.devcontainer/README.md#github-cli-authentication) - Troubleshooting
 
@@ -87,16 +87,16 @@ gh pr create --title "Title" --body "Description"
 .
 ├── .devcontainer/          # Dev container configuration
 │   ├── README.md          # Dev container docs
-│   ├── GH_AUTH_SETUP.md   # GitHub CLI auth guide
+│   ├── GITHUB_CLI_AUTH.md # GitHub CLI auth guide
 │   ├── Dockerfile         # Container image
 │   ├── devcontainer.json  # Configuration
 │   └── setup-gh-token.sh  # Auth script
 │
 ├── .gitpod/               # Ona automation configuration
 │   ├── README.md          # Quick start guide
-│   ├── README_INDEX.md    # This file
+│   ├── INDEX.md           # This file
 │   ├── TRIGGERS.md        # Trigger documentation
-│   ├── SETUP_SUMMARY.md   # Quick reference
+│   ├── CONFIGURATION.md   # Quick reference
 │   ├── automations.yaml   # Task definitions
 │   └── ...                # Additional docs
 │

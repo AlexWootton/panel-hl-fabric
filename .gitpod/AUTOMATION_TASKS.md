@@ -1,4 +1,4 @@
-# Ona Automations - Additional Features
+# Ona Automation Tasks
 
 ## Overview
 
@@ -282,7 +282,7 @@ All documentation has been updated to reflect these additions:
 - `.gitpod/README.md` - Updated with new tasks and service
 - `.gitpod/TRIGGERS.md` - Documented implementation and usage
 - `AGENTS.md` - Updated automation commands
-- `AUTOMATIONS_ADDITIONS.md` - This document
+- `AUTOMATION_TASKS.md` - This document
 
 ## Testing Results
 

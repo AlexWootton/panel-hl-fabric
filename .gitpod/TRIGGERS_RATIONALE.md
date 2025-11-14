@@ -1,4 +1,4 @@
-# Ona Automations Triggers - Summary
+# Ona Automations Triggers - Rationale
 
 ## What Changed
 

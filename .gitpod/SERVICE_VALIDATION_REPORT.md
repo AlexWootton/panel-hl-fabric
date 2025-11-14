@@ -236,11 +236,11 @@ gitpod automations task start stop-test-network
 ### Removed
 - `fabric-network` service from `.gitpod/automations.yaml`
 - Service documentation from `.gitpod/README.md`
-- Service usage examples from `AUTOMATIONS_ADDITIONS.md`
+- Service usage examples from `AUTOMATION_TASKS.md`
 
 ### Updated
 - `.gitpod/TRIGGERS.md` - Added "Why No Service?" section
-- `AUTOMATIONS_ADDITIONS.md` - Explained service removal
+- `AUTOMATION_TASKS.md` - Explained service removal
 - `AGENTS.md` - Removed service reference
 - All documentation now recommends task-based approach
 
