@@ -54,6 +54,15 @@ tasks:
       - setup-test-network
       - setup-docker-images
     command: |
+      # Add Fabric binaries to PATH
+      export PATH=/workspaces/fabric/build/bin:$PATH
+      
+      # Create symlink to config directory if it doesn't exist
+      if [ ! -d "/workspaces/fabric-samples/config" ]; then
+        ln -s /workspaces/fabric/sampleconfig /workspaces/fabric-samples/config
+        echo "Created symlink to config directory"
+      fi
+      
       cd /workspaces/fabric-samples/test-network
       echo "Starting Fabric test network..."
       ./network.sh up createChannel
@@ -111,11 +120,32 @@ tasks:
     dependsOn:
       - start-test-network
     command: |
+      # Add Fabric binaries to PATH
+      export PATH=/workspaces/fabric/build/bin:$PATH
+      
+      # Ensure config symlink exists
+      if [ ! -d "/workspaces/fabric-samples/config" ]; then
+        ln -s /workspaces/fabric/sampleconfig /workspaces/fabric-samples/config
+        echo "Created symlink to config directory"
+      fi
+      
       cd /workspaces/fabric-samples/test-network
       echo "Deploying asset-transfer-basic chaincode..."
       ./network.sh deployCC -ccn basic -ccp ../asset-transfer-basic/chaincode-go -ccl go
       echo "✅ Chaincode deployed successfully"
       echo "Test with: cd /workspaces/fabric-samples/test-network && peer chaincode invoke ..."
+
+  validate-network:
+    name: "validate-network"
+    description: "Validate that the test network is fully functional"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Running comprehensive network validation..."
+      .gitpod/validate-network.sh
+      echo ""
+      echo "💡 Tip: Run 'gitpod automations task start validate-network' anytime to check network health"
 
   run-integration-tests:
     name: "run-integration-tests"
