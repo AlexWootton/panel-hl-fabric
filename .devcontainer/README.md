@@ -125,14 +125,8 @@ echo $PATH
 # If not, rebuild the container
 ```
 
-### GitHub CLI Not Authenticated
-```bash
-# Check auth status
-gh auth status
-
-# Login if needed
-gh auth login
-```
+### GitHub CLI Issues
+See [GITHUB_CLI_AUTH.md](./GITHUB_CLI_AUTH.md) for authentication troubleshooting.
 
 ## Resources
 
