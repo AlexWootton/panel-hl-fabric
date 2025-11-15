@@ -316,12 +316,9 @@ make docker-thirdparty
 
 ## Additional Documentation
 
-- **[TESTING_STRATEGY.md](./TESTING_STRATEGY.md)** - Complete guide to testing tools and when to use each
 - **[VALIDATION.md](./VALIDATION.md)** - Detailed network validation guide
-- **[VALIDATION_ANALYSIS.md](./VALIDATION_ANALYSIS.md)** - Analysis of validation vs. existing tests
 - **[TRIGGERS.md](./TRIGGERS.md)** - Detailed automation trigger design and philosophy
 - **[../.devcontainer/README.md](../.devcontainer/README.md)** - Dev container configuration
-- **[../.devcontainer/DEPENDENCY_ALIGNMENT.md](../.devcontainer/DEPENDENCY_ALIGNMENT.md)** - Dependency alignment with Vagrant/CI
 - **[../.devcontainer/GITHUB_CLI_AUTH.md](../.devcontainer/GITHUB_CLI_AUTH.md)** - GitHub CLI authentication
 
 ## Resources
