@@ -32,8 +32,5 @@
 		"PKCS11_LABEL": "ForFabric"
 	},
 	// One-time setup on container creation (runs once per container lifecycle)
-	"postCreateCommand": [
-		"sh", "-c",
-		"echo 'export PKCS11_LIB=\"$(find /usr/lib -name libsofthsm2.so | head -1)\"' >> ~/.bashrc && bash ${containerWorkspaceFolder}/.devcontainer/setup-gh-token.sh"
-	]
+	"postCreateCommand": "echo 'export PKCS11_LIB=\"$(find /usr/lib -name libsofthsm2.so | head -1)\"' >> ~/.bashrc && bash ${containerWorkspaceFolder}/.devcontainer/setup-gh-token.sh"
 }
