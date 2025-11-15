@@ -1,14 +1,12 @@
 # Hyperledger Fabric Dev Container
 
-Dev Container configuration for Hyperledger Fabric development, aligned with Vagrant and CI environments.
+Dev Container configuration for Hyperledger Fabric development. This environment is aligned with Vagrant and CI configurations to ensure consistent builds and tests across all platforms.
 
 ## Configuration Files
 
 - **`devcontainer.json`** - Dev Container configuration
 - **`Dockerfile`** - Custom image with required tools
 - **`setup-gh-token.sh`** - GitHub CLI authentication setup
-
-See [DEPENDENCY_ALIGNMENT.md](./DEPENDENCY_ALIGNMENT.md) for details on environment consistency.
 
 ## Installed Tools
 
@@ -102,10 +100,30 @@ docker info  # Check status
 sudo systemctl restart docker  # Restart if needed
 ```
 
+**Go version mismatch:**
+```bash
+go version  # Check current version
+grep "^go " go.mod  # Check required version
+# If mismatch, update Dockerfile and rebuild
+```
+
 **Go tools not found:**
 ```bash
 echo $PATH  # Should include /home/vscode/go/bin
 # If not, rebuild the container
+```
+
+**SoftHSM2 not working:**
+```bash
+softhsm2-util --show-slots  # Should show slot 0 with label "ForFabric"
+echo $PKCS11_LIB  # Should show path to libsofthsm2.so
+# If empty, restart the container
+```
+
+**Build or test failures:**
+```bash
+make basic-checks  # Run full validation suite
+# This checks Go version, linting, licenses, etc.
 ```
 
 **GitHub CLI issues:**
