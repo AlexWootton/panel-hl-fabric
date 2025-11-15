@@ -38,12 +38,58 @@ The GitHub CLI is **automatically authenticated** using your Git credentials.
 
 See [GITHUB_CLI_AUTH.md](./GITHUB_CLI_AUTH.md) for usage and troubleshooting.
 
-### Rebuilding
+## Common Workflows
 
-After modifying configuration files:
+### Updating Go Version
+
+The Go version must be kept in sync between `go.mod` and `.devcontainer/Dockerfile`. To update:
+
+1. **Update go.mod:**
+   ```bash
+   # Edit go.mod, change: go 1.25.3 → go 1.26.0
+   go mod tidy
+   ```
+
+2. **Update Dockerfile:**
+   ```bash
+   # Edit .devcontainer/Dockerfile
+   # Change: ARG GO_VERSION=1.25.3 → ARG GO_VERSION=1.26.0
+   ```
+
+3. **Rebuild (automatic prompt):**
+   
+   Ona will detect the Dockerfile change and prompt: **"Container configuration changed. Rebuild?"**
+   
+   Click "Rebuild" or run manually:
+   ```bash
+   gitpod environment devcontainer rebuild
+   ```
+   
+   The rebuild process (~2-5 minutes):
+   - Downloads and installs the specified Go version
+   - Preserves your workspace files and git state
+   - Resets installed packages and shell history
+
+4. **Verify the new version:**
+   ```bash
+   go version
+   # Or use the helper script:
+   .devcontainer/check-go-version.sh
+   ```
+
+**Helper Script:** Run `.devcontainer/check-go-version.sh` anytime to verify your container's Go version matches `go.mod`. It will warn if they're out of sync.
+
+**Why two places?** Keeping the version in the Dockerfile allows Ona to detect changes and automatically prompt for rebuild. This provides better UX than requiring users to remember to rebuild manually.
+
+### Rebuilding the Container
+
+Rebuild when you modify:
+- `go.mod` (Go version)
+- `.devcontainer/Dockerfile`
+- `.devcontainer/devcontainer.json`
 
 ```bash
-# Via Gitpod CLI
+# Via Gitpod CLI (recommended)
 gitpod environment devcontainer rebuild
 
 # Or via VS Code Command Palette

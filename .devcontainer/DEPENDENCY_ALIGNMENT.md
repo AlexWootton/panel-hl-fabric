@@ -20,18 +20,21 @@ This document explains the dependency alignment between Vagrant, CI, and the Dev
 ## Key Changes Made
 
 ### 1. Go Version Management
-**Problem:** Dockerfile was installing `golang-go` from Ubuntu repos (Go 1.22.2), but project requires Go 1.25.3. Additionally, the Go version was hardcoded in the Dockerfile, requiring manual sync with go.mod.
+**Problem:** Dockerfile was installing `golang-go` from Ubuntu repos (Go 1.22.2), but project requires Go 1.25.3.
 
 **Solution:** 
-- Extract Go version from `go.mod` at build time (single source of truth)
 - Download and install Go directly from go.dev
+- Use ARG GO_VERSION in Dockerfile (must match go.mod)
 - Add symlinks to `/usr/local/bin` for easy access
-- Aligns with CI's `go-version-file: go.mod` approach
+- Ona detects Dockerfile changes and prompts for rebuild
 
 **Impact:** 
-- Eliminates manual version synchronization
-- Prevents version drift between environments
-- Matches CI and Vagrant approaches
+- Automatic rebuild prompts when version changes
+- Better UX than requiring manual rebuild
+- Matches Vagrant approach
+- CI uses go-version-file: go.mod for automatic detection
+
+**Trade-off:** Version must be kept in sync between go.mod and Dockerfile, but this enables automatic rebuild detection which provides better user experience.
 
 ### 2. Missing Dependencies Added
 
@@ -156,17 +159,24 @@ The dev container includes automatic GitHub CLI authentication via `setup-gh-tok
 
 This provides seamless `gh` CLI access without manual authentication.
 
-## Future Maintenance
+## Updating Go Version
 
-When updating Go version:
-1. Update `go.mod` (go directive) - **This is the single source of truth**
-2. Update `vagrant/golang.sh` (GO_VERSION variable)
-3. Dev container and CI will automatically pick up the change from go.mod
+**Quick Guide:**
+1. Update `go.mod` (change the `go` directive)
+2. Run `go mod tidy`
+3. Update `.devcontainer/Dockerfile` (change `ARG GO_VERSION`)
+4. Ona will prompt: "Container configuration changed. Rebuild?" → Click "Rebuild"
+5. Update `vagrant/golang.sh` (GO_VERSION variable)
 
-**Automatic Version Detection:**
-- **Dev Container**: Extracts Go version from `go.mod` at build time
-- **CI**: Uses `go-version-file: go.mod` in GitHub Actions
+**Why keep version in Dockerfile?** This allows Ona to detect changes and automatically prompt for rebuild, providing better UX than requiring users to remember to rebuild manually.
+
+**Version Synchronization:**
+- **go.mod**: Source of truth for the project
+- **Dockerfile**: Must match go.mod (Ona detects changes here)
+- **CI**: Uses `go-version-file: go.mod` (automatic)
 - **Vagrant**: Requires manual update (GO_VERSION variable)
+
+**Helper:** Run `.devcontainer/check-go-version.sh` to verify go.mod and container versions match.
 
 Note: `tools/go.mod` will be updated automatically when you run `go mod tidy` in the tools directory.
 

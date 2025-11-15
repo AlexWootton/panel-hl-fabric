@@ -21,14 +21,14 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Go from official source - version extracted from go.mod at build time
-COPY go.mod /tmp/go.mod
-RUN GO_VERSION=$(grep "^go " /tmp/go.mod | awk '{print $2}') \
-    && echo "Installing Go ${GO_VERSION} from go.mod" \
+# Install Go from official source
+# IMPORTANT: Keep this version in sync with go.mod
+# When updating: 1) Update go.mod, 2) Update this ARG, 3) Ona will prompt to rebuild
+ARG GO_VERSION=1.25.3
+RUN echo "Installing Go ${GO_VERSION}" \
     && curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" | tar -xz -C /usr/local \
     && ln -sf /usr/local/go/bin/go /usr/local/bin/go \
-    && ln -sf /usr/local/go/bin/gofmt /usr/local/bin/gofmt \
-    && rm /tmp/go.mod
+    && ln -sf /usr/local/go/bin/gofmt /usr/local/bin/gofmt
 
 # Install GitHub CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
