@@ -142,6 +142,16 @@ staticcheck -debug.version
 4. **Maintainability** - Single source of truth for Go version (go.mod)
 5. **Testing** - PKCS#11 tests can now run in dev container
 
+## GitHub CLI Authentication
+
+The dev container includes automatic GitHub CLI authentication via `setup-gh-token.sh`:
+- Extracts token from Gitpod's git credential helper
+- Sets `GH_TOKEN` environment variable
+- Idempotent (skips if already configured)
+- Runs once per container via `postCreateCommand`
+
+This provides seamless `gh` CLI access without manual authentication.
+
 ## Future Maintenance
 
 When updating Go version:
@@ -150,7 +160,7 @@ When updating Go version:
 3. Update `.devcontainer/Dockerfile` (GO_VERSION ARG)
 4. CI will automatically pick up the change from go.mod
 
-Note: `tools/go.mod` will be updated automatically when you run `go mod tidy` in the tools directory. No toolchain directive is needed since we install the correct Go version directly.
+Note: `tools/go.mod` will be updated automatically when you run `go mod tidy` in the tools directory.
 
 ## References
 

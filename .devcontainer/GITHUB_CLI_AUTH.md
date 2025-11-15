@@ -6,66 +6,51 @@ The GitHub CLI (`gh`) is **automatically authenticated** using your Git credenti
 
 ## Usage
 
-Just use `gh` commands directly:
-
 ```bash
 # Create a PR
 gh pr create --title "Your PR title" --body "Description"
 
-# View PRs
+# View and manage PRs
 gh pr list
-
-# Check out a PR
 gh pr checkout <number>
-
-# View PR details
 gh pr view <number>
+
+# Check authentication status
+gh auth status
 ```
 
 ## How It Works
 
 The dev container automatically:
-1. Extracts your GitHub token from Git credential helper
+1. Extracts your GitHub token from Git credential helper (provided by Gitpod)
 2. Sets the `GH_TOKEN` environment variable
-3. Configures your shell for future sessions
+3. Configures your shell for future sessions with dynamic token extraction
 
-This happens via `postStartCommand` in `devcontainer.json`.
+This happens via `postCreateCommand` in `devcontainer.json` (runs once per container).
+
+**Key Features:**
+- **Idempotent** - Skips setup if already authenticated
+- **Dynamic token extraction** - Automatically picks up token rotations
+- **Zero configuration** - Works out of the box
 
 ## Troubleshooting
-
-### Authentication Errors
 
 If `gh` commands fail with authentication errors:
 
 ```bash
 # Re-run the setup script
-bash ${containerWorkspaceFolder}/.devcontainer/setup-gh-token.sh
+bash .devcontainer/setup-gh-token.sh
 
 # Or reload your shell
 exec bash
-```
 
-### Check Authentication Status
-
-```bash
-gh auth status
-```
-
-### Manual Authentication (if needed)
-
-```bash
+# Manual authentication (if needed)
 gh auth login
 ```
 
 ## Technical Details
 
-The setup script (`.devcontainer/setup-gh-token.sh`):
-- Locates Git credential file provided by Gitpod
-- Extracts GitHub token (format: `gho_...`)
-- Sets `GH_TOKEN` environment variable
-- Adds configuration to `~/.bashrc`
-
-The token has these scopes:
+The setup script extracts the GitHub token from Gitpod's git credential helper and makes it available to the `gh` CLI. The token includes these scopes:
 - `read:user` - Read user profile
 - `repo` - Repository access
 - `user:email` - Email access

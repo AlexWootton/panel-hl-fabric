@@ -1,136 +1,73 @@
 # Hyperledger Fabric Dev Container
 
-This directory contains the Dev Container configuration for Hyperledger Fabric development.
+Dev Container configuration for Hyperledger Fabric development, aligned with Vagrant and CI environments.
 
 ## Configuration Files
 
 - **`devcontainer.json`** - Dev Container configuration
 - **`Dockerfile`** - Custom image with required tools
+- **`setup-gh-token.sh`** - GitHub CLI authentication setup
 
-## Dependency Alignment
-
-This dev container configuration is aligned with:
-- **Vagrant setup** (`vagrant/` directory) - Same Go version, build tools, and SoftHSM2
-- **CI workflows** (`.github/workflows/`) - Uses `go-version-file: go.mod` approach
-- **Project requirements** (`go.mod`) - Go 1.25.3 with toolchain directive
-
-All three environments now provide consistent tooling for Fabric development.
+See [DEPENDENCY_ALIGNMENT.md](./DEPENDENCY_ALIGNMENT.md) for details on environment consistency.
 
 ## Installed Tools
 
-### Core Development Tools
-- **Go 1.25.3** - Go programming language (matches go.mod requirement)
-- **Make** - Build automation tool
-- **Git** - Version control system
-- **Build Essential** - GCC, G++, and other build tools
+- **Go 1.25.3** - Matches go.mod requirement
+- **Docker-in-Docker** - Container runtime with Docker Compose v2
+- **GitHub CLI (gh)** - Automatically authenticated for PR management
+- **SoftHSM2** - Software HSM for PKCS#11 testing
+- **Build tools** - make, gcc, g++, git
+- **Utilities** - curl, jq, file, unzip
 
-### Container & Orchestration
-- **Docker** - Container runtime (via Docker-in-Docker feature)
-- **Docker Compose v2** - Multi-container orchestration
+## Environment Variables
 
-### GitHub Integration
-- **GitHub CLI (gh)** - GitHub command-line tool for PR management
+- `FABRIC_CFG_PATH` - Points to `sampleconfig/`
+- `GOPATH` - Set to `/home/vscode/go`
+- `PATH` - Includes Go binaries
+- `PKCS11_LIB` - Path to SoftHSM2 library (auto-detected)
+- `PKCS11_PIN` - PIN for PKCS#11 token (98765432)
+- `PKCS11_LABEL` - Label for PKCS#11 token (ForFabric)
 
-### Security & Cryptography
-- **SoftHSM2** - Software implementation of HSM for PKCS#11 testing
+## Quick Start
 
-### Utilities
-- **curl** - HTTP client
-- **jq** - JSON processor
-- **file** - File type identification (required by code checks)
-- **unzip** - Archive extraction
+The container is ready to use immediately. All tools and authentication are configured automatically.
 
-## Features
+### GitHub CLI
 
-### Docker-in-Docker
-Enabled via the `ghcr.io/devcontainers/features/docker-in-docker:2` feature:
-- Allows running Docker containers inside the dev container
-- Required for Fabric test network
-- Includes Docker Compose v2
+The GitHub CLI is **automatically authenticated** using your Git credentials.
 
-### Environment Variables
-- `FABRIC_CFG_PATH`: Points to `${containerWorkspaceFolder}/sampleconfig`
-- `GOPATH`: Set to `/home/vscode/go`
-- `PATH`: Includes `$GOPATH/bin` and `/usr/local/go/bin` for Go tools
-- `PKCS11_LIB`: Path to SoftHSM2 library (auto-detected)
-- `PKCS11_PIN`: PIN for PKCS#11 token (98765432)
-- `PKCS11_LABEL`: Label for PKCS#11 token (ForFabric)
+See [GITHUB_CLI_AUTH.md](./GITHUB_CLI_AUTH.md) for usage and troubleshooting.
 
-### VS Code Extensions
-- **golang.go** - Go language support
+### Rebuilding
 
-## Rebuilding the Container
+After modifying configuration files:
 
-After modifying the configuration:
-
-1. Open Command Palette (Ctrl+Shift+P / Cmd+Shift+P)
-2. Select "Dev Containers: Rebuild Container"
-3. Wait for rebuild to complete
-
-Or use the Gitpod CLI:
 ```bash
+# Via Gitpod CLI
 gitpod environment devcontainer rebuild
-```
 
-## GitHub CLI Authentication
-
-The GitHub CLI is pre-installed and **automatically authenticated** using your Git credentials. No manual setup required!
-
-See [GITHUB_CLI_AUTH.md](./GITHUB_CLI_AUTH.md) for usage examples and troubleshooting.
-
-## Customization
-
-To add more tools, edit the `Dockerfile`:
-
-```dockerfile
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends \
-    your-package-here \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-```
-
-To add VS Code extensions, edit `devcontainer.json`:
-
-```json
-"customizations": {
-  "vscode": {
-    "extensions": [
-      "golang.go",
-      "your-extension-id"
-    ]
-  }
-}
+# Or via VS Code Command Palette
+# Ctrl+Shift+P → "Dev Containers: Rebuild Container"
 ```
 
 ## Troubleshooting
 
-### Docker Not Available
-If Docker is not available after rebuild:
+**Docker not available:**
 ```bash
-# Check Docker status
-docker info
-
-# Restart Docker service
-sudo systemctl restart docker
+docker info  # Check status
+sudo systemctl restart docker  # Restart if needed
 ```
 
-### Go Tools Not in PATH
-If Go tools (like ginkgo) are not found:
+**Go tools not found:**
 ```bash
-# Check PATH
-echo $PATH
-
-# Should include /home/vscode/go/bin
+echo $PATH  # Should include /home/vscode/go/bin
 # If not, rebuild the container
 ```
 
-### GitHub CLI Issues
-See [GITHUB_CLI_AUTH.md](./GITHUB_CLI_AUTH.md) for authentication troubleshooting.
+**GitHub CLI issues:**
+See [GITHUB_CLI_AUTH.md](./GITHUB_CLI_AUTH.md)
 
 ## Resources
 
 - [Dev Container Specification](https://containers.dev/)
-- [Docker-in-Docker Feature](https://github.com/devcontainers/features/tree/main/src/docker-in-docker)
 - [GitHub CLI Documentation](https://cli.github.com/manual/)
-- [VS Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers)
