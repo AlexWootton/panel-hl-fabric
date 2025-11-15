@@ -31,8 +31,9 @@
 		"PKCS11_PIN": "98765432",
 		"PKCS11_LABEL": "ForFabric"
 	},
-	// One-time setup on container creation
-	"postCreateCommand": "echo 'export PKCS11_LIB=\"$(find /usr/lib -name libsofthsm2.so | head -1)\"' >> ~/.bashrc",
-	// Run on every container start to ensure fresh authentication
-	"postStartCommand": "bash ${containerWorkspaceFolder}/.devcontainer/setup-gh-token.sh"
+	// One-time setup on container creation (runs once per container lifecycle)
+	"postCreateCommand": [
+		"sh", "-c",
+		"echo 'export PKCS11_LIB=\"$(find /usr/lib -name libsofthsm2.so | head -1)\"' >> ~/.bashrc && bash ${containerWorkspaceFolder}/.devcontainer/setup-gh-token.sh"
+	]
 }

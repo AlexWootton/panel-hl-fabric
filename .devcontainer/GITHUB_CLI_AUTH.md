@@ -23,15 +23,29 @@ gh auth status
 
 The dev container automatically:
 1. Extracts your GitHub token from Git credential helper (provided by Gitpod)
-2. Sets the `GH_TOKEN` environment variable
-3. Configures your shell for future sessions with dynamic token extraction
+2. Sets the `GH_TOKEN` environment variable for the current session
+3. Adds dynamic token extraction code to `~/.bashrc` for all future shell sessions
 
-This happens via `postCreateCommand` in `devcontainer.json` (runs once per container).
+This happens via `postCreateCommand` in `devcontainer.json` (runs once per container lifecycle).
 
 **Key Features:**
-- **Idempotent** - Skips setup if already authenticated
-- **Dynamic token extraction** - Automatically picks up token rotations
+- **One-time setup** - Runs once on container creation, not on every start
+- **Dynamic token extraction** - Bashrc code automatically picks up token rotations in new shells
+- **Idempotent** - Skips setup if already configured
 - **Zero configuration** - Works out of the box
+
+**Token Rotation Handling:**
+
+The setup script adds this code to your `~/.bashrc`:
+```bash
+# GitHub CLI authentication
+CRED_FILE=$(git config --get credential.github.com.helper 2>/dev/null | grep -oP "cat '\K[^']+")
+if [ -n "$CRED_FILE" ] && [ -f "$CRED_FILE" ]; then
+    export GH_TOKEN=$(grep "^password=" "$CRED_FILE" 2>/dev/null | cut -d= -f2)
+fi
+```
+
+This means every new shell session automatically extracts the current token from Git credentials, so token rotation is handled without re-running the setup script.
 
 ## Troubleshooting
 
