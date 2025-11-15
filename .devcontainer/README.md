@@ -73,11 +73,9 @@ The Go version must be kept in sync between `go.mod` and `.devcontainer/Dockerfi
 4. **Verify the new version:**
    ```bash
    go version
-   # Or use the helper script:
-   .devcontainer/check-go-version.sh
+   # Or run the full validation suite:
+   make basic-checks
    ```
-
-**Helper Script:** Run `.devcontainer/check-go-version.sh` anytime to verify your container's Go version matches `go.mod`. It will warn if they're out of sync.
 
 **Why two places?** Keeping the version in the Dockerfile allows Ona to detect changes and automatically prompt for rebuild. This provides better UX than requiring users to remember to rebuild manually.
 

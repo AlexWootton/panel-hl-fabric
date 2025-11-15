@@ -176,7 +176,7 @@ This provides seamless `gh` CLI access without manual authentication.
 - **CI**: Uses `go-version-file: go.mod` (automatic)
 - **Vagrant**: Requires manual update (GO_VERSION variable)
 
-**Helper:** Run `.devcontainer/check-go-version.sh` to verify go.mod and container versions match.
+**Verification:** Run `make basic-checks` to verify the Go version and other dependencies are correct.
 
 Note: `tools/go.mod` will be updated automatically when you run `go mod tidy` in the tools directory.
 
