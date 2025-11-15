@@ -19,15 +19,19 @@ This document explains the dependency alignment between Vagrant, CI, and the Dev
 
 ## Key Changes Made
 
-### 1. Go Version Fix
-**Problem:** Dockerfile was installing `golang-go` from Ubuntu repos (Go 1.22.2), but project requires Go 1.25.3.
+### 1. Go Version Management
+**Problem:** Dockerfile was installing `golang-go` from Ubuntu repos (Go 1.22.2), but project requires Go 1.25.3. Additionally, the Go version was hardcoded in the Dockerfile, requiring manual sync with go.mod.
 
 **Solution:** 
-- Download and install Go 1.25.3 directly from go.dev
+- Extract Go version from `go.mod` at build time (single source of truth)
+- Download and install Go directly from go.dev
 - Add symlinks to `/usr/local/bin` for easy access
-- Matches Vagrant's approach exactly
+- Aligns with CI's `go-version-file: go.mod` approach
 
-**Impact:** Eliminates reliance on Go's automatic toolchain download, improving build performance.
+**Impact:** 
+- Eliminates manual version synchronization
+- Prevents version drift between environments
+- Matches CI and Vagrant approaches
 
 ### 2. Missing Dependencies Added
 
@@ -155,10 +159,14 @@ This provides seamless `gh` CLI access without manual authentication.
 ## Future Maintenance
 
 When updating Go version:
-1. Update `go.mod` (go directive)
+1. Update `go.mod` (go directive) - **This is the single source of truth**
 2. Update `vagrant/golang.sh` (GO_VERSION variable)
-3. Update `.devcontainer/Dockerfile` (GO_VERSION ARG)
-4. CI will automatically pick up the change from go.mod
+3. Dev container and CI will automatically pick up the change from go.mod
+
+**Automatic Version Detection:**
+- **Dev Container**: Extracts Go version from `go.mod` at build time
+- **CI**: Uses `go-version-file: go.mod` in GitHub Actions
+- **Vagrant**: Requires manual update (GO_VERSION variable)
 
 Note: `tools/go.mod` will be updated automatically when you run `go mod tidy` in the tools directory.
 

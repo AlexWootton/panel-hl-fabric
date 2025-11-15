@@ -12,7 +12,7 @@ See [DEPENDENCY_ALIGNMENT.md](./DEPENDENCY_ALIGNMENT.md) for details on environm
 
 ## Installed Tools
 
-- **Go 1.25.3** - Matches go.mod requirement
+- **Go** - Version automatically extracted from go.mod (currently 1.25.3)
 - **Docker-in-Docker** - Container runtime with Docker Compose v2
 - **GitHub CLI (gh)** - Automatically authenticated for PR management
 - **SoftHSM2** - Software HSM for PKCS#11 testing
