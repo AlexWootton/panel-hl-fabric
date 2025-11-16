@@ -93,6 +93,75 @@ This is the Hyperledger Fabric repository - an enterprise-grade, distributed led
 - `GOPATH` - Go workspace path
 - `GO_VER` - Required Go version (defined in go.mod)
 
+## Agent Guidelines for Documentation
+
+### Temporary Documentation Management
+
+When creating analysis, design, or implementation documents during development:
+
+**DO**:
+- ✅ Create detailed analysis documents to support PR review
+- ✅ Document design decisions and rationale
+- ✅ Provide implementation guides for complex changes
+- ✅ Use descriptive names (e.g., `AUTOMATION_ANALYSIS.md`, `IMPLEMENTATION_PLAN.md`)
+
+**DO NOT**:
+- ❌ Commit temporary analysis documents to the repository long-term
+- ❌ Leave implementation plans after the work is complete
+- ❌ Keep design documents that duplicate commit messages
+
+**Cleanup Process**:
+1. Create temporary docs during development (useful for PR review)
+2. Reference them in commit messages if needed
+3. **Delete them before final commit** or in a cleanup commit
+4. Keep only permanent documentation:
+   - User-facing guides (README.md)
+   - Operational procedures (TRIGGERS.md, VALIDATION.md)
+   - Configuration documentation
+
+**Rationale**:
+- Temporary docs add clutter after merge
+- Information is preserved in commit messages and git history
+- Reduces maintenance burden
+- Keeps repository focused on current, actionable documentation
+
+**Example Cleanup**:
+```bash
+# Remove temporary analysis documents
+rm .gitpod/AUTOMATION_ANALYSIS.md
+rm .gitpod/IMPLEMENTATION_PLAN.md
+rm .gitpod/TEST_ARTIFACT_ANALYSIS.md
+
+# Commit cleanup
+git add .gitpod/
+git commit -m "Remove temporary analysis documents
+
+These documents served their purpose during PR review.
+The information is preserved in commit messages:
+- Commit abc123: Design rationale
+- Commit def456: Implementation details
+
+Keeping only permanent documentation."
+```
+
+### Permanent vs Temporary Documentation
+
+**Permanent** (Keep in repository):
+- User guides and tutorials
+- API documentation
+- Configuration references
+- Operational procedures
+- Troubleshooting guides
+- Architecture overviews (high-level, stable)
+
+**Temporary** (Delete after use):
+- Design analysis documents
+- Implementation plans
+- Decision records (use commit messages instead)
+- Investigation notes
+- Performance analysis (unless ongoing reference)
+- Migration guides (after migration complete)
+
 ## Resources
 - [Fabric Documentation](https://hyperledger-fabric.readthedocs.io/)
 - [Test Network Tutorial](https://hyperledger-fabric.readthedocs.io/en/latest/test_network.html)
