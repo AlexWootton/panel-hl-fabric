@@ -314,18 +314,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      echo "Cleaning up test artifacts..."
-      find integration/ -name "*.test" -type f -delete 2>/dev/null || true
-      find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
-      go mod tidy 2>/dev/null || true
-      
-      echo ""
-      if [ $EXIT_CODE -eq 0 ]; then
-        echo "✅ Consensus tests complete and artifacts cleaned"
-      else
-        echo "❌ Consensus tests failed (exit code: $EXIT_CODE) but artifacts cleaned"
-        exit $EXIT_CODE
-      fi
+      .gitpod/cleanup-test-artifacts.sh $EXIT_CODE "Consensus"
 
   test-ledger:
     name: "test-ledger"
@@ -355,18 +344,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      echo "Cleaning up test artifacts..."
-      find integration/ -name "*.test" -type f -delete 2>/dev/null || true
-      find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
-      go mod tidy 2>/dev/null || true
-      
-      echo ""
-      if [ $EXIT_CODE -eq 0 ]; then
-        echo "✅ Ledger tests complete and artifacts cleaned"
-      else
-        echo "❌ Ledger tests failed (exit code: $EXIT_CODE) but artifacts cleaned"
-        exit $EXIT_CODE
-      fi
+      .gitpod/cleanup-test-artifacts.sh $EXIT_CODE "Ledger"
 
   test-lifecycle:
     name: "test-lifecycle"
@@ -389,18 +367,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      echo "Cleaning up test artifacts..."
-      find integration/ -name "*.test" -type f -delete 2>/dev/null || true
-      find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
-      go mod tidy 2>/dev/null || true
-      
-      echo ""
-      if [ $EXIT_CODE -eq 0 ]; then
-        echo "✅ Lifecycle tests complete and artifacts cleaned"
-      else
-        echo "❌ Lifecycle tests failed (exit code: $EXIT_CODE) but artifacts cleaned"
-        exit $EXIT_CODE
-      fi
+      .gitpod/cleanup-test-artifacts.sh $EXIT_CODE "Lifecycle"
 
   test-gateway:
     name: "test-gateway"
@@ -423,18 +390,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      echo "Cleaning up test artifacts..."
-      find integration/ -name "*.test" -type f -delete 2>/dev/null || true
-      find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
-      go mod tidy 2>/dev/null || true
-      
-      echo ""
-      if [ $EXIT_CODE -eq 0 ]; then
-        echo "✅ Gateway tests complete and artifacts cleaned"
-      else
-        echo "❌ Gateway tests failed (exit code: $EXIT_CODE) but artifacts cleaned"
-        exit $EXIT_CODE
-      fi
+      .gitpod/cleanup-test-artifacts.sh $EXIT_CODE "Gateway"
 
   test-e2e:
     name: "test-e2e"
@@ -457,18 +413,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      echo "Cleaning up test artifacts..."
-      find integration/ -name "*.test" -type f -delete 2>/dev/null || true
-      find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
-      go mod tidy 2>/dev/null || true
-      
-      echo ""
-      if [ $EXIT_CODE -eq 0 ]; then
-        echo "✅ E2E tests complete and artifacts cleaned"
-      else
-        echo "❌ E2E tests failed (exit code: $EXIT_CODE) but artifacts cleaned"
-        exit $EXIT_CODE
-      fi
+      .gitpod/cleanup-test-artifacts.sh $EXIT_CODE "E2E"
 
   test-integration-all:
     name: "test-integration-all"
@@ -502,16 +447,8 @@ tasks:
       make integration-test
       EXIT_CODE=$?
       
-      echo "Cleaning up integration test artifacts..."
-      find integration/ -name "*.test" -type f -delete 2>/dev/null || true
-      find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
-      
-      if [ $EXIT_CODE -eq 0 ]; then
-        echo "✅ All integration tests passed"
-      else
-        echo "❌ Integration tests failed (exit code: $EXIT_CODE)"
-        exit $EXIT_CODE
-      fi
+      # Cleanup test artifacts
+      .gitpod/cleanup-test-artifacts.sh $EXIT_CODE "All integration"
 
   # ============================================================================
   # CODE QUALITY (1) - Pre-commit checks
