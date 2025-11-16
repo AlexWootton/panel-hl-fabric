@@ -185,36 +185,125 @@ gitpod automations task start start-test-network
 - `build-fabric` will rebuild on every restart
 - This is acceptable as Desktop restarts are less frequent
 
+## Recent Improvements (November 2024)
+
+### Major Automation Redesign
+
+We've significantly improved the automation design based on comprehensive developer persona analysis. See [AUTOMATION_ANALYSIS.md](AUTOMATION_ANALYSIS.md) for full details.
+
+**Key Changes**:
+1. ✅ Fixed test network restart issue (no more "channel exists" errors)
+2. ✅ Added fast feedback loops (`quick-check`, `verify-changes`)
+3. ✅ Added granular integration test suites (5-10 min vs 30 min)
+4. ✅ Added CouchDB network support for ledger developers
+5. ✅ Improved network management with clean restart
+6. ❌ Removed low-value automations (`setup-test-network`, `setup-docker-images`, `benchmark`)
+
+**Impact**:
+- 67-83% reduction in test cycle time
+- Fast feedback for all developer personas
+- Better resource utilization
+- Clearer automation names and purposes
+
 ## Implemented Additions
 
 The following tasks have been implemented based on developer feedback:
 
 ### Additional Tasks
 
-1. **`deploy-chaincode`** ✅ - Deploy sample chaincode to test network
+#### Quick Validation (NEW!)
+1. **`quick-check`** ✅ - Fast validation for all developers
    - **Trigger**: manual
-   - **Dependencies**: start-test-network
-   - **Purpose**: One-command chaincode deployment
-   - **Usage**: `gitpod automations task start deploy-chaincode`
+   - **Purpose**: Linters + tests for changed packages
+   - **Duration**: 2-5 minutes
+   - **Usage**: `gitpod automations task start quick-check`
 
-2. **`run-integration-tests`** ✅ - Run full integration test suite
+2. **`verify-changes`** ✅ - Test only changed packages
    - **Trigger**: manual
-   - **Dependencies**: setup-docker-images
-   - **Purpose**: Comprehensive integration testing
-   - **Duration**: 15-30 minutes
-   - **Usage**: `gitpod automations task start run-integration-tests`
+   - **Purpose**: Fastest test feedback
+   - **Duration**: 1-3 minutes
+   - **Usage**: `gitpod automations task start verify-changes`
 
-3. **`benchmark`** ✅ - Run performance benchmarks
+#### Network Management (IMPROVED!)
+3. **`start-network`** ✅ - Start test network (improved)
    - **Trigger**: manual
-   - **Purpose**: Performance testing and optimization
-   - **Output**: Results saved to benchmark-results.txt
-   - **Usage**: `gitpod automations task start benchmark`
+   - **Purpose**: Clean restart, no "channel exists" errors
+   - **Changes**: Absorbed setup dependencies, added cleanup
+   - **Usage**: `gitpod automations task start start-network`
 
-4. **`clean-all`** ✅ - Clean all build artifacts and Docker resources
+4. **`start-network-couchdb`** ✅ - Start network with CouchDB
    - **Trigger**: manual
-   - **Purpose**: Complete cleanup of workspace
-   - **Actions**: Removes build artifacts, stops networks, prunes Docker
-   - **Usage**: `gitpod automations task start clean-all`
+   - **Purpose**: Ledger development with CouchDB state database
+   - **Usage**: `gitpod automations task start start-network-couchdb`
+
+5. **`restart-network`** ✅ - Quick network restart
+   - **Trigger**: manual
+   - **Purpose**: Fast iteration without manual commands
+   - **Duration**: ~30 seconds
+   - **Usage**: `gitpod automations task start restart-network`
+
+6. **`setup-couchdb`** ✅ - Pull CouchDB image
+   - **Trigger**: manual
+   - **Purpose**: Prepare for ledger tests
+   - **Usage**: `gitpod automations task start setup-couchdb`
+
+#### Granular Integration Testing (NEW!)
+7. **`test-consensus`** ✅ - Consensus tests only
+   - **Trigger**: manual
+   - **Suites**: raft, smartbft
+   - **Duration**: ~5 minutes
+   - **Usage**: `gitpod automations task start test-consensus`
+
+8. **`test-ledger`** ✅ - Ledger tests only
+   - **Trigger**: manual
+   - **Suites**: ledger, pvtdata, pvtdatapurge
+   - **Duration**: ~8 minutes
+   - **Usage**: `gitpod automations task start test-ledger`
+
+9. **`test-lifecycle`** ✅ - Lifecycle tests only
+   - **Trigger**: manual
+   - **Suites**: lifecycle, devmode, pluggable
+   - **Duration**: ~6 minutes
+   - **Usage**: `gitpod automations task start test-lifecycle`
+
+10. **`test-gateway`** ✅ - Gateway tests only
+    - **Trigger**: manual
+    - **Suites**: gateway, discovery, gossip
+    - **Duration**: ~5 minutes
+    - **Usage**: `gitpod automations task start test-gateway`
+
+11. **`test-e2e`** ✅ - End-to-end tests only
+    - **Trigger**: manual
+    - **Suites**: e2e, nwo, sbe, msp
+    - **Duration**: ~10 minutes
+    - **Usage**: `gitpod automations task start test-e2e`
+
+12. **`test-integration-all`** ✅ - All integration tests (renamed)
+    - **Trigger**: manual
+    - **Purpose**: Comprehensive integration testing
+    - **Duration**: 15-30 minutes
+    - **Note**: Renamed from `run-integration-tests`
+    - **Usage**: `gitpod automations task start test-integration-all`
+
+#### Other Tasks
+13. **`deploy-chaincode`** ✅ - Deploy sample chaincode to test network
+    - **Trigger**: manual
+    - **Purpose**: One-command chaincode deployment
+    - **Usage**: `gitpod automations task start deploy-chaincode`
+
+14. **`clean-all`** ✅ - Clean all build artifacts and Docker resources
+    - **Trigger**: manual
+    - **Purpose**: Complete cleanup of workspace
+    - **Actions**: Removes build artifacts, stops networks, prunes Docker
+    - **Usage**: `gitpod automations task start clean-all`
+
+### Removed Tasks
+
+The following tasks were removed as low-value or redundant:
+
+1. **`setup-test-network`** ❌ - Absorbed into `start-network`
+2. **`setup-docker-images`** ❌ - Absorbed into `start-network`
+3. **`benchmark`** ❌ - Too generic, low value
 
 ### Why No Service for Fabric Network?
 

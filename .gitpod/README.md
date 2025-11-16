@@ -2,6 +2,16 @@
 
 Complete guide for developing Hyperledger Fabric in Gitpod/Ona.
 
+## What's New ✨
+
+**Improved Automations** - Faster feedback and better experience:
+- ⚡ **Quick validation**: `quick-check` (2-5 min) and `verify-changes` (1-3 min) for fast feedback
+- 🎯 **Granular testing**: Run specific integration test suites (5-10 min) instead of all tests (30 min)
+- 🌐 **Better network management**: Clean restart (no more "channel exists" errors!), CouchDB support
+- 📊 **Time savings**: 67-83% reduction in test cycle time for most developers
+
+See [AUTOMATION_ANALYSIS.md](AUTOMATION_ANALYSIS.md) for full details.
+
 ## Quick Start
 
 ### 1. Environment Startup
@@ -9,13 +19,14 @@ When you start the environment, Fabric binaries are **automatically built** (~2-
 
 ### 2. Start Test Network
 ```bash
-# One command to start everything:
-gitpod automations task start start-test-network
+# One command to start everything (with clean restart):
+gitpod automations task start start-network
 ```
 
 This automatically:
 - Clones fabric-samples (if needed)
 - Pulls required Docker images
+- Cleans any existing network (no more "channel exists" errors!)
 - Starts the network with a channel
 
 ### 3. Deploy Chaincode (Optional)
@@ -30,29 +41,48 @@ gitpod automations task start validate-network
 
 ### 5. Stop Test Network
 ```bash
-gitpod automations task start stop-test-network
+gitpod automations task start stop-network
 ```
 
 ## Available Automations
 
+### Quick Validation (NEW! ⚡)
+| Task | Description | Time | Trigger |
+|------|-------------|------|---------|
+| `quick-check` | Linters + tests for changed packages | 2-5 min | Manual |
+| `verify-changes` | Unit tests for changed packages only | 1-3 min | Manual |
+
 ### Network Management
 | Task | Description | Trigger |
 |------|-------------|---------|
-| `start-test-network` | Start Fabric test network with channel | Manual |
-| `stop-test-network` | Stop and clean up test network | Manual |
+| `start-network` | Start test network (clean restart, no errors!) | Manual |
+| `start-network-couchdb` | Start network with CouchDB state database | Manual |
+| `restart-network` | Quick network restart | Manual |
+| `stop-network` | Stop and clean up test network | Manual |
 | `deploy-chaincode` | Deploy sample chaincode | Manual |
 | `validate-network` | Validate network is fully functional | Manual |
-| `setup-test-network` | Clone fabric-samples repository | Manual |
-| `setup-docker-images` | Pull required Docker images | Manual |
+| `setup-couchdb` | Pull CouchDB image for ledger tests | Manual |
 
-### Development & Testing
+### Testing - Unit
+| Task | Description | Time | Trigger |
+|------|-------------|------|---------|
+| `test-unit` | Run all unit tests | 15-20 min | Manual |
+
+### Testing - Integration (NEW! 🎯)
+| Task | Description | Time | Trigger |
+|------|-------------|------|---------|
+| `test-consensus` | Raft + SmartBFT consensus tests | ~5 min | Manual |
+| `test-ledger` | Ledger + private data tests | ~8 min | Manual |
+| `test-lifecycle` | Chaincode lifecycle tests | ~6 min | Manual |
+| `test-gateway` | Gateway + discovery tests | ~5 min | Manual |
+| `test-e2e` | End-to-end integration tests | ~10 min | Manual |
+| `test-integration-all` | ALL integration tests | ~30 min | Manual |
+
+### Development
 | Task | Description | Trigger |
 |------|-------------|---------|
 | `build-fabric` | Build all Fabric native binaries | **Automatic** (on start) |
 | `build-docker` | Build Fabric Docker images | Manual |
-| `test-unit` | Run unit tests | Manual |
-| `run-integration-tests` | Run integration tests (~15-30 min) | Manual |
-| `benchmark` | Run performance benchmarks | Manual |
 | `check-code` | Run linting and code checks | Manual |
 
 ### Cleanup
@@ -78,13 +108,36 @@ gitpod automations task list-executions <task-name>
 
 ## Development Workflow
 
+### Quick Iteration (NEW! ⚡)
+```bash
+# Fast feedback during development
+gitpod automations task start quick-check        # 2-5 min: linters + changed packages
+gitpod automations task start verify-changes     # 1-3 min: test changed packages only
+
+# Before committing
+gitpod automations task start check-code         # Full code quality checks
+```
+
 ### Building Changes
 ```bash
 make native          # Build binaries
 make docker          # Build Docker images
 ```
 
-### Testing
+### Testing - Granular (NEW! 🎯)
+```bash
+# Run specific integration test suites (much faster!)
+gitpod automations task start test-consensus     # ~5 min: Raft + SmartBFT
+gitpod automations task start test-ledger        # ~8 min: Ledger + private data
+gitpod automations task start test-lifecycle     # ~6 min: Chaincode lifecycle
+gitpod automations task start test-gateway       # ~5 min: Gateway + discovery
+gitpod automations task start test-e2e           # ~10 min: End-to-end tests
+
+# Or run everything (slower)
+gitpod automations task start test-integration-all  # ~30 min: ALL tests
+```
+
+### Testing - Traditional
 ```bash
 make unit-test       # Run unit tests
 make integration-test # Run integration tests (requires Docker)
@@ -95,15 +148,34 @@ make basic-checks    # Run linting, license checks, etc.
 
 #### Option 1: Automation (Recommended)
 ```bash
-gitpod automations task start start-test-network
+# Start network (clean restart, no errors!)
+gitpod automations task start start-network
+
+# Deploy chaincode
 gitpod automations task start deploy-chaincode
+
 # ... develop and test ...
-gitpod automations task start stop-test-network
+
+# Quick restart if needed
+gitpod automations task start restart-network
+
+# Stop when done
+gitpod automations task start stop-network
 ```
 
-#### Option 2: Manual
+#### Option 2: With CouchDB (for ledger development)
+```bash
+gitpod automations task start start-network-couchdb
+# CouchDB UI: http://localhost:5984/_utils (admin/adminpw)
+gitpod automations task start deploy-chaincode
+# ... develop and test ...
+gitpod automations task start stop-network
+```
+
+#### Option 3: Manual
 ```bash
 cd /workspaces/fabric-samples/test-network
+./network.sh down  # Clean first to avoid errors
 ./network.sh up createChannel
 ./network.sh deployCC -ccn basic -ccp ../asset-transfer-basic/chaincode-go -ccl go
 # ... develop and test ...
