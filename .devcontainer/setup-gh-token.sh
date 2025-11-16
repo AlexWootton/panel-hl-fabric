@@ -1,9 +1,14 @@
 #!/bin/bash
+#
+# Copyright IBM Corp All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
 # Setup GitHub CLI authentication using git credential helper
 
 # Skip if already configured
 if gh auth status &>/dev/null; then
-    echo "✅ GitHub CLI already authenticated"
+    echo "GitHub CLI already authenticated"
     exit 0
 fi
 
@@ -11,7 +16,7 @@ fi
 CRED_FILE=$(git config --get credential.github.com.helper 2>/dev/null | grep -oP "cat '\K[^']+")
 
 if [ -z "$CRED_FILE" ] || [ ! -f "$CRED_FILE" ]; then
-    echo "⚠️  Git credential file not found"
+    echo "Warning: Git credential file not found"
     exit 1
 fi
 
@@ -19,7 +24,7 @@ fi
 GITHUB_TOKEN=$(grep "^password=" "$CRED_FILE" 2>/dev/null | cut -d= -f2)
 
 if [ -z "$GITHUB_TOKEN" ]; then
-    echo "⚠️  Could not extract GitHub token from credential file"
+    echo "Warning: Could not extract GitHub token from credential file"
     exit 1
 fi
 
@@ -38,5 +43,5 @@ fi
 EOF
 fi
 
-echo "✅ GitHub CLI authenticated successfully"
+echo "GitHub CLI authenticated successfully"
 gh auth status 2>&1 | head -5
