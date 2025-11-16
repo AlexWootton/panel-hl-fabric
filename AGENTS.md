@@ -2,7 +2,7 @@
 
 Target audience: AI coding agents (Claude, GPT-4, etc.)
 
-Purpose: Enable AI agents to contribute effectively to Hyperledger Fabric codebase.
+Purpose: Quick reference for stable patterns and critical requirements. For detailed information, refer to authoritative source files.
 
 ---
 
@@ -76,13 +76,14 @@ Key directories:
 
 ## COMMON TASKS
 
+See `Makefile` header comments for complete list of targets.
+
 ### Build
 
 ```bash
 make native      # Build all binaries → build/bin/
 make docker      # Build Docker images
 make clean       # Clean build artifacts
-make clean-all   # Clean everything including Docker
 ```
 
 ### Test
@@ -90,10 +91,11 @@ make clean-all   # Clean everything including Docker
 ```bash
 make unit-test   # Run all unit tests
 make verify      # Test changed packages only (fast)
-make integration-test INTEGRATION_TEST_SUITE="raft smartbft"  # Specific suite
-make integration-test  # All integration tests (~30 min)
+make integration-test INTEGRATION_TEST_SUITE="<suite>"  # Specific suite
 make basic-checks  # Code quality checks
 ```
+
+For available integration test suites, see `integration/` directory structure.
 
 ### Code Quality
 
@@ -142,21 +144,12 @@ Location: `integration/` directory
 
 Framework: Ginkgo/Gomega (BDD style)
 
-Available suites:
-- `raft` - Raft consensus (~5 min)
-- `smartbft` - SmartBFT consensus (~5 min)
-- `ledger` - Ledger tests (~8 min)
-- `pvtdata` - Private data (~8 min)
-- `lifecycle` - Chaincode lifecycle (~6 min)
-- `gateway` - Gateway API (~5 min)
-- `e2e` - End-to-end (~10 min)
-- `nwo` - Network orchestration (~10 min)
-
 Run specific suites:
 ```bash
 make integration-test INTEGRATION_TEST_SUITE="raft smartbft"
-make integration-test INTEGRATION_TEST_SUITE="ledger pvtdata"
 ```
+
+For available suites and details, explore the `integration/` directory.
 
 ### Mock Generation
 
@@ -232,9 +225,6 @@ import (
 ### Missing License Header
 
 Error: `make license` fails
-```
-Error: Missing SPDX-License-Identifier in file.go
-```
 
 Solution: Add to top of file:
 ```go
@@ -244,9 +234,6 @@ Solution: Add to top of file:
 ### Deprecated Package Import
 
 Error: `make linter` fails
-```
-Error: use of deprecated package golang.org/x/net/context
-```
 
 Solution: Use standard library:
 ```go
@@ -256,9 +243,6 @@ import "context"  // Not golang.org/x/net/context
 ### Vendor Out of Sync
 
 Error: `make native` fails
-```
-Error: vendor/ directory out of sync
-```
 
 Solution:
 ```bash
@@ -277,131 +261,36 @@ go generate ./path/to/package
 ### go.sum Stale
 
 Error: `make basic-checks` fails
-```
-Error: go.sum is stale
-```
 
 Solution:
 ```bash
 go mod tidy
 ```
 
-### Port Already in Use
-
-Error: Integration tests fail
-```
-Error: bind: address already in use
-```
-
-Solution:
-```bash
-cd /workspaces/fabric-samples/test-network
-./network.sh down
-```
-
 ---
 
 ## ONA ENVIRONMENT
 
-### Automatic Tasks
+For complete automation details, see `.gitpod/README.md` and `.gitpod/automations.yaml`.
 
-Runs on environment start:
-- `build-fabric` - Builds all binaries
-
-### Quick Validation
-
-Fast feedback for development:
-```bash
-gitpod automations task start quick-check      # 2-5 min: linters + changed packages
-gitpod automations task start verify-changes   # 1-3 min: changed packages only
-```
-
-### Test Network
-
-For chaincode and API development:
-```bash
-gitpod automations task start start-network              # Start (clean restart)
-gitpod automations task start start-network-couchdb      # Start with CouchDB
-gitpod automations task start deploy-chaincode           # Deploy sample
-gitpod automations task start restart-network            # Quick restart
-gitpod automations task start stop-network               # Stop
-```
-
-### Integration Tests
-
-Granular test suites (faster than full suite):
-```bash
-gitpod automations task start test-consensus      # ~5 min: Raft + SmartBFT
-gitpod automations task start test-ledger         # ~8 min: Ledger + private data
-gitpod automations task start test-lifecycle      # ~6 min: Chaincode lifecycle
-gitpod automations task start test-gateway        # ~5 min: Gateway + discovery
-gitpod automations task start test-e2e            # ~10 min: End-to-end
-gitpod automations task start test-integration-all  # ~30 min: All tests
-```
-
-### Code Quality
+### Quick Commands
 
 ```bash
-gitpod automations task start check-code  # Run all code quality checks
-```
+# List all available automations
+gitpod automations task list
 
-### Utilities
+# Fast validation
+gitpod automations task start quick-check
+gitpod automations task start verify-changes
 
-```bash
-gitpod automations task list                          # List all automations
-gitpod automations task start clean-integration-tests # Clean test artifacts (~300-400MB)
-gitpod automations task start clean-all               # Clean everything
-```
-
-### Ona Specifics
-
-- Test artifacts cleaned automatically after tests
-- Docker-in-Docker enabled
-- Binaries pre-built on environment start
-- Use automations instead of manual commands (more reliable)
-
-Resource management:
-- Integration tests create ~300-400MB artifacts
-- Cleanup automatic via `.gitpod/cleanup-test-artifacts.sh`
-- Use `clean-integration-tests` if needed
-
----
-
-## TROUBLESHOOTING
-
-### Build Failures
-
-Problem: `make native` fails
-
-Solution:
-```bash
-make clean
-make native
-```
-
-### Test Failures
-
-Problem: Integration tests fail with "image not found"
-
-Solution:
-```bash
-make docker-thirdparty
-```
-
-### Automation Issues
-
-Problem: Automation fails with "task not found"
-
-Solution:
-```bash
-gitpod automations update .gitpod/automations.yaml
-```
-
-Problem: Network won't start (channel exists error)
-
-Solution: Use `start-network` (does clean restart automatically)
-```bash
+# Test network
 gitpod automations task start start-network
+gitpod automations task start stop-network
+
+# Integration tests (granular)
+gitpod automations task start test-consensus
+gitpod automations task start test-ledger
+gitpod automations task start test-lifecycle
 ```
 
 ---
@@ -413,7 +302,7 @@ gitpod automations task start start-network
 - User guides and tutorials
 - API documentation
 - Configuration references
-- Operational procedures (README.md, TRIGGERS.md, VALIDATION.md)
+- Operational procedures
 
 ### Remove After Use
 
@@ -423,13 +312,6 @@ gitpod automations task start start-network
 - Decision records (use commit messages instead)
 
 Rationale: Temporary docs add clutter, duplicate commit messages, rarely referenced after merge.
-
-Cleanup process:
-```bash
-rm .gitpod/ANALYSIS_DOCUMENT.md
-git commit -m "Remove temporary analysis document
-Information preserved in commit message."
-```
 
 ---
 
@@ -441,28 +323,6 @@ Information preserved in commit message."
 make native              # Build
 make verify              # Test changed packages
 make basic-checks        # Pre-commit checks
-```
-
-### Full Validation
-
-```bash
-make unit-test           # All unit tests
-make integration-test    # All integration tests
-```
-
-### Ona Quick Validation
-
-```bash
-gitpod automations task start quick-check        # Fast feedback
-gitpod automations task start test-consensus     # Specific suite
-```
-
-### Test Network
-
-```bash
-gitpod automations task start start-network      # Start
-gitpod automations task start deploy-chaincode   # Deploy
-gitpod automations task start stop-network       # Stop
 ```
 
 ### Pre-Commit Checklist
@@ -477,23 +337,18 @@ gitpod automations task start stop-network       # Stop
 
 ---
 
-## ADDITIONAL RESOURCES
+## AUTHORITATIVE SOURCES
 
-Documentation:
-- [Fabric Documentation](https://hyperledger-fabric.readthedocs.io/)
-- [Test Network Tutorial](https://hyperledger-fabric.readthedocs.io/en/latest/test_network.html)
-- [Contributing Guide](./CONTRIBUTING.md)
-- [Ona Automations README](./.gitpod/README.md)
-- [Automation Triggers](./.gitpod/TRIGGERS.md)
+When this guide conflicts with or lacks detail, refer to:
 
-Key files:
-- `Makefile` - Build system
-- `staticcheck.conf` - Linter configuration
-- `.gitpod/automations.yaml` - Ona automation definitions
-- `go.mod` - Go module dependencies
+- **Build system**: `Makefile` (header comments list all targets)
+- **Ona automations**: `.gitpod/README.md` and `.gitpod/automations.yaml`
+- **Integration tests**: `integration/` directory structure
+- **Code style**: `staticcheck.conf`
+- **Dependencies**: `go.mod`
+- **Contributing**: `CONTRIBUTING.md`
+- **Fabric docs**: https://hyperledger-fabric.readthedocs.io/
 
 ---
 
-This file is maintained in version control. See git history for changes.
-
-If this file is missing critical information or contains errors, update it and commit the changes.
+This file contains stable patterns and critical requirements. For implementation details, timings, and specific configurations, always refer to the authoritative source files listed above.
