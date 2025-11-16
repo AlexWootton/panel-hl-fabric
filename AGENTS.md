@@ -1,60 +1,58 @@
-# Hyperledger Fabric - AI Agent Development Guide
+# Hyperledger Fabric - Agent Development Guide
 
-**Purpose**: This file provides AI agents with essential information for contributing to Hyperledger Fabric, with specific guidance for Ona remote development environments.
+Target audience: AI coding agents (Claude, GPT-4, etc.)
 
-**Target Audience**: AI coding agents (Claude, GPT-4, etc.) working on Fabric codebase
+Purpose: Enable AI agents to contribute effectively to Hyperledger Fabric codebase.
 
 ---
 
-## 🚨 Critical Requirements (READ FIRST)
+## CRITICAL REQUIREMENTS
 
-These requirements will **fail CI checks** if not followed:
+These requirements cause CI failures if not followed.
 
-### 1. License Headers (MANDATORY)
+### License Headers
 
-**Every source file MUST have an SPDX license header:**
+Every source file must include SPDX license header:
 
 ```go
 // SPDX-License-Identifier: Apache-2.0
 ```
 
-Or for scripts:
+For scripts:
 ```bash
 # SPDX-License-Identifier: Apache-2.0
 ```
 
-**Missing license headers = CI failure**. Run `make license` to check.
+Missing license headers will fail CI. Check with: `make license`
 
-### 2. Use Make Commands (NEVER direct go build)
+### Build System
+
+Use make commands exclusively. Never use go build directly.
 
 ```bash
-✅ make native          # Build binaries
-✅ make unit-test       # Run unit tests
-✅ make basic-checks    # Pre-commit checks
-
-❌ go build ./cmd/peer  # WRONG - bypasses build system
-❌ go test ./...        # WRONG - use make commands
+make native          # Correct
+go build ./cmd/peer  # Wrong - bypasses build system
 ```
 
-**Why**: Makefile handles cross-compilation, vendoring, Docker builds, and ensures consistent builds.
+Rationale: Makefile handles cross-compilation, vendoring, Docker builds.
 
-### 3. Pre-Commit Checklist
+### Pre-Commit Validation
 
-Before committing, **ALWAYS run**:
+Run before every commit:
 ```bash
 make basic-checks  # License, linting, spelling, trailing spaces
-make unit-test     # Unit tests
+make unit-test     # Unit tests (or make verify for changed packages only)
 ```
 
 ---
 
-## 📁 Project Structure
+## PROJECT STRUCTURE
 
 ```
 fabric/
-├── cmd/                    # CLI tools (peer, orderer, configtxgen, etc.)
-├── core/                   # Core Fabric functionality
-│   ├── chaincode/         # Chaincode runtime & lifecycle
+├── cmd/                    # CLI tools (peer, orderer, configtxgen)
+├── core/                   # Core functionality
+│   ├── chaincode/         # Chaincode runtime and lifecycle
 │   ├── ledger/            # Ledger implementation
 │   └── peer/              # Peer node implementation
 ├── orderer/               # Ordering service (Raft, SmartBFT)
@@ -62,89 +60,66 @@ fabric/
 ├── gossip/                # Gossip protocol
 ├── msp/                   # Membership Service Provider
 ├── integration/           # Integration tests (Ginkgo-based)
-├── internal/              # Internal packages (not for external use)
+├── internal/              # Internal packages
 ├── sampleconfig/          # Sample configuration files
 ├── build/bin/             # Built binaries (after make native)
-└── .gitpod/               # Ona development environment config
+└── .gitpod/               # Ona development environment
 ```
 
-**Key Directories**:
-- `cmd/` - Entry points for binaries
+Key directories:
+- `cmd/` - Binary entry points
 - `core/` - Main business logic
 - `integration/` - End-to-end tests
-- `internal/` - Private packages
+- `internal/` - Private packages (not for external use)
 
 ---
 
-## 🔨 Common Development Tasks
+## COMMON TASKS
 
-### Building
+### Build
 
 ```bash
-# Build all binaries (peer, orderer, configtxgen, etc.)
-make native
-
-# Build Docker images
-make docker
-
-# Clean build artifacts
-make clean
-
-# Clean everything (including Docker)
-make clean-all
+make native      # Build all binaries → build/bin/
+make docker      # Build Docker images
+make clean       # Clean build artifacts
+make clean-all   # Clean everything including Docker
 ```
 
-**Output**: Binaries are in `build/bin/`
-
-### Testing
+### Test
 
 ```bash
-# Run unit tests
-make unit-test
-
-# Run tests for changed packages only (fast!)
-make verify
-
-# Run specific integration test suite
-make integration-test INTEGRATION_TEST_SUITE="raft smartbft"
-
-# Run all integration tests (~30 minutes)
-make integration-test
-
-# Run code quality checks
-make basic-checks
+make unit-test   # Run all unit tests
+make verify      # Test changed packages only (fast)
+make integration-test INTEGRATION_TEST_SUITE="raft smartbft"  # Specific suite
+make integration-test  # All integration tests (~30 min)
+make basic-checks  # Code quality checks
 ```
 
 ### Code Quality
 
 ```bash
-# Run linter (gofumpt, goimports, staticcheck)
-make linter
-
-# Check license headers
-make license
-
-# Check spelling
-make spelling
+make linter    # Run gofumpt, goimports, staticcheck
+make license   # Check license headers
+make spelling  # Check spelling
 ```
 
 ---
 
-## 🧪 Testing Framework
+## TESTING
 
 ### Unit Tests
 
-**Location**: Same directory as code, `*_test.go` files
+Location: Same directory as code, `*_test.go` files
 
-**Framework**: Standard Go testing or Ginkgo/Gomega
+Framework: Standard Go testing or Ginkgo/Gomega
 
-**Requirements**:
-- ✅ Must support parallel execution (`go test -p`)
-- ✅ NO external dependencies (use mocks)
-- ✅ Clean up temp directories
-- ✅ Use existing test framework in package
+Requirements:
+- Support parallel execution (`go test -p`)
+- No external dependencies (use mocks)
+- Clean up temp directories
+- Use existing test framework in package
 
-**Example**:
+Example:
 ```go
 // SPDX-License-Identifier: Apache-2.0
 
@@ -163,85 +138,74 @@ func TestMyFunction(t *testing.T) {
 
 ### Integration Tests
 
-**Location**: `integration/` directory
+Location: `integration/` directory
 
-**Framework**: Ginkgo/Gomega (BDD style)
+Framework: Ginkgo/Gomega (BDD style)
 
-**Test Suites**:
-- `raft` - Raft consensus tests
-- `smartbft` - SmartBFT consensus tests
-- `ledger` - Ledger tests
-- `pvtdata` - Private data tests
-- `lifecycle` - Chaincode lifecycle tests
-- `gateway` - Gateway API tests
-- `e2e` - End-to-end tests
-- `nwo` - Network orchestration tests
+Available suites:
+- `raft` - Raft consensus (~5 min)
+- `smartbft` - SmartBFT consensus (~5 min)
+- `ledger` - Ledger tests (~8 min)
+- `pvtdata` - Private data (~8 min)
+- `lifecycle` - Chaincode lifecycle (~6 min)
+- `gateway` - Gateway API (~5 min)
+- `e2e` - End-to-end (~10 min)
+- `nwo` - Network orchestration (~10 min)
 
-**Running Specific Suites**:
+Run specific suites:
 ```bash
-# Fast: Run only consensus tests (~5 min)
 make integration-test INTEGRATION_TEST_SUITE="raft smartbft"
-
-# Medium: Run ledger tests (~8 min)
 make integration-test INTEGRATION_TEST_SUITE="ledger pvtdata"
-
-# Slow: Run all tests (~30 min)
-make integration-test
 ```
 
 ### Mock Generation
 
-**Two tools** (for historical reasons):
+Two tools exist (historical reasons):
 
-1. **Counterfeiter** (preferred for new code):
+Counterfeiter (preferred):
 ```go
 //go:generate counterfeiter -o mocks/myinterface.go --fake-name MyInterface . MyInterface
 ```
 
-2. **Mockery** (legacy, still used in some packages):
+Mockery (legacy):
 ```go
 //go:generate mockery -dir . -name MyInterface -case underscore -output mocks/
 ```
 
-**Check existing mocks** in the package to determine which tool to use.
+Check existing mocks in package to determine which tool to use.
 
-**Regenerate mocks**:
+Regenerate mocks:
 ```bash
-go generate ./...
+go generate ./path/to/package
 ```
 
 ---
 
-## 🎨 Code Style
+## CODE STYLE
 
-### Go Style Requirements
+### Enforced by CI
 
-**Enforced by CI**:
-- ✅ **gofumpt** - Stricter gofmt formatting
-- ✅ **goimports** - Import organization
-- ✅ **go vet** - Static analysis
-- ✅ **staticcheck** - Additional linting (see `staticcheck.conf`)
+- gofumpt - Stricter gofmt formatting
+- goimports - Import organization
+- go vet - Static analysis
+- staticcheck - Additional linting (see `staticcheck.conf`)
 
-**Run locally**:
-```bash
-make linter
-```
+Run locally: `make linter`
 
-### Fabric-Specific Patterns
+### Fabric Patterns
 
-**DO**:
-- ✅ Use standard library `context` package
-- ✅ Use `github.com/golang/protobuf` for protobuf
-- ✅ Use interfaces at component boundaries
-- ✅ Encapsulate within components
-- ✅ Generate mocks with counterfeiter or mockery
+DO:
+- Use standard library `context` package
+- Use `github.com/golang/protobuf` for protobuf
+- Use interfaces at component boundaries
+- Generate mocks with counterfeiter or mockery
 
-**DON'T**:
-- ❌ Use `golang.org/x/net/context` (deprecated)
-- ❌ Use `github.com/gogo/protobuf` (deprecated)
-- ❌ Create unnecessary interfaces
-- ❌ Use package-level global state
-- ❌ Hand-write mocks
+DO NOT:
+- Use `golang.org/x/net/context` (deprecated)
+- Use `github.com/gogo/protobuf` (deprecated)
+- Create unnecessary interfaces
+- Use package-level global state
+- Hand-write mocks
 
 ### Import Organization
 
@@ -263,298 +227,246 @@ import (
 
 ---
 
-## ⚠️ Common Pitfalls
+## COMMON ERRORS
 
-### Critical Mistakes (Will Break CI)
+### Missing License Header
 
-1. **Missing SPDX license header**
-   ```bash
-   # Check before committing
-   make license
-   ```
+Error: `make license` fails
+```
+Error: Missing SPDX-License-Identifier in file.go
+```
 
-2. **Using deprecated packages**
-   ```go
-   ❌ import "golang.org/x/net/context"
-   ✅ import "context"
-   
-   ❌ import "github.com/gogo/protobuf/proto"
-   ✅ import "github.com/golang/protobuf/proto"
-   ```
+Solution: Add to top of file:
+```go
+// SPDX-License-Identifier: Apache-2.0
+```
 
-3. **Not running basic-checks**
-   ```bash
-   # Always run before committing
-   make basic-checks
-   ```
+### Deprecated Package Import
 
-4. **Using `go build` directly**
-   ```bash
-   ❌ go build ./cmd/peer
-   ✅ make native
-   ```
+Error: `make linter` fails
+```
+Error: use of deprecated package golang.org/x/net/context
+```
 
-### Common Mistakes (Will Cause Issues)
+Solution: Use standard library:
+```go
+import "context"  // Not golang.org/x/net/context
+```
 
-5. **Forgetting to update vendor/**
-   ```bash
-   # After changing dependencies
-   go mod tidy && go mod vendor
-   ```
+### Vendor Out of Sync
 
-6. **Not regenerating mocks**
-   ```bash
-   # After changing interfaces
-   go generate ./path/to/package
-   ```
+Error: `make native` fails
+```
+Error: vendor/ directory out of sync
+```
 
-7. **External dependencies in unit tests**
-   ```go
-   ❌ func TestWithDocker(t *testing.T) { /* uses Docker */ }
-   ✅ func TestWithMock(t *testing.T) { /* uses mock */ }
-   ```
+Solution:
+```bash
+go mod tidy && go mod vendor
+```
 
-8. **Not cleaning up temp directories**
-   ```go
-   func TestMyFunction(t *testing.T) {
-       tempDir, err := os.MkdirTemp("", "test")
-       require.NoError(t, err)
-       defer os.RemoveAll(tempDir)  // ✅ Always clean up
-   }
-   ```
+### Stale Mocks
+
+Error: Tests fail with interface mismatch
+
+Solution:
+```bash
+go generate ./path/to/package
+```
+
+### go.sum Stale
+
+Error: `make basic-checks` fails
+```
+Error: go.sum is stale
+```
+
+Solution:
+```bash
+go mod tidy
+```
+
+### Port Already in Use
+
+Error: Integration tests fail
+```
+Error: bind: address already in use
+```
+
+Solution:
+```bash
+cd /workspaces/fabric-samples/test-network
+./network.sh down
+```
 
 ---
 
-## 🌐 Ona Development Environment
+## ONA ENVIRONMENT
 
-### Ona Automations
+### Automatic Tasks
 
-**Automatic** (runs on environment start):
+Runs on environment start:
 - `build-fabric` - Builds all binaries
 
-**Quick Validation** (fast feedback):
-```bash
-# 2-5 minutes: Linters + changed package tests
-gitpod automations task start quick-check
+### Quick Validation
 
-# 1-3 minutes: Test only changed packages
-gitpod automations task start verify-changes
+Fast feedback for development:
+```bash
+gitpod automations task start quick-check      # 2-5 min: linters + changed packages
+gitpod automations task start verify-changes   # 1-3 min: changed packages only
 ```
 
-**Test Network** (for chaincode/API development):
+### Test Network
+
+For chaincode and API development:
 ```bash
-# Start network (clean restart, no errors)
-gitpod automations task start start-network
-
-# Start network with CouchDB (for ledger development)
-gitpod automations task start start-network-couchdb
-
-# Deploy sample chaincode
-gitpod automations task start deploy-chaincode
-
-# Quick restart
-gitpod automations task start restart-network
-
-# Stop network
-gitpod automations task start stop-network
+gitpod automations task start start-network              # Start (clean restart)
+gitpod automations task start start-network-couchdb      # Start with CouchDB
+gitpod automations task start deploy-chaincode           # Deploy sample
+gitpod automations task start restart-network            # Quick restart
+gitpod automations task start stop-network               # Stop
 ```
 
-**Granular Integration Tests** (much faster than full suite):
+### Integration Tests
+
+Granular test suites (faster than full suite):
 ```bash
-# ~5 min: Consensus tests (Raft + SmartBFT)
-gitpod automations task start test-consensus
-
-# ~8 min: Ledger tests (ledger + private data)
-gitpod automations task start test-ledger
-
-# ~6 min: Lifecycle tests (chaincode lifecycle)
-gitpod automations task start test-lifecycle
-
-# ~5 min: Gateway tests (gateway + discovery)
-gitpod automations task start test-gateway
-
-# ~10 min: E2E tests (end-to-end scenarios)
-gitpod automations task start test-e2e
-
-# ~30 min: ALL integration tests
-gitpod automations task start test-integration-all
+gitpod automations task start test-consensus      # ~5 min: Raft + SmartBFT
+gitpod automations task start test-ledger         # ~8 min: Ledger + private data
+gitpod automations task start test-lifecycle      # ~6 min: Chaincode lifecycle
+gitpod automations task start test-gateway        # ~5 min: Gateway + discovery
+gitpod automations task start test-e2e            # ~10 min: End-to-end
+gitpod automations task start test-integration-all  # ~30 min: All tests
 ```
 
-**Code Quality**:
+### Code Quality
+
 ```bash
-# Run all code quality checks
-gitpod automations task start check-code
+gitpod automations task start check-code  # Run all code quality checks
 ```
 
-**Utilities**:
+### Utilities
+
 ```bash
-# List all available automations
-gitpod automations task list
-
-# Clean test artifacts (~300-400MB)
-gitpod automations task start clean-integration-tests
-
-# Clean everything (artifacts + Docker)
-gitpod automations task start clean-all
+gitpod automations task list                          # List all automations
+gitpod automations task start clean-integration-tests # Clean test artifacts (~300-400MB)
+gitpod automations task start clean-all               # Clean everything
 ```
 
-### Ona-Specific Considerations
+### Ona Specifics
 
-**Remote Development**:
-- ✅ Use automations instead of manual commands (more reliable)
-- ✅ Test artifacts are cleaned automatically after tests
-- ✅ Docker-in-Docker is enabled
-- ✅ Binaries are pre-built on environment start
+- Test artifacts cleaned automatically after tests
+- Docker-in-Docker enabled
+- Binaries pre-built on environment start
+- Use automations instead of manual commands (more reliable)
 
-**Resource Management**:
-- Integration tests create ~300-400MB of artifacts
-- Cleanup is automatic (via `.gitpod/cleanup-test-artifacts.sh`)
+Resource management:
+- Integration tests create ~300-400MB artifacts
+- Cleanup automatic via `.gitpod/cleanup-test-artifacts.sh`
 - Use `clean-integration-tests` if needed
-
-**Troubleshooting**:
-- If `check-code` fails after tests: Artifacts are cleaned automatically
-- If network won't start: Use `start-network` (not `start-test-network`)
-- If disk space issues: Run `clean-all` automation
 
 ---
 
-## 📝 Documentation Guidelines
+## TROUBLESHOOTING
 
-### Temporary vs Permanent Documentation
+### Build Failures
 
-**Permanent** (keep in repository):
-- ✅ User guides and tutorials
-- ✅ API documentation
-- ✅ Configuration references
-- ✅ Operational procedures (README.md, TRIGGERS.md, VALIDATION.md)
+Problem: `make native` fails
 
-**Temporary** (delete after use):
-- ❌ Design analysis documents
-- ❌ Implementation plans
-- ❌ Investigation notes
-- ❌ Decision records (use commit messages instead)
-
-**Cleanup Process**:
+Solution:
 ```bash
-# Create temporary docs during development
-# Use them for PR review
-# Reference them in commit messages
-# Delete before final commit
+make clean
+make native
+```
 
+### Test Failures
+
+Problem: Integration tests fail with "image not found"
+
+Solution:
+```bash
+make docker-thirdparty
+```
+
+### Automation Issues
+
+Problem: Automation fails with "task not found"
+
+Solution:
+```bash
+gitpod automations update .gitpod/automations.yaml
+```
+
+Problem: Network won't start (channel exists error)
+
+Solution: Use `start-network` (does clean restart automatically)
+```bash
+gitpod automations task start start-network
+```
+
+---
+
+## DOCUMENTATION MANAGEMENT
+
+### Keep in Repository
+
+- User guides and tutorials
+- API documentation
+- Configuration references
+- Operational procedures (README.md, TRIGGERS.md, VALIDATION.md)
+
+### Remove After Use
+
+- Design analysis documents
+- Implementation plans
+- Investigation notes
+- Decision records (use commit messages instead)
+
+Rationale: Temporary docs add clutter, duplicate commit messages, rarely referenced after merge.
+
+Cleanup process:
+```bash
 rm .gitpod/ANALYSIS_DOCUMENT.md
 git commit -m "Remove temporary analysis document
 Information preserved in commit message."
 ```
 
-**Why**: Temporary docs add clutter, duplicate commit messages, and are rarely referenced after merge.
-
 ---
 
-## 🔍 Troubleshooting
+## QUICK REFERENCE
 
-### Build Issues
-
-**Problem**: `make native` fails
-```bash
-# Solution: Clean and rebuild
-make clean
-make native
-```
-
-**Problem**: "vendor/ out of sync"
-```bash
-# Solution: Update vendor
-go mod tidy && go mod vendor
-```
-
-### Test Issues
-
-**Problem**: Integration tests fail with "image not found"
-```bash
-# Solution: Pull Docker images
-make docker-thirdparty
-```
-
-**Problem**: `check-code` fails with "go.sum is stale"
-```bash
-# Solution: Run go mod tidy
-go mod tidy
-```
-
-**Problem**: Tests fail with "port already in use"
-```bash
-# Solution: Stop test network
-cd /workspaces/fabric-samples/test-network
-./network.sh down
-```
-
-### Ona-Specific Issues
-
-**Problem**: Automation fails with "task not found"
-```bash
-# Solution: Update automations
-gitpod automations update .gitpod/automations.yaml
-```
-
-**Problem**: Network won't start (channel exists error)
-```bash
-# Solution: Use start-network (not start-test-network)
-# start-network does clean restart automatically
-gitpod automations task start start-network
-```
-
----
-
-## 📚 Additional Resources
-
-### Documentation
-- [Fabric Documentation](https://hyperledger-fabric.readthedocs.io/)
-- [Test Network Tutorial](https://hyperledger-fabric.readthedocs.io/en/latest/test_network.html)
-- [Contributing Guide](./CONTRIBUTING.md)
-- [Ona Automations README](./.gitpod/README.md)
-- [Automation Triggers](./.gitpod/TRIGGERS.md)
-
-### Key Files
-- `Makefile` - Build system (read this to understand targets)
-- `staticcheck.conf` - Linter configuration
-- `.gitpod/automations.yaml` - Ona automation definitions
-- `go.mod` - Go module dependencies
-
-### Getting Help
-- Check existing issues on GitHub
-- Review recent commits for similar changes
-- Read test files for usage examples
-- Use `make help` for available targets
-
----
-
-## 🎯 Quick Reference
-
-### Most Common Commands
+### Development Cycle
 
 ```bash
-# Development cycle
 make native              # Build
 make verify              # Test changed packages
 make basic-checks        # Pre-commit checks
+```
 
-# Full validation
+### Full Validation
+
+```bash
 make unit-test           # All unit tests
 make integration-test    # All integration tests
+```
 
-# Ona quick validation
+### Ona Quick Validation
+
+```bash
 gitpod automations task start quick-check        # Fast feedback
 gitpod automations task start test-consensus     # Specific suite
+```
 
-# Test network
+### Test Network
+
+```bash
 gitpod automations task start start-network      # Start
 gitpod automations task start deploy-chaincode   # Deploy
 gitpod automations task start stop-network       # Stop
 ```
 
-### Critical Checklist
+### Pre-Commit Checklist
 
-Before committing:
 - [ ] Added SPDX license headers to new files
 - [ ] Ran `make basic-checks` (passed)
 - [ ] Ran `make unit-test` or `make verify` (passed)
@@ -565,6 +477,23 @@ Before committing:
 
 ---
 
-**Last Updated**: This file is maintained in version control. See git history for changes.
+## ADDITIONAL RESOURCES
 
-**Feedback**: If this file is missing critical information or contains errors, update it and commit the changes.
+Documentation:
+- [Fabric Documentation](https://hyperledger-fabric.readthedocs.io/)
+- [Test Network Tutorial](https://hyperledger-fabric.readthedocs.io/en/latest/test_network.html)
+- [Contributing Guide](./CONTRIBUTING.md)
+- [Ona Automations README](./.gitpod/README.md)
+- [Automation Triggers](./.gitpod/TRIGGERS.md)
+
+Key files:
+- `Makefile` - Build system
+- `staticcheck.conf` - Linter configuration
+- `.gitpod/automations.yaml` - Ona automation definitions
+- `go.mod` - Go module dependencies
+
+---
+
+This file is maintained in version control. See git history for changes.
+
+If this file is missing critical information or contains errors, update it and commit the changes.
