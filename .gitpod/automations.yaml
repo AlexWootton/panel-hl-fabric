@@ -311,8 +311,21 @@ tasks:
       echo "⏱️  Estimated time: ~5 minutes"
       echo ""
       make integration-test INTEGRATION_TEST_SUITE="raft smartbft"
+      EXIT_CODE=$?
+      
+      # Cleanup test artifacts
+      echo "Cleaning up test artifacts..."
+      find integration/ -name "*.test" -type f -delete 2>/dev/null || true
+      find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
+      go mod tidy 2>/dev/null || true
+      
       echo ""
-      echo "✅ Consensus tests complete"
+      if [ $EXIT_CODE -eq 0 ]; then
+        echo "✅ Consensus tests complete and artifacts cleaned"
+      else
+        echo "❌ Consensus tests failed (exit code: $EXIT_CODE) but artifacts cleaned"
+        exit $EXIT_CODE
+      fi
 
   test-ledger:
     name: "test-ledger"
@@ -339,8 +352,21 @@ tasks:
       echo "⏱️  Estimated time: ~8 minutes"
       echo ""
       make integration-test INTEGRATION_TEST_SUITE="ledger pvtdata pvtdatapurge"
+      EXIT_CODE=$?
+      
+      # Cleanup test artifacts
+      echo "Cleaning up test artifacts..."
+      find integration/ -name "*.test" -type f -delete 2>/dev/null || true
+      find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
+      go mod tidy 2>/dev/null || true
+      
       echo ""
-      echo "✅ Ledger tests complete"
+      if [ $EXIT_CODE -eq 0 ]; then
+        echo "✅ Ledger tests complete and artifacts cleaned"
+      else
+        echo "❌ Ledger tests failed (exit code: $EXIT_CODE) but artifacts cleaned"
+        exit $EXIT_CODE
+      fi
 
   test-lifecycle:
     name: "test-lifecycle"
@@ -360,8 +386,21 @@ tasks:
       echo "⏱️  Estimated time: ~6 minutes"
       echo ""
       make integration-test INTEGRATION_TEST_SUITE="lifecycle devmode pluggable"
+      EXIT_CODE=$?
+      
+      # Cleanup test artifacts
+      echo "Cleaning up test artifacts..."
+      find integration/ -name "*.test" -type f -delete 2>/dev/null || true
+      find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
+      go mod tidy 2>/dev/null || true
+      
       echo ""
-      echo "✅ Lifecycle tests complete"
+      if [ $EXIT_CODE -eq 0 ]; then
+        echo "✅ Lifecycle tests complete and artifacts cleaned"
+      else
+        echo "❌ Lifecycle tests failed (exit code: $EXIT_CODE) but artifacts cleaned"
+        exit $EXIT_CODE
+      fi
 
   test-gateway:
     name: "test-gateway"
@@ -381,8 +420,21 @@ tasks:
       echo "⏱️  Estimated time: ~5 minutes"
       echo ""
       make integration-test INTEGRATION_TEST_SUITE="gateway discovery gossip"
+      EXIT_CODE=$?
+      
+      # Cleanup test artifacts
+      echo "Cleaning up test artifacts..."
+      find integration/ -name "*.test" -type f -delete 2>/dev/null || true
+      find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
+      go mod tidy 2>/dev/null || true
+      
       echo ""
-      echo "✅ Gateway tests complete"
+      if [ $EXIT_CODE -eq 0 ]; then
+        echo "✅ Gateway tests complete and artifacts cleaned"
+      else
+        echo "❌ Gateway tests failed (exit code: $EXIT_CODE) but artifacts cleaned"
+        exit $EXIT_CODE
+      fi
 
   test-e2e:
     name: "test-e2e"
@@ -402,8 +454,21 @@ tasks:
       echo "⏱️  Estimated time: ~10 minutes"
       echo ""
       make integration-test INTEGRATION_TEST_SUITE="e2e nwo sbe msp"
+      EXIT_CODE=$?
+      
+      # Cleanup test artifacts
+      echo "Cleaning up test artifacts..."
+      find integration/ -name "*.test" -type f -delete 2>/dev/null || true
+      find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
+      go mod tidy 2>/dev/null || true
+      
       echo ""
-      echo "✅ E2E tests complete"
+      if [ $EXIT_CODE -eq 0 ]; then
+        echo "✅ E2E tests complete and artifacts cleaned"
+      else
+        echo "❌ E2E tests failed (exit code: $EXIT_CODE) but artifacts cleaned"
+        exit $EXIT_CODE
+      fi
 
   test-integration-all:
     name: "test-integration-all"
