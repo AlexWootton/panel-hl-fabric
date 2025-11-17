@@ -61,6 +61,8 @@ The following automations have been implemented and are ready to use:
 
 **Estimated Time Savings**: 40-50 hours/year (Phase 1 + 2A combined)
 
+**Ona UI Compatibility**: 28 of 31 automations (90%) work from Ona UI. See [ONA_UI_COMPATIBILITY.md](ONA_UI_COMPATIBILITY.md) for details.
+
 ### 🔄 Pending Implementation
 
 The following require GitHub repository admin access or additional work:

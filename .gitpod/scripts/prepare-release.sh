@@ -12,12 +12,37 @@ set -euo pipefail
 
 VERSION="${1:-}"
 
+# Interactive mode if no version provided
 if [ -z "$VERSION" ]; then
-    echo "❌ Error: Version required"
-    echo ""
-    echo "Usage: $0 <version>"
-    echo "Example: $0 3.1.4"
-    exit 1
+    # Check if running interactively
+    if [ -t 0 ]; then
+        echo "🚀 Prepare Release"
+        echo ""
+        
+        # Show current version from Makefile
+        CURRENT=$(grep "FABRIC_VER ?=" Makefile | cut -d'=' -f2 | tr -d ' ' || echo "unknown")
+        echo "Current version in Makefile: $CURRENT"
+        
+        # Show last tag
+        LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "none")
+        echo "Last git tag: $LAST_TAG"
+        echo ""
+        
+        read -p "Enter new version (e.g., 3.1.4): " VERSION
+        
+        if [ -z "$VERSION" ]; then
+            echo "❌ Error: No version provided"
+            exit 1
+        fi
+    else
+        echo "❌ Error: Version required"
+        echo ""
+        echo "Usage: $0 <version>"
+        echo "Example: $0 3.1.4"
+        echo ""
+        echo "Or run interactively: $0"
+        exit 1
+    fi
 fi
 
 # Validate version format (X.Y.Z)

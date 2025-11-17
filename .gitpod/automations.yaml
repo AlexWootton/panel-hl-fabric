@@ -554,23 +554,23 @@ tasks:
   
   update-go-version:
     name: "update-go-version"
-    description: "Update Go version across all Fabric files (go.mod, docs, vagrant, devcontainer)"
+    description: "(CLI only) Update Go version across all files - requires GO_VERSION variable"
     triggeredBy:
       - manual
     command: |
       cd /workspaces/fabric
       
       if [ -z "${GO_VERSION:-}" ]; then
-        echo "❌ Error: GO_VERSION environment variable required"
+        echo "❌ This automation requires the GO_VERSION environment variable"
         echo ""
-        echo "Usage: GO_VERSION=1.25.4 gitpod automations task start update-go-version"
+        echo "🖥️  CLI Usage:"
+        echo "   GO_VERSION=1.25.4 gitpod automations task start update-go-version"
         echo ""
-        echo "This will update:"
-        echo "  - go.mod (root and tools/)"
-        echo "  - vagrant/golang.sh"
-        echo "  - .devcontainer/Dockerfile"
-        echo "  - docs/source/prereqs.md"
-        echo "  - docs/source/dev-setup/devenv.rst"
+        echo "📝 Or run the script directly with interactive prompts:"
+        echo "   .gitpod/scripts/update-go-version.sh"
+        echo ""
+        echo "⚠️  Note: This automation cannot be run from the Ona UI"
+        echo "   Use the CLI or run the script directly instead"
         exit 1
       fi
       
@@ -578,22 +578,25 @@ tasks:
 
   update-dependency:
     name: "update-dependency"
-    description: "Update a Go dependency (runs go get + go mod tidy + go mod vendor)"
+    description: "(CLI only) Update a Go dependency - requires DEPENDENCY and VERSION variables"
     triggeredBy:
       - manual
     command: |
       cd /workspaces/fabric
       
       if [ -z "${DEPENDENCY:-}" ] || [ -z "${VERSION:-}" ]; then
-        echo "❌ Error: DEPENDENCY and VERSION environment variables required"
+        echo "❌ This automation requires DEPENDENCY and VERSION environment variables"
         echo ""
-        echo "Usage: DEPENDENCY=github.com/pkg/errors VERSION=v0.9.1 gitpod automations task start update-dependency"
+        echo "🖥️  CLI Usage:"
+        echo "   DEPENDENCY=github.com/pkg/errors VERSION=v0.9.1 gitpod automations task start update-dependency"
         echo ""
-        echo "Common dependencies:"
-        echo "  - github.com/consensys/gnark-crypto"
-        echo "  - github.com/docker/docker"
-        echo "  - golang.org/x/crypto"
-        echo "  - golang.org/x/net"
+        echo "📝 Or run the script directly with interactive prompts:"
+        echo "   .gitpod/scripts/update-dependency.sh"
+        echo ""
+        echo "💡 Alternative: Use 'check-outdated-deps' to see what needs updating"
+        echo ""
+        echo "⚠️  Note: This automation cannot be run from the Ona UI"
+        echo "   Use the CLI or run the script directly instead"
         exit 1
       fi
       
@@ -610,34 +613,41 @@ tasks:
 
   validate-changes:
     name: "validate-changes"
-    description: "Validate changes before committing (go.mod, vendor, linting, tests)"
+    description: "Validate changes before committing (full validation with unit tests)"
     triggeredBy:
       - manual
     command: |
       cd /workspaces/fabric
-      
-      QUICK_FLAG=""
-      if [ "${QUICK:-false}" = "true" ]; then
-        QUICK_FLAG="--quick"
-      fi
-      
-      .gitpod/scripts/validate-changes.sh $QUICK_FLAG
-      
-      echo ""
-      echo "💡 Tip: Set QUICK=true to skip unit tests for faster validation"
+      .gitpod/scripts/validate-changes.sh
+
+  validate-changes-quick:
+    name: "validate-changes-quick"
+    description: "Quick validation (skip unit tests for faster feedback)"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      .gitpod/scripts/validate-changes.sh --quick
 
   prepare-release:
     name: "prepare-release"
-    description: "Generate release checklist and validate version"
+    description: "(CLI only) Generate release checklist - requires VERSION variable"
     triggeredBy:
       - manual
     command: |
       cd /workspaces/fabric
       
       if [ -z "${VERSION:-}" ]; then
-        echo "❌ Error: VERSION environment variable required"
+        echo "❌ This automation requires the VERSION environment variable"
         echo ""
-        echo "Usage: VERSION=3.1.4 gitpod automations task start prepare-release"
+        echo "🖥️  CLI Usage:"
+        echo "   VERSION=3.1.4 gitpod automations task start prepare-release"
+        echo ""
+        echo "📝 Or run the script directly with interactive prompts:"
+        echo "   .gitpod/scripts/prepare-release.sh"
+        echo ""
+        echo "⚠️  Note: This automation cannot be run from the Ona UI"
+        echo "   Use the CLI or run the script directly instead"
         exit 1
       fi
       
@@ -702,3 +712,38 @@ tasks:
     command: |
       cd /workspaces/fabric
       .gitpod/scripts/install-git-hooks.sh
+
+  check-outdated-deps:
+    name: "check-outdated-deps"
+    description: "Check for outdated Go dependencies and show update commands"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      echo "🔍 Checking for outdated Go dependencies..."
+      echo ""
+      
+      # Get list of direct dependencies
+      OUTDATED=$(go list -u -m -json all 2>/dev/null | jq -r 'select(.Update) | "\(.Path)|\(.Version)|\(.Update.Version)"')
+      
+      if [ -z "$OUTDATED" ]; then
+        echo "✅ All dependencies are up to date!"
+        exit 0
+      fi
+      
+      echo "📦 Outdated dependencies found:"
+      echo ""
+      
+      echo "$OUTDATED" | while IFS='|' read -r path current latest; do
+        echo "  📌 $path"
+        echo "     Current: $current"
+        echo "     Latest:  $latest"
+        echo "     Update:  DEPENDENCY=$path VERSION=$latest gitpod automations task start update-dependency"
+        echo ""
+      done
+      
+      echo "💡 To update a dependency:"
+      echo "   1. Copy the update command above"
+      echo "   2. Run it in the CLI (not Ona UI)"
+      echo "   3. Or run: .gitpod/scripts/update-dependency.sh <dependency> <version>"

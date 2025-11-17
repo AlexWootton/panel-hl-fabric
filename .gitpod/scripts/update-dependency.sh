@@ -13,18 +13,45 @@ set -euo pipefail
 DEPENDENCY="${1:-}"
 VERSION="${2:-}"
 
+# Interactive mode if no arguments provided
 if [ -z "$DEPENDENCY" ] || [ -z "$VERSION" ]; then
-    echo "❌ Error: Dependency and version required"
-    echo ""
-    echo "Usage: $0 <dependency> <version>"
-    echo "Example: $0 github.com/consensys/gnark-crypto v0.19.2"
-    echo ""
-    echo "Common dependencies:"
-    echo "  - github.com/consensys/gnark-crypto"
-    echo "  - github.com/docker/docker"
-    echo "  - golang.org/x/crypto"
-    echo "  - golang.org/x/net"
-    exit 1
+    # Check if running interactively
+    if [ -t 0 ]; then
+        echo "🔄 Update Go Dependency"
+        echo ""
+        echo "Common dependencies:"
+        echo "  1. github.com/consensys/gnark-crypto"
+        echo "  2. github.com/docker/docker"
+        echo "  3. golang.org/x/crypto"
+        echo "  4. golang.org/x/net"
+        echo "  5. Other (specify)"
+        echo ""
+        
+        if [ -z "$DEPENDENCY" ]; then
+            read -p "Enter dependency path: " DEPENDENCY
+        fi
+        
+        if [ -z "$VERSION" ]; then
+            # Show current version if available
+            CURRENT=$(go list -m -json "$DEPENDENCY" 2>/dev/null | jq -r '.Version' 2>/dev/null || echo "not found")
+            echo ""
+            echo "Current version: $CURRENT"
+            read -p "Enter new version (e.g., v0.19.2): " VERSION
+        fi
+        
+        if [ -z "$DEPENDENCY" ] || [ -z "$VERSION" ]; then
+            echo "❌ Error: Both dependency and version required"
+            exit 1
+        fi
+    else
+        echo "❌ Error: Dependency and version required"
+        echo ""
+        echo "Usage: $0 <dependency> <version>"
+        echo "Example: $0 github.com/consensys/gnark-crypto v0.19.2"
+        echo ""
+        echo "Or run interactively: $0"
+        exit 1
+    fi
 fi
 
 # Ensure version starts with 'v' for proper semver

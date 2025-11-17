@@ -12,12 +12,30 @@ set -euo pipefail
 
 NEW_VERSION="${1:-}"
 
+# Interactive mode if no version provided
 if [ -z "$NEW_VERSION" ]; then
-    echo "❌ Error: Go version required"
-    echo ""
-    echo "Usage: $0 <go-version>"
-    echo "Example: $0 1.25.4"
-    exit 1
+    # Check if running interactively
+    if [ -t 0 ]; then
+        echo "🔄 Update Go Version"
+        echo ""
+        echo "Current Go version in go.mod:"
+        grep "^go " go.mod || echo "  (not found)"
+        echo ""
+        read -p "Enter new Go version (e.g., 1.25.4): " NEW_VERSION
+        
+        if [ -z "$NEW_VERSION" ]; then
+            echo "❌ Error: No version provided"
+            exit 1
+        fi
+    else
+        echo "❌ Error: Go version required"
+        echo ""
+        echo "Usage: $0 <go-version>"
+        echo "Example: $0 1.25.4"
+        echo ""
+        echo "Or run interactively: $0"
+        exit 1
+    fi
 fi
 
 # Validate version format (X.Y.Z)

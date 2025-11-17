@@ -109,25 +109,30 @@ gitpod automations task list-executions <task-name>
 ## Development Workflow
 
 ### Maintenance Automation (🔧 Phase 1 + 2A Complete)
-```bash
-# Core Maintenance
-GO_VERSION=1.25.4 gitpod automations task start update-go-version
-DEPENDENCY=github.com/pkg/errors VERSION=v0.9.1 gitpod automations task start update-dependency
-gitpod automations task start fix-typos
-gitpod automations task start validate-changes
-VERSION=3.1.4 gitpod automations task start prepare-release
 
-# Quality Gates (NEW!)
+**✅ Works from Ona UI** (no variables needed):
+```bash
+gitpod automations task start fix-typos
 gitpod automations task start fix-license-headers
 gitpod automations task start fix-trailing-spaces
+gitpod automations task start validate-changes
+gitpod automations task start validate-changes-quick
 gitpod automations task start validate-commit-message
-SINCE_TAG=v3.1.3 gitpod automations task start generate-changelog
+gitpod automations task start generate-changelog
 gitpod automations task start install-git-hooks
+gitpod automations task start check-outdated-deps
 ```
 
-**10 automations implemented** - saves 40-50 hours/year
+**🖥️ CLI Only** (requires variables):
+```bash
+GO_VERSION=1.25.4 gitpod automations task start update-go-version
+DEPENDENCY=github.com/pkg/errors VERSION=v0.9.1 gitpod automations task start update-dependency
+VERSION=3.1.4 gitpod automations task start prepare-release
+```
 
-See [MAINTENANCE_AUTOMATION.md](MAINTENANCE_AUTOMATION.md) for detailed usage guide.
+**28 of 31 automations (90%)** work from Ona UI
+
+See [ONA_UI_COMPATIBILITY.md](ONA_UI_COMPATIBILITY.md) for workarounds and [MAINTENANCE_AUTOMATION.md](MAINTENANCE_AUTOMATION.md) for detailed usage.
 
 ### Quick Iteration (⚡)
 ```bash

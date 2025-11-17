@@ -2,19 +2,27 @@
 
 Quick reference for automated maintenance tasks in Hyperledger Fabric.
 
+**⚠️ Ona UI Limitation**: Some automations require environment variables and can only be run from CLI. See [ONA_UI_COMPATIBILITY.md](ONA_UI_COMPATIBILITY.md) for details.
+
 ---
 
 ## Available Automations
 
 ### Core Maintenance (Phase 1)
 
-### 1. Update Go Version (ENHANCED)
+### 1. Update Go Version (ENHANCED) 🖥️ CLI Only
 
 **Purpose**: Update Go version across all Fabric files in one command.
 
+**⚠️ Requires CLI**: This automation needs the `GO_VERSION` variable and cannot be run from Ona UI.
+
 **Usage**:
 ```bash
+# CLI with variable
 GO_VERSION=1.25.4 gitpod automations task start update-go-version
+
+# Or run directly with interactive prompts
+.gitpod/scripts/update-go-version.sh
 ```
 
 **Files updated**:
@@ -34,13 +42,22 @@ GO_VERSION=1.25.4 gitpod automations task start update-go-version
 
 ---
 
-### 2. Update Go Dependency
+### 2. Update Go Dependency 🖥️ CLI Only
 
 **Purpose**: Update a Go dependency and sync vendor directory.
 
+**⚠️ Requires CLI**: This automation needs `DEPENDENCY` and `VERSION` variables and cannot be run from Ona UI.
+
 **Usage**:
 ```bash
+# CLI with variables
 DEPENDENCY=github.com/pkg/errors VERSION=v0.9.1 gitpod automations task start update-dependency
+
+# Or run directly with interactive prompts
+.gitpod/scripts/update-dependency.sh
+
+# Or check what's outdated first (works from Ona UI)
+gitpod automations task start check-outdated-deps
 ```
 
 **Common dependencies**:
@@ -92,7 +109,7 @@ gitpod automations task start fix-typos
 
 ---
 
-### 4. Validate Changes
+### 4. Validate Changes ✅ Works from Ona UI
 
 **Purpose**: Run pre-commit validation checks (same as CI).
 
@@ -101,8 +118,8 @@ gitpod automations task start fix-typos
 # Full validation (includes unit tests)
 gitpod automations task start validate-changes
 
-# Quick validation (skip unit tests)
-QUICK=true gitpod automations task start validate-changes
+# Quick validation (skip unit tests) - NEW!
+gitpod automations task start validate-changes-quick
 ```
 
 **Checks performed**:
@@ -122,13 +139,19 @@ QUICK=true gitpod automations task start validate-changes
 
 ---
 
-### 5. Prepare Release
+### 5. Prepare Release 🖥️ CLI Only
 
 **Purpose**: Generate release checklist and validate version.
 
+**⚠️ Requires CLI**: This automation needs the `VERSION` variable and cannot be run from Ona UI.
+
 **Usage**:
 ```bash
+# CLI with variable
 VERSION=3.1.4 gitpod automations task start prepare-release
+
+# Or run directly with interactive prompts
+.gitpod/scripts/prepare-release.sh
 ```
 
 **What it does**:
@@ -152,7 +175,41 @@ VERSION=3.1.4 gitpod automations task start prepare-release
 
 ### Quality Gates (Phase 2A)
 
-### 6. Fix License Headers
+### 6. Check Outdated Dependencies ✅ Works from Ona UI (NEW!)
+
+**Purpose**: List outdated Go dependencies and show update commands.
+
+**Usage**:
+```bash
+# Check from Ona UI or CLI
+gitpod automations task start check-outdated-deps
+```
+
+**What it does**:
+1. Scans all Go dependencies
+2. Compares current vs latest versions
+3. Shows update commands for each outdated dependency
+
+**Output example**:
+```
+📦 Outdated dependencies found:
+
+  📌 golang.org/x/crypto
+     Current: v0.43.0
+     Latest:  v0.44.0
+     Update:  DEPENDENCY=golang.org/x/crypto VERSION=v0.44.0 gitpod automations task start update-dependency
+```
+
+**When to use**:
+- Weekly dependency checks
+- Before releases
+- After security advisories
+
+**Time saved**: ~15 minutes per check (automated discovery)
+
+---
+
+### 7. Fix License Headers
 
 **Purpose**: Auto-add missing SPDX license headers to source files.
 
@@ -180,7 +237,7 @@ gitpod automations task start fix-license-headers
 
 ---
 
-### 7. Fix Trailing Spaces
+### 8. Fix Trailing Spaces
 
 **Purpose**: Auto-remove trailing spaces from source files.
 
@@ -207,7 +264,7 @@ gitpod automations task start fix-trailing-spaces
 
 ---
 
-### 8. Validate Commit Message
+### 9. Validate Commit Message
 
 **Purpose**: Validate commit message format and conventions.
 
@@ -236,7 +293,7 @@ MESSAGE="bump go to 1.25.4" gitpod automations task start validate-commit-messag
 
 ---
 
-### 9. Generate Changelog
+### 10. Generate Changelog
 
 **Purpose**: Generate changelog entry from commits between tags.
 
@@ -272,7 +329,7 @@ SINCE_TAG=v3.1.3 UNTIL_TAG=HEAD gitpod automations task start generate-changelog
 
 ---
 
-### 10. Install Git Hooks
+### 11. Install Git Hooks
 
 **Purpose**: Install pre-push and commit-msg validation hooks.
 
