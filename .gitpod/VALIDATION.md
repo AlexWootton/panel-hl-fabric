@@ -287,5 +287,5 @@ make native
 ## Additional Resources
 
 - [README.md](./README.md) - Main development guide
-- [TRIGGERS.md](./TRIGGERS.md) - Automation design philosophy
+- [MAINTENANCE.md](./MAINTENANCE.md) - Maintenance automation guide
 - [Fabric Test Network Tutorial](https://hyperledger-fabric.readthedocs.io/en/latest/test_network.html)

@@ -11,8 +11,7 @@ This environment provides automated workflows for building, testing, and develop
 - Granular integration test suites (5-10 minutes per suite)
 - Test network management with automatic cleanup
 - CouchDB state database support
-
-See [AUTOMATION_ANALYSIS.md](AUTOMATION_ANALYSIS.md) for detailed analysis.
+- Maintenance automation (dependency updates, code quality fixes)
 
 ## Quick Start
 
@@ -116,34 +115,27 @@ gitpod automations task list-executions <task-name>
 
 ### Maintenance Automation
 
-** Works from Ona UI** (no variables needed):
+Automated maintenance tasks for code quality, dependency management, and releases.
+
+**Quick examples:**
 ```bash
+# Code quality
 gitpod automations task start fix-typos
 gitpod automations task start fix-license-headers
-gitpod automations task start fix-trailing-spaces
 gitpod automations task start validate-changes
-gitpod automations task start validate-changes-quick
-gitpod automations task start validate-commit-message
-gitpod automations task start generate-changelog
-gitpod automations task start install-git-hooks
+
+# Dependency management
 gitpod automations task start check-outdated-deps
+DEPENDENCY=golang.org/x/crypto VERSION=v0.44.0 gitpod automations task start update-dependency
+
+# Security and quality
+gitpod automations task start scan-vulnerabilities
+gitpod automations task start check-test-coverage
 ```
 
-** CLI Only** (requires variables):
-```bash
-GO_VERSION=1.25.4 gitpod automations task start update-go-version
-DEPENDENCY=github.com/pkg/errors VERSION=v0.9.1 gitpod automations task start update-dependency
-VERSION=3.1.4 gitpod automations task start prepare-release
-```
+**31 of 34 automations (91%)** work from Ona UI without variables.
 
-**31 of 34 automations (91%)** work from Ona UI
-
-Phase 2B additions::
-- `check-unused-deps` - Find unused vendored dependencies
-- `scan-vulnerabilities` - Security scanning with govulncheck
-- `check-test-coverage` - Test coverage reporting
-
-See [ONA_UI_COMPATIBILITY.md](ONA_UI_COMPATIBILITY.md) for workarounds and [MAINTENANCE_AUTOMATION.md](MAINTENANCE_AUTOMATION.md) for detailed usage.
+See [MAINTENANCE.md](MAINTENANCE.md) for complete usage guide.
 
 ### Quick Iteration
 ```bash
@@ -155,7 +147,7 @@ gitpod automations task start verify-changes     # make verify: test changed pac
 gitpod automations task start check-code         # make basic-checks: all quality checks
 ```
 
-**Note**: Our automations use existing Makefile targets where possible. See [MAKEFILE_INTEGRATION.md](MAKEFILE_INTEGRATION.md) for details.
+**Note**: Our automations use existing Makefile targets where possible to avoid duplication and leverage upstream-maintained validation logic.
 
 ### Building Changes
 ```bash
@@ -247,9 +239,7 @@ cd /workspaces/fabric-samples/test-network
 - `/workspaces/fabric-samples` - Sample applications and test network
 - `/workspaces/fabric/sampleconfig` - Configuration files
 
-## Why These Triggers?
 
-For detailed explanation of why certain tasks are automatic vs manual, see [TRIGGERS.md](./TRIGGERS.md).
 
 ## Network Validation
 
@@ -427,8 +417,8 @@ make docker-thirdparty
 
 ## Additional Documentation
 
-- **[VALIDATION.md](./VALIDATION.md)** - Detailed network validation guide
-- **[TRIGGERS.md](./TRIGGERS.md)** - Detailed automation trigger design and philosophy
+- **[MAINTENANCE.md](./MAINTENANCE.md)** - Maintenance automation guide
+- **[VALIDATION.md](./VALIDATION.md)** - Network validation guide
 - **[../.devcontainer/README.md](../.devcontainer/README.md)** - Dev container configuration
 - **[../.devcontainer/GITHUB_CLI_AUTH.md](../.devcontainer/GITHUB_CLI_AUTH.md)** - GitHub CLI authentication
 
