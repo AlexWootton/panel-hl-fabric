@@ -130,7 +130,12 @@ DEPENDENCY=github.com/pkg/errors VERSION=v0.9.1 gitpod automations task start up
 VERSION=3.1.4 gitpod automations task start prepare-release
 ```
 
-**28 of 31 automations (90%)** work from Ona UI
+**31 of 34 automations (91%)** work from Ona UI
+
+**New in Phase 2B**:
+- `check-unused-deps` - Find unused vendored dependencies
+- `scan-vulnerabilities` - Security scanning with govulncheck
+- `check-test-coverage` - Test coverage reporting
 
 See [ONA_UI_COMPATIBILITY.md](ONA_UI_COMPATIBILITY.md) for workarounds and [MAINTENANCE_AUTOMATION.md](MAINTENANCE_AUTOMATION.md) for detailed usage.
 

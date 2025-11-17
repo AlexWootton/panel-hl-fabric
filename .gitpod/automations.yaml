@@ -724,6 +724,13 @@ tasks:
       echo "🔍 Checking for outdated Go dependencies..."
       echo ""
       
+      # Check if jq is available
+      if ! command -v jq &> /dev/null; then
+        echo "❌ Error: jq is required but not installed"
+        echo "   Install with: apt-get install jq"
+        exit 1
+      fi
+      
       # Get list of direct dependencies
       OUTDATED=$(go list -u -m -json all 2>/dev/null | jq -r 'select(.Update) | "\(.Path)|\(.Version)|\(.Update.Version)"')
       
@@ -747,3 +754,30 @@ tasks:
       echo "   1. Copy the update command above"
       echo "   2. Run it in the CLI (not Ona UI)"
       echo "   3. Or run: .gitpod/scripts/update-dependency.sh <dependency> <version>"
+
+  check-unused-deps:
+    name: "check-unused-deps"
+    description: "Check for unused vendored dependencies: make check-deps"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      .gitpod/scripts/check-unused-deps.sh
+
+  scan-vulnerabilities:
+    name: "scan-vulnerabilities"
+    description: "Scan for security vulnerabilities in Go dependencies"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      .gitpod/scripts/scan-vulnerabilities.sh
+
+  check-test-coverage:
+    name: "check-test-coverage"
+    description: "Generate and display test coverage report"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      .gitpod/scripts/check-test-coverage.sh

@@ -1,5 +1,6 @@
 #!/bin/bash
-# Copyright IBM Corp All Rights Reserved.
+#
+# Copyright IBM Corp. All Rights Reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -9,13 +10,18 @@
 
 set -euo pipefail
 
+# shellcheck source=.gitpod/scripts/common.sh
+source "$(dirname "$0")/common.sh"
+
 CHECK_ONLY=false
-if [ "${1:-}" = "--check-only" ]; then
+if [[ "${1:-}" == "--check-only" ]]; then
     CHECK_ONLY=true
 fi
 
 # Change to repository root
 cd "$(dirname "$0")/../.."
+
+verifyRepoRoot || exit 1
 
 echo "🔍 Checking for missing license headers..."
 echo ""
