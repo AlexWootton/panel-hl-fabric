@@ -220,8 +220,6 @@ DO:
 - Use `github.com/golang/protobuf` for protobuf
 - Use interfaces at component boundaries
 - Generate mocks with counterfeiter or mockery
-- Follow professional documentation standards
-- Use proper copyright headers with period
 
 DO NOT:
 - Use `golang.org/x/net/context` (deprecated)
@@ -229,8 +227,6 @@ DO NOT:
 - Create unnecessary interfaces
 - Use package-level global state
 - Hand-write mocks
-- Use emojis in code or documentation
-- Use casual or conversational tone in documentation
 
 ### Import Organization
 
@@ -303,12 +299,12 @@ go mod tidy
 
 ## ONA ENVIRONMENT
 
-For complete automation details, see `.gitpod/README.md` and `.gitpod/automations.yaml`.
+The `.gitpod/` directory contains automation configurations for development workflows.
 
 ### Quick Commands
 
 ```bash
-# List all available automations
+# List available automations
 gitpod automations task list
 
 # Fast validation
@@ -318,12 +314,9 @@ gitpod automations task start verify-changes
 # Test network
 gitpod automations task start start-network
 gitpod automations task start stop-network
-
-# Integration tests (granular)
-gitpod automations task start test-consensus
-gitpod automations task start test-ledger
-gitpod automations task start test-lifecycle
 ```
+
+For complete automation details, see `.gitpod/README.md`.
 
 ---
 
@@ -376,7 +369,7 @@ make basic-checks        # Pre-commit checks
 When this guide conflicts with or lacks detail, refer to:
 
 - **Build system**: `Makefile` (header comments list all targets)
-- **Ona automations**: `.gitpod/README.md` and `.gitpod/automations.yaml`
+- **Ona environment**: `.gitpod/README.md`
 - **Integration tests**: `integration/` directory structure
 - **Code style**: `staticcheck.conf`
 - **Dependencies**: `go.mod`
