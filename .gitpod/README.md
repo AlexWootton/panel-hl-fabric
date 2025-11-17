@@ -122,7 +122,7 @@ Automated maintenance tasks for code quality, dependency management, and release
 # Code quality
 gitpod automations task start fix-typos
 gitpod automations task start fix-license-headers
-gitpod automations task start validate-changes
+make basic-checks
 
 # Dependency management
 gitpod automations task start check-outdated-deps

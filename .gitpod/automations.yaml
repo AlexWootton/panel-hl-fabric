@@ -611,24 +611,6 @@ tasks:
       cd /workspaces/fabric
       .gitpod/scripts/fix-typos.sh
 
-  validate-changes:
-    name: "validate-changes"
-    description: "Validate changes before committing (full validation with unit tests)"
-    triggeredBy:
-      - manual
-    command: |
-      cd /workspaces/fabric
-      .gitpod/scripts/validate-changes.sh
-
-  validate-changes-quick:
-    name: "validate-changes-quick"
-    description: "Quick validation (skip unit tests for faster feedback)"
-    triggeredBy:
-      - manual
-    command: |
-      cd /workspaces/fabric
-      .gitpod/scripts/validate-changes.sh --quick
-
   prepare-release:
     name: "prepare-release"
     description: "(CLI only) Generate release checklist - requires VERSION variable"

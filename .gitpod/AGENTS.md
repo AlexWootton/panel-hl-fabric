@@ -11,7 +11,6 @@ gitpod automations task list
 # Validation
 gitpod automations task start quick-check
 gitpod automations task start verify-changes
-gitpod automations task start validate-changes
 
 # Test network
 gitpod automations task start start-network

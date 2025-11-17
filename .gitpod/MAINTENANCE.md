@@ -11,8 +11,6 @@ Quick reference for automated maintenance tasks in Hyperledger Fabric.
 gitpod automations task start fix-typos
 gitpod automations task start fix-license-headers
 gitpod automations task start fix-trailing-spaces
-gitpod automations task start validate-changes
-gitpod automations task start validate-changes-quick
 gitpod automations task start check-code
 
 # Validation
@@ -62,7 +60,7 @@ GO_VERSION=1.25.4 gitpod automations task start update-go-version
 **Post-update:**
 ```bash
 git diff
-gitpod automations task start validate-changes
+make basic-checks
 git commit -am "bump go to 1.25.4"
 ```
 
@@ -78,7 +76,7 @@ DEPENDENCY=golang.org/x/crypto VERSION=v0.44.0 gitpod automations task start upd
 **Post-update:**
 ```bash
 git diff
-gitpod automations task start validate-changes
+make basic-checks
 git commit -am "bump golang.org/x/crypto to v0.44.0"
 ```
 
@@ -140,28 +138,6 @@ git commit -am "chore: remove trailing spaces"
 ```
 
 ## Validation
-
-### Validate Changes
-
-Pre-commit validation checks (same as CI).
-
-**Usage:**
-```bash
-# Full validation (includes unit tests)
-gitpod automations task start validate-changes
-
-# Quick validation (skip unit tests)
-gitpod automations task start validate-changes-quick
-```
-
-**Checks performed:**
-- go.mod is tidy
-- vendor/ is in sync
-- License headers present
-- No spelling errors
-- No trailing spaces
-- Linting passes
-- Unit tests pass (unless quick mode)
 
 ### Validate Commit Message
 
@@ -285,7 +261,7 @@ git commit -am "chore: fix code quality issues"
 ### Pre-Commit Validation
 
 ```bash
-gitpod automations task start validate-changes
+make basic-checks
 git add .
 git commit -m "your commit message"
 ```
@@ -298,7 +274,6 @@ All automations can be run directly:
 .gitpod/scripts/update-go-version.sh 1.25.4
 .gitpod/scripts/update-dependency.sh golang.org/x/crypto v0.44.0
 .gitpod/scripts/fix-typos.sh
-.gitpod/scripts/validate-changes.sh
 .gitpod/scripts/prepare-release.sh 3.1.4
 ```
 
@@ -331,12 +306,12 @@ go mod vendor
 
 1. Always validate before committing:
    ```bash
-   gitpod automations task start validate-changes
+   make basic-checks
    ```
 
-2. Use quick validation for fast feedback:
+2. Test changed packages:
    ```bash
-   gitpod automations task start validate-changes-quick
+   make verify
    ```
 
 3. Review changes before committing:
@@ -348,11 +323,6 @@ go mod vendor
    - Go version: "bump go to X.Y.Z"
    - Dependency: "bump <dependency> to <version>"
    - Typos: "chore: fix typos in comments"
-
-5. Run full validation before creating PR:
-   ```bash
-   gitpod automations task start validate-changes
-   ```
 
 ## Time Savings
 
