@@ -10,7 +10,7 @@
 
 set -euo pipefail
 
-# shellcheck source=.gitpod/scripts/common.sh
+# shellcheck source=.ona/scripts/common.sh
 source "$(dirname "$0")/common.sh"
 
 # Change to repository root

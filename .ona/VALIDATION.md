@@ -37,7 +37,7 @@ gitpod automations task start validate-network
 Or run the script directly:
 
 ```bash
-.gitpod/validate-network.sh
+.ona/validate-network.sh
 ```
 
 ## What Gets Tested
@@ -196,7 +196,7 @@ Chaincode invoke successful. result: status:200
 ## Validation Script Details
 
 ### Location
-`.gitpod/validate-network.sh`
+`.ona/validate-network.sh`
 
 ### Requirements
 - Fabric binaries built (`make native`)
@@ -226,7 +226,7 @@ The validation script can be integrated into CI/CD pipelines:
 # Example GitHub Actions
 - name: Validate Fabric Network
   run: |
-    .gitpod/validate-network.sh
+    .ona/validate-network.sh
   timeout-minutes: 5
 ```
 
@@ -234,7 +234,7 @@ The validation script can be integrated into CI/CD pipelines:
 # Example GitLab CI
 validate-network:
   script:
-    - .gitpod/validate-network.sh
+    - .ona/validate-network.sh
   timeout: 5m
 ```
 
@@ -247,7 +247,7 @@ validate-network:
 
 ### Permission Denied
 ```bash
-chmod +x .gitpod/validate-network.sh
+chmod +x .ona/validate-network.sh
 ```
 
 ### Peer Command Not Found

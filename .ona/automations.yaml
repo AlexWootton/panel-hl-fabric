@@ -261,7 +261,7 @@ tasks:
     command: |
       cd /workspaces/fabric
       echo "Running comprehensive network validation..."
-      .gitpod/validate-network.sh
+      .ona/validate-network.sh
       echo ""
       echo "Tip: Run 'gitpod automations task start validate-network' anytime to check network health"
 
@@ -310,7 +310,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      .gitpod/cleanup-test-artifacts.sh $EXIT_CODE "Consensus"
+      .ona/cleanup-test-artifacts.sh $EXIT_CODE "Consensus"
 
   test-ledger:
     name: "test-ledger"
@@ -340,7 +340,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      .gitpod/cleanup-test-artifacts.sh $EXIT_CODE "Ledger"
+      .ona/cleanup-test-artifacts.sh $EXIT_CODE "Ledger"
 
   test-lifecycle:
     name: "test-lifecycle"
@@ -363,7 +363,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      .gitpod/cleanup-test-artifacts.sh $EXIT_CODE "Lifecycle"
+      .ona/cleanup-test-artifacts.sh $EXIT_CODE "Lifecycle"
 
   test-gateway:
     name: "test-gateway"
@@ -386,7 +386,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      .gitpod/cleanup-test-artifacts.sh $EXIT_CODE "Gateway"
+      .ona/cleanup-test-artifacts.sh $EXIT_CODE "Gateway"
 
   test-e2e:
     name: "test-e2e"
@@ -409,7 +409,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      .gitpod/cleanup-test-artifacts.sh $EXIT_CODE "E2E"
+      .ona/cleanup-test-artifacts.sh $EXIT_CODE "E2E"
 
   test-integration-all:
     name: "test-integration-all"
@@ -444,7 +444,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      .gitpod/cleanup-test-artifacts.sh $EXIT_CODE "All integration"
+      .ona/cleanup-test-artifacts.sh $EXIT_CODE "All integration"
 
   # ============================================================================
   # CODE QUALITY (1) - Pre-commit checks
@@ -567,14 +567,14 @@ tasks:
         echo "   GO_VERSION=1.25.4 gitpod automations task start update-go-version"
         echo ""
         echo "📝 Or run the script directly with interactive prompts:"
-        echo "   .gitpod/scripts/update-go-version.sh"
+        echo "   .ona/scripts/update-go-version.sh"
         echo ""
         echo "Note: This automation cannot be run from the Ona UI"
         echo "   Use the CLI or run the script directly instead"
         exit 1
       fi
       
-      .gitpod/scripts/update-go-version.sh "$GO_VERSION"
+      .ona/scripts/update-go-version.sh "$GO_VERSION"
 
   update-dependency:
     name: "update-dependency"
@@ -591,7 +591,7 @@ tasks:
         echo "   DEPENDENCY=github.com/pkg/errors VERSION=v0.9.1 gitpod automations task start update-dependency"
         echo ""
         echo "📝 Or run the script directly with interactive prompts:"
-        echo "   .gitpod/scripts/update-dependency.sh"
+        echo "   .ona/scripts/update-dependency.sh"
         echo ""
         echo "Alternative: Use 'check-outdated-deps' to see what needs updating"
         echo ""
@@ -600,7 +600,7 @@ tasks:
         exit 1
       fi
       
-      .gitpod/scripts/update-dependency.sh "$DEPENDENCY" "$VERSION"
+      .ona/scripts/update-dependency.sh "$DEPENDENCY" "$VERSION"
 
   fix-typos:
     name: "fix-typos"
@@ -609,7 +609,7 @@ tasks:
       - manual
     command: |
       cd /workspaces/fabric
-      .gitpod/scripts/fix-typos.sh
+      .ona/scripts/fix-typos.sh
 
   prepare-release:
     name: "prepare-release"
@@ -626,14 +626,14 @@ tasks:
         echo "   VERSION=3.1.4 gitpod automations task start prepare-release"
         echo ""
         echo "📝 Or run the script directly with interactive prompts:"
-        echo "   .gitpod/scripts/prepare-release.sh"
+        echo "   .ona/scripts/prepare-release.sh"
         echo ""
         echo "Note: This automation cannot be run from the Ona UI"
         echo "   Use the CLI or run the script directly instead"
         exit 1
       fi
       
-      .gitpod/scripts/prepare-release.sh "$VERSION"
+      .ona/scripts/prepare-release.sh "$VERSION"
 
   fix-license-headers:
     name: "fix-license-headers"
@@ -642,7 +642,7 @@ tasks:
       - manual
     command: |
       cd /workspaces/fabric
-      .gitpod/scripts/fix-license-headers.sh
+      .ona/scripts/fix-license-headers.sh
 
   fix-trailing-spaces:
     name: "fix-trailing-spaces"
@@ -651,7 +651,7 @@ tasks:
       - manual
     command: |
       cd /workspaces/fabric
-      .gitpod/scripts/fix-trailing-spaces.sh
+      .ona/scripts/fix-trailing-spaces.sh
 
   validate-commit-message:
     name: "validate-commit-message"
@@ -662,9 +662,9 @@ tasks:
       cd /workspaces/fabric
       
       if [ -n "${MESSAGE:-}" ]; then
-        .gitpod/scripts/validate-commit-message.sh "$MESSAGE"
+        .ona/scripts/validate-commit-message.sh "$MESSAGE"
       else
-        .gitpod/scripts/validate-commit-message.sh
+        .ona/scripts/validate-commit-message.sh
       fi
 
   generate-changelog:
@@ -684,7 +684,7 @@ tasks:
         echo ""
       fi
       
-      .gitpod/scripts/generate-changelog-entry.sh "$SINCE" "$UNTIL"
+      .ona/scripts/generate-changelog-entry.sh "$SINCE" "$UNTIL"
 
   check-outdated-deps:
     name: "check-outdated-deps"
@@ -726,7 +726,7 @@ tasks:
       echo "To update a dependency:"
       echo "   1. Copy the update command above"
       echo "   2. Run it in the CLI (not Ona UI)"
-      echo "   3. Or run: .gitpod/scripts/update-dependency.sh <dependency> <version>"
+      echo "   3. Or run: .ona/scripts/update-dependency.sh <dependency> <version>"
 
   check-unused-deps:
     name: "check-unused-deps"
@@ -735,7 +735,7 @@ tasks:
       - manual
     command: |
       cd /workspaces/fabric
-      .gitpod/scripts/check-unused-deps.sh
+      .ona/scripts/check-unused-deps.sh
 
   scan-vulnerabilities:
     name: "scan-vulnerabilities"
@@ -744,7 +744,7 @@ tasks:
       - manual
     command: |
       cd /workspaces/fabric
-      .gitpod/scripts/scan-vulnerabilities.sh
+      .ona/scripts/scan-vulnerabilities.sh
 
   check-test-coverage:
     name: "check-test-coverage"
@@ -753,4 +753,4 @@ tasks:
       - manual
     command: |
       cd /workspaces/fabric
-      .gitpod/scripts/check-test-coverage.sh
+      .ona/scripts/check-test-coverage.sh

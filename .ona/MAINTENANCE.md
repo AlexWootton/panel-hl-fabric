@@ -213,7 +213,7 @@ Generates changelog entry from commits between tags.
 gitpod automations task start generate-changelog
 
 # Save to file
-.gitpod/scripts/generate-changelog-entry.sh v3.1.3 HEAD > CHANGELOG_ENTRY.md
+.ona/scripts/generate-changelog-entry.sh v3.1.3 HEAD > CHANGELOG_ENTRY.md
 ```
 
 **Categories:**
@@ -271,10 +271,10 @@ git commit -m "your commit message"
 All automations can be run directly:
 
 ```bash
-.gitpod/scripts/update-go-version.sh 1.25.4
-.gitpod/scripts/update-dependency.sh golang.org/x/crypto v0.44.0
-.gitpod/scripts/fix-typos.sh
-.gitpod/scripts/prepare-release.sh 3.1.4
+.ona/scripts/update-go-version.sh 1.25.4
+.ona/scripts/update-dependency.sh golang.org/x/crypto v0.44.0
+.ona/scripts/fix-typos.sh
+.ona/scripts/prepare-release.sh 3.1.4
 ```
 
 ## Troubleshooting
@@ -282,13 +282,13 @@ All automations can be run directly:
 ### Permission Denied
 
 ```bash
-chmod +x .gitpod/scripts/*.sh
+chmod +x .ona/scripts/*.sh
 ```
 
 ### Automation Task Not Found
 
 ```bash
-gitpod automations update .gitpod/automations.yaml
+gitpod automations update .ona/automations.yaml
 gitpod automations task list
 ```
 
