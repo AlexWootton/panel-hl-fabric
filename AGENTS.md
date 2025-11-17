@@ -185,6 +185,34 @@ go generate ./path/to/package
 
 Run locally: `make linter`
 
+### Documentation and Comments
+
+**Copyright Headers:**
+All files must include proper copyright format with period:
+```go
+// Copyright the Hyperledger Fabric contributors. All rights reserved.
+//
+// SPDX-License-Identifier: Apache-2.0
+```
+
+For scripts:
+```bash
+# Copyright the Hyperledger Fabric contributors. All rights reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+```
+
+**Professional Tone:**
+- Use professional, technical language in all documentation
+- Avoid casual phrases, conversational tone, or colloquialisms
+- Do not use emojis in code, scripts, or documentation
+- Exception: Emojis may be used in user-facing UI elements if appropriate
+
+**Comments:**
+- Document the "why," not the "what"
+- Avoid redundant comments that restate code
+- Only add comments to clarify non-obvious logic or trade-offs
+
 ### Fabric Patterns
 
 DO:
@@ -192,6 +220,8 @@ DO:
 - Use `github.com/golang/protobuf` for protobuf
 - Use interfaces at component boundaries
 - Generate mocks with counterfeiter or mockery
+- Follow professional documentation standards
+- Use proper copyright headers with period
 
 DO NOT:
 - Use `golang.org/x/net/context` (deprecated)
@@ -199,6 +229,8 @@ DO NOT:
 - Create unnecessary interfaces
 - Use package-level global state
 - Hand-write mocks
+- Use emojis in code or documentation
+- Use casual or conversational tone in documentation
 
 ### Import Organization
 
@@ -327,7 +359,9 @@ make basic-checks        # Pre-commit checks
 
 ### Pre-Commit Checklist
 
+- [ ] Added proper copyright headers to new files (with period)
 - [ ] Added SPDX license headers to new files
+- [ ] Verified professional tone in all documentation (no emojis, no casual language)
 - [ ] Ran `make basic-checks` (passed)
 - [ ] Ran `make unit-test` or `make verify` (passed)
 - [ ] Updated mocks if interfaces changed (`go generate`)
