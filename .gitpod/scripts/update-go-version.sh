@@ -82,6 +82,39 @@ go mod tidy
 echo "🔧 Running go mod vendor..."
 go mod vendor
 
+# Verify workflows use go-version-file
+echo ""
+echo "🔍 Verifying GitHub workflows..."
+WORKFLOW_ISSUES=()
+
+for workflow in .github/workflows/*.yml; do
+    if [ -f "$workflow" ]; then
+        # Check if workflow uses Go
+        if grep -q "actions/setup-go" "$workflow"; then
+            # Check if it uses go-version-file
+            if ! grep -q "go-version-file:" "$workflow"; then
+                WORKFLOW_ISSUES+=("$workflow: Missing 'go-version-file: go.mod'")
+            fi
+            # Check for hardcoded Go version
+            if grep -q "go-version: [0-9]" "$workflow"; then
+                WORKFLOW_ISSUES+=("$workflow: Has hardcoded go-version (should use go-version-file)")
+            fi
+        fi
+    fi
+done
+
+if [ ${#WORKFLOW_ISSUES[@]} -gt 0 ]; then
+    echo "⚠️  Workflow issues found:"
+    for issue in "${WORKFLOW_ISSUES[@]}"; do
+        echo "   ⚠️  $issue"
+    done
+    echo ""
+    echo "   Workflows should use: go-version-file: go.mod"
+    echo "   This automatically extracts the Go version from go.mod"
+else
+    echo "   ✅ All workflows use go-version-file: go.mod"
+fi
+
 echo ""
 echo "✅ Go version updated to $NEW_VERSION"
 echo ""
@@ -95,9 +128,6 @@ echo "   - docs/source/dev-setup/devenv.rst"
 echo ""
 echo "📋 Next steps:"
 echo "   1. Review changes: git diff"
-echo "   2. Run checks: make basic-checks"
-echo "   3. Run tests: make verify"
-echo "   4. Commit: git commit -am 'bump go to $NEW_VERSION'"
-echo "   5. Create PR with title: 'bump go to $NEW_VERSION'"
-echo ""
-echo "💡 Tip: Use 'gitpod automations task start validate-changes' to run checks"
+echo "   2. Run validation: gitpod automations task start validate-changes"
+echo "   3. Commit: git commit -am 'bump go to $NEW_VERSION'"
+echo "   4. Create PR with title: 'bump go to $NEW_VERSION'"

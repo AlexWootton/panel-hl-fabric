@@ -42,16 +42,43 @@ else
 fi
 echo ""
 
-# Check 3: Basic checks (license, spelling, linting)
-echo "📋 Running basic checks..."
-if ! make basic-checks; then
-    FAILURES+=("basic-checks failed - see output above")
+# Check 3: License headers
+echo "📋 Checking license headers..."
+if ! make license; then
+    FAILURES+=("license check failed - run '.gitpod/scripts/fix-license-headers.sh' to fix")
 else
-    echo "   ✅ Basic checks passed"
+    echo "   ✅ License headers present"
 fi
 echo ""
 
-# Check 4: Unit tests (skip in quick mode)
+# Check 4: Spelling
+echo "📋 Checking spelling..."
+if ! make spelling; then
+    FAILURES+=("spelling check failed - run 'gitpod automations task start fix-typos' to fix")
+else
+    echo "   ✅ No spelling errors"
+fi
+echo ""
+
+# Check 5: Trailing spaces
+echo "📋 Checking trailing spaces..."
+if ! make trailing-spaces; then
+    FAILURES+=("trailing spaces found - run '.gitpod/scripts/fix-trailing-spaces.sh' to fix")
+else
+    echo "   ✅ No trailing spaces"
+fi
+echo ""
+
+# Check 6: Linting
+echo "📋 Running linter..."
+if ! make linter; then
+    FAILURES+=("linter failed - see output above")
+else
+    echo "   ✅ Linting passed"
+fi
+echo ""
+
+# Check 7: Unit tests (skip in quick mode)
 if [ "$QUICK_MODE" = false ]; then
     echo "📋 Running unit tests for changed packages..."
     if ! make verify; then
@@ -62,6 +89,20 @@ if [ "$QUICK_MODE" = false ]; then
     echo ""
 else
     echo "⏭️  Skipping unit tests (quick mode)"
+    echo ""
+fi
+
+# Check 8: Commit message (if there are staged changes)
+if git diff --cached --quiet; then
+    echo "⏭️  No staged changes, skipping commit message check"
+    echo ""
+else
+    echo "📋 Checking last commit message..."
+    if .gitpod/scripts/validate-commit-message.sh 2>&1 | grep -q "❌"; then
+        FAILURES+=("commit message validation failed - see output above")
+    else
+        echo "   ✅ Commit message is valid"
+    fi
     echo ""
 fi
 
