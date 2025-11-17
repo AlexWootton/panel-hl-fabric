@@ -28,19 +28,15 @@ tasks:
   
   quick-check:
     name: "quick-check"
-    description: "Fast validation: linters + tests for changed packages (~2-5 min)"
+    description: "Fast validation: make desk-check (linters + changed packages)"
     triggeredBy:
       - manual
     command: |
       cd /workspaces/fabric
       echo "Running quick validation checks..."
-      echo "This runs: linters + unit tests for changed packages"
+      echo "This runs: make desk-check (linters + unit tests for changed packages)"
       echo ""
-      echo "Running linters..."
-      make linter
-      echo ""
-      echo "Running tests for changed packages..."
-      make verify
+      make desk-check
       echo ""
       echo "✅ Quick check complete"
       echo "💡 Run 'gitpod automations task start check-code' for full checks"
@@ -456,13 +452,17 @@ tasks:
   
   check-code:
     name: "check-code"
-    description: "Run basic code checks and linting (~3-5 min)"
+    description: "Run all code quality checks: make basic-checks"
     triggeredBy:
       - manual
     command: |
       cd /workspaces/fabric
-      echo "Running code checks..."
-      echo "This includes: license headers, spelling, trailing spaces, linting"
+      echo "Running all code quality checks..."
+      echo "This runs: make basic-checks"
+      echo "  - License headers, spelling, trailing spaces"
+      echo "  - Linting (gofumpt, goimports, staticcheck)"
+      echo "  - References, help docs, metrics doc, swagger"
+      echo ""
       make basic-checks
       echo ""
       echo "✅ Code checks passed"

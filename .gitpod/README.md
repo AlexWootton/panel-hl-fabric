@@ -137,12 +137,14 @@ See [ONA_UI_COMPATIBILITY.md](ONA_UI_COMPATIBILITY.md) for workarounds and [MAIN
 ### Quick Iteration (⚡)
 ```bash
 # Fast feedback during development
-gitpod automations task start quick-check        # 2-5 min: linters + changed packages
-gitpod automations task start verify-changes     # 1-3 min: test changed packages only
+gitpod automations task start quick-check        # make desk-check: linters + changed packages
+gitpod automations task start verify-changes     # make verify: test changed packages only
 
 # Before committing
-gitpod automations task start check-code         # Full code quality checks
+gitpod automations task start check-code         # make basic-checks: all quality checks
 ```
+
+**Note**: Our automations use existing Makefile targets where possible. See [MAKEFILE_INTEGRATION.md](MAKEFILE_INTEGRATION.md) for details.
 
 ### Building Changes
 ```bash

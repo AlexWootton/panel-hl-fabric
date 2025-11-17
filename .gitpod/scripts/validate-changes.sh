@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Validate changes before committing
-# Runs the same checks as CI to catch issues early
+# Wraps existing make targets with additional checks
 #
 # Usage: ./validate-changes.sh [--quick]
 
@@ -42,57 +42,52 @@ else
 fi
 echo ""
 
-# Check 3: License headers
-echo "📋 Checking license headers..."
-if ! make license; then
-    FAILURES+=("license check failed - run '.gitpod/scripts/fix-license-headers.sh' to fix")
-else
-    echo "   ✅ License headers present"
-fi
-echo ""
-
-# Check 4: Spelling
-echo "📋 Checking spelling..."
-if ! make spelling; then
-    FAILURES+=("spelling check failed - run 'gitpod automations task start fix-typos' to fix")
-else
-    echo "   ✅ No spelling errors"
-fi
-echo ""
-
-# Check 5: Trailing spaces
-echo "📋 Checking trailing spaces..."
-if ! make trailing-spaces; then
-    FAILURES+=("trailing spaces found - run '.gitpod/scripts/fix-trailing-spaces.sh' to fix")
-else
-    echo "   ✅ No trailing spaces"
-fi
-echo ""
-
-# Check 6: Linting
-echo "📋 Running linter..."
-if ! make linter; then
-    FAILURES+=("linter failed - see output above")
-else
-    echo "   ✅ Linting passed"
-fi
-echo ""
-
-# Check 7: Unit tests (skip in quick mode)
-if [ "$QUICK_MODE" = false ]; then
-    echo "📋 Running unit tests for changed packages..."
-    if ! make verify; then
-        FAILURES+=("unit tests failed - run 'make verify' for details")
+if [ "$QUICK_MODE" = true ]; then
+    # Quick mode: Use make desk-check (linter + verify changed packages)
+    echo "📋 Running quick checks (make desk-check)..."
+    echo ""
+    if ! make desk-check; then
+        FAILURES+=("desk-check failed - see output above")
+        echo ""
+        echo "💡 Fix suggestions:"
+        echo "   - License headers: .gitpod/scripts/fix-license-headers.sh"
+        echo "   - Typos: gitpod automations task start fix-typos"
+        echo "   - Trailing spaces: .gitpod/scripts/fix-trailing-spaces.sh"
     else
-        echo "   ✅ Unit tests passed"
+        echo ""
+        echo "   ✅ Quick checks passed"
     fi
     echo ""
 else
-    echo "⏭️  Skipping unit tests (quick mode)"
+    # Full mode: Use make basic-checks (comprehensive checks)
+    echo "📋 Running basic checks (make basic-checks)..."
+    echo ""
+    if ! make basic-checks; then
+        FAILURES+=("basic-checks failed - see output above")
+        echo ""
+        echo "💡 Fix suggestions:"
+        echo "   - License headers: .gitpod/scripts/fix-license-headers.sh"
+        echo "   - Typos: gitpod automations task start fix-typos"
+        echo "   - Trailing spaces: .gitpod/scripts/fix-trailing-spaces.sh"
+    else
+        echo ""
+        echo "   ✅ Basic checks passed"
+    fi
+    echo ""
+    
+    # Run unit tests for changed packages
+    echo "📋 Running unit tests for changed packages (make verify)..."
+    echo ""
+    if ! make verify; then
+        FAILURES+=("unit tests failed - run 'make verify' for details")
+    else
+        echo ""
+        echo "   ✅ Unit tests passed"
+    fi
     echo ""
 fi
 
-# Check 8: Commit message (if there are staged changes)
+# Additional check: Commit message validation (not in make targets)
 if git diff --cached --quiet; then
     echo "⏭️  No staged changes, skipping commit message check"
     echo ""
