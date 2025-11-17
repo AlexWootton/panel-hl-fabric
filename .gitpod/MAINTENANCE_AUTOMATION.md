@@ -6,7 +6,9 @@ Quick reference for automated maintenance tasks in Hyperledger Fabric.
 
 ## Available Automations
 
-### 1. Update Go Version
+### Core Maintenance (Phase 1)
+
+### 1. Update Go Version (ENHANCED)
 
 **Purpose**: Update Go version across all Fabric files in one command.
 
@@ -145,6 +147,160 @@ VERSION=3.1.4 gitpod automations task start prepare-release
 - Post-release tasks
 
 **Time saved**: ~30 minutes per release (comprehensive checklist)
+
+---
+
+### Quality Gates (Phase 2A)
+
+### 6. Fix License Headers
+
+**Purpose**: Auto-add missing SPDX license headers to source files.
+
+**Usage**:
+```bash
+# Check for missing headers
+.gitpod/scripts/fix-license-headers.sh --check-only
+
+# Auto-fix missing headers
+gitpod automations task start fix-license-headers
+```
+
+**What it does**:
+1. Scans Go and shell script files
+2. Detects missing SPDX-License-Identifier headers
+3. Adds appropriate headers based on file type
+4. Handles shebang lines correctly
+
+**Post-fix steps**:
+1. Review changes: `git diff`
+2. Validate: `make license`
+3. Commit: `git commit -am "chore: add missing SPDX license headers"`
+
+**Time saved**: ~15 minutes per fix (prevents CI failures)
+
+---
+
+### 7. Fix Trailing Spaces
+
+**Purpose**: Auto-remove trailing spaces from source files.
+
+**Usage**:
+```bash
+# Check for trailing spaces
+.gitpod/scripts/fix-trailing-spaces.sh --check-only
+
+# Auto-fix trailing spaces
+gitpod automations task start fix-trailing-spaces
+```
+
+**What it does**:
+1. Scans source files (Go, shell, YAML, Markdown)
+2. Detects trailing spaces
+3. Removes trailing spaces
+
+**Post-fix steps**:
+1. Review changes: `git diff`
+2. Validate: `make trailing-spaces`
+3. Commit: `git commit -am "chore: remove trailing spaces"`
+
+**Time saved**: ~10 minutes per fix (prevents CI failures)
+
+---
+
+### 8. Validate Commit Message
+
+**Purpose**: Validate commit message format and conventions.
+
+**Usage**:
+```bash
+# Validate last commit
+gitpod automations task start validate-commit-message
+
+# Validate specific message
+MESSAGE="bump go to 1.25.4" gitpod automations task start validate-commit-message
+```
+
+**What it checks**:
+1. Subject line length (max 72, recommended 50)
+2. Subject doesn't end with period
+3. Conventional commit format (optional)
+4. Signed-off-by line presence
+5. Co-authored-by for automation
+
+**When to use**:
+- Before creating PR
+- After writing commit message
+- As part of git hooks
+
+**Time saved**: ~5 minutes per commit (catches format issues early)
+
+---
+
+### 9. Generate Changelog
+
+**Purpose**: Generate changelog entry from commits between tags.
+
+**Usage**:
+```bash
+# Generate from last tag to HEAD
+gitpod automations task start generate-changelog
+
+# Generate between specific tags
+SINCE_TAG=v3.1.3 UNTIL_TAG=HEAD gitpod automations task start generate-changelog
+
+# Save to file
+.gitpod/scripts/generate-changelog-entry.sh v3.1.3 HEAD > CHANGELOG_ENTRY.md
+```
+
+**What it does**:
+1. Extracts commits between tags
+2. Categorizes by type (features, fixes, docs, etc.)
+3. Formats as markdown
+4. Provides statistics
+
+**Categories**:
+- Features
+- Bug Fixes
+- Documentation
+- Refactoring
+- Dependencies
+- Tests
+- Maintenance
+- Other Changes
+
+**Time saved**: ~30 minutes per release (automated categorization)
+
+---
+
+### 10. Install Git Hooks
+
+**Purpose**: Install pre-push and commit-msg validation hooks.
+
+**Usage**:
+```bash
+# Install hooks
+gitpod automations task start install-git-hooks
+
+# Uninstall hooks
+.gitpod/scripts/install-git-hooks.sh --uninstall
+```
+
+**Hooks installed**:
+1. **pre-push**: Runs quick validation before pushing
+   - Checks go.mod, vendor, license, spelling, trailing spaces, linting
+   - Skips unit tests for speed
+   - Can bypass with `git push --no-verify`
+
+2. **commit-msg**: Validates commit message format
+   - Checks message format and conventions
+   - Can bypass with `git commit --no-verify`
+
+**When to use**:
+- One-time setup for development environment
+- Catches issues before pushing to remote
+- Enforces commit message standards
+
+**Time saved**: ~10 hours/year (prevents push-fix-push cycles)
 
 ---
 
@@ -301,15 +457,20 @@ go install github.com/client9/misspell/cmd/misspell@latest
 
 ## Time Savings Summary
 
-| Task | Manual Time | Automated Time | Savings |
-|------|-------------|----------------|---------|
-| Go version update | 30 min | 5 min | 25 min |
-| Dependency update | 15 min | 5 min | 10 min |
-| Typo fix | 15 min | 5 min | 10 min |
-| Pre-commit validation | 15 min | 10 min | 5 min |
-| Release preparation | 60 min | 30 min | 30 min |
+| Task | Manual Time | Automated Time | Savings | Frequency |
+|------|-------------|----------------|---------|-----------|
+| Go version update | 30 min | 5 min | 25 min | 4-6/year |
+| Dependency update | 15 min | 5 min | 10 min | 30-40/year |
+| License header fix | 20 min | 5 min | 15 min | 5-10/year |
+| Trailing space fix | 10 min | 2 min | 8 min | 10-15/year |
+| Typo fix | 15 min | 5 min | 10 min | 10-15/year |
+| Pre-commit validation | 15 min | 10 min | 5 min | Continuous |
+| Commit message validation | 10 min | 2 min | 8 min | Continuous |
+| Changelog generation | 60 min | 30 min | 30 min | 4-6/year |
+| Release preparation | 60 min | 30 min | 30 min | 4-6/year |
+| Git hooks (one-time) | 30 min | 5 min | 25 min | One-time |
 
-**Annual savings**: 25-35 hours (based on typical update frequency)
+**Annual savings**: 40-50 hours (Phase 1 + Phase 2A combined)
 
 ---
 

@@ -642,3 +642,63 @@ tasks:
       fi
       
       .gitpod/scripts/prepare-release.sh "$VERSION"
+
+  fix-license-headers:
+    name: "fix-license-headers"
+    description: "Add missing SPDX license headers to source files"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      .gitpod/scripts/fix-license-headers.sh
+
+  fix-trailing-spaces:
+    name: "fix-trailing-spaces"
+    description: "Remove trailing spaces from source files"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      .gitpod/scripts/fix-trailing-spaces.sh
+
+  validate-commit-message:
+    name: "validate-commit-message"
+    description: "Validate commit message format (last commit or specified)"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      if [ -n "${MESSAGE:-}" ]; then
+        .gitpod/scripts/validate-commit-message.sh "$MESSAGE"
+      else
+        .gitpod/scripts/validate-commit-message.sh
+      fi
+
+  generate-changelog:
+    name: "generate-changelog"
+    description: "Generate changelog entry from commits between tags"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      SINCE="${SINCE_TAG:-}"
+      UNTIL="${UNTIL_TAG:-HEAD}"
+      
+      if [ -z "$SINCE" ]; then
+        echo "💡 Tip: Set SINCE_TAG to specify starting tag"
+        echo "   Example: SINCE_TAG=v3.1.3 gitpod automations task start generate-changelog"
+        echo ""
+      fi
+      
+      .gitpod/scripts/generate-changelog-entry.sh "$SINCE" "$UNTIL"
+
+  install-git-hooks:
+    name: "install-git-hooks"
+    description: "Install git hooks for pre-push and commit-msg validation"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      .gitpod/scripts/install-git-hooks.sh
