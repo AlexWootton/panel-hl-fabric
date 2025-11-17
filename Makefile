@@ -121,8 +121,7 @@ basic-checks: check-go-version license spelling references trailing-spaces linte
 
 
 .PHONY: desk-check
-desk-check: ## Runs linters and verify to test changed packages
-	checks verify
+desk-check: linter verify ## Runs linters and verify to test changed packages
 
 .PHONY: help-docs
 help-docs: native ## Generate the command reference docs
