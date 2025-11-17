@@ -12,19 +12,19 @@ The `validate-network.sh` script provides **quick health checks** for deployed F
 
 ### What This Script Does NOT Do
 
-- ❌ Replace comprehensive integration tests
-- ❌ Test edge cases or failure scenarios
-- ❌ Validate internal APIs
-- ❌ Create or destroy networks
-- ❌ Test all Fabric features
+-  Replace comprehensive integration tests
+-  Test edge cases or failure scenarios
+-  Validate internal APIs
+-  Create or destroy networks
+-  Test all Fabric features
 
 ### What This Script DOES Do
 
-- ✅ Validate existing network health
-- ✅ Provide quick feedback (30-60 seconds)
-- ✅ Identify specific failure points
-- ✅ Test end-to-end transaction flow
-- ✅ Verify deployment success
+-  Validate existing network health
+-  Provide quick feedback (30-60 seconds)
+-  Identify specific failure points
+-  Test end-to-end transaction flow
+-  Verify deployment success
 
 ## Quick Validation
 
@@ -43,24 +43,24 @@ Or run the script directly:
 ## What Gets Tested
 
 ### 1. Infrastructure Layer
-- ✅ Docker containers (peer0.org1, peer0.org2, orderer)
-- ✅ Chaincode containers (dev-peer containers)
+-  Docker containers (peer0.org1, peer0.org2, orderer)
+-  Chaincode containers (dev-peer containers)
 
 ### 2. Network Layer
-- ✅ Channel creation and accessibility
-- ✅ Peer connectivity for both organizations
-- ✅ Orderer service availability
+-  Channel creation and accessibility
+-  Peer connectivity for both organizations
+-  Orderer service availability
 
 ### 3. Chaincode Lifecycle
-- ✅ Chaincode installation on peers
-- ✅ Chaincode commitment to channel
-- ✅ Chaincode container deployment
+-  Chaincode installation on peers
+-  Chaincode commitment to channel
+-  Chaincode container deployment
 
 ### 4. Transaction Layer
-- ✅ Invoke operations (InitLedger, CreateAsset)
-- ✅ Query operations (GetAllAssets, ReadAsset)
-- ✅ Data persistence across peers
-- ✅ Transaction endorsement and ordering
+-  Invoke operations (InitLedger, CreateAsset)
+-  Query operations (GetAllAssets, ReadAsset)
+-  Data persistence across peers
+-  Transaction endorsement and ordering
 
 ## Understanding Results
 
@@ -80,14 +80,14 @@ Your network is ready for:
 The validation script will show which specific tests failed:
 
 ```
-❌ FAIL: Container peer0.org1.example.com is not running
+ FAIL: Container peer0.org1.example.com is not running
 ```
 
 Common failure scenarios:
 
 #### Network Not Started
 ```
-❌ FAIL: Container peer0.org1.example.com is not running
+ FAIL: Container peer0.org1.example.com is not running
 ```
 **Solution:** Start the network
 ```bash
@@ -96,7 +96,7 @@ gitpod automations task start start-test-network
 
 #### Chaincode Not Deployed
 ```
-❌ FAIL: Chaincode 'basic' is not installed
+ FAIL: Chaincode 'basic' is not installed
 ```
 **Solution:** Deploy chaincode
 ```bash
@@ -105,7 +105,7 @@ gitpod automations task start deploy-chaincode
 
 #### Peer Connectivity Issues
 ```
-❌ FAIL: Org1 peer is not responsive
+ FAIL: Org1 peer is not responsive
 ```
 **Solution:** Check Docker logs and restart
 ```bash

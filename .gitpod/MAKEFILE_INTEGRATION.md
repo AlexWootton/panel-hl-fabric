@@ -8,7 +8,7 @@
 
 ## Analysis Results
 
-### ✅ What We're Doing Right
+###  What We're Doing Right
 
 Our automations **correctly use** existing make targets:
 
@@ -27,7 +27,7 @@ Our automations **correctly use** existing make targets:
 
 ---
 
-### 🔧 What We Fixed
+###  What We Fixed
 
 **Before**: `validate-changes.sh` reimplemented `make basic-checks` logic
 ```bash
@@ -54,7 +54,7 @@ make verify        # Test changed packages
 
 ---
 
-### 📋 Make Targets We Use
+###  Make Targets We Use
 
 #### Validation Targets
 
@@ -85,7 +85,7 @@ make verify        # Test changed packages
 
 ---
 
-### 🎯 What We Keep Separate
+###  What We Keep Separate
 
 These are **not** appropriate for the Makefile and remain as standalone scripts:
 
@@ -152,37 +152,37 @@ By using `make basic-checks` instead of reimplementing it, we now include:
 
 ### Use Make Targets For:
 
-✅ **Validation** - `make basic-checks`, `make desk-check`, `make verify`
+ **Validation** - `make basic-checks`, `make desk-check`, `make verify`
 - Already exists
 - More comprehensive
 - Standard interface
 - Maintained by Fabric team
 
-✅ **Building** - `make native`, `make docker`
+ **Building** - `make native`, `make docker`
 - Already exists
 - Handles cross-compilation
 - Standard interface
 
-✅ **Testing** - `make unit-test`, `make verify`, `make integration-test`
+ **Testing** - `make unit-test`, `make verify`, `make integration-test`
 - Already exists
 - Proper test setup
 - Standard interface
 
 ### Keep Scripts For:
 
-✅ **Auto-fixers** - Modify files (not appropriate for make)
+ **Auto-fixers** - Modify files (not appropriate for make)
 
-✅ **Interactive tools** - Need prompts (not supported by make)
+ **Interactive tools** - Need prompts (not supported by make)
 
-✅ **Ona-specific** - Not relevant to upstream
+ **Ona-specific** - Not relevant to upstream
 
-✅ **Custom logic** - Commit message validation, changelog generation
+ **Custom logic** - Commit message validation, changelog generation
 
 ---
 
 ## Should We Add to Makefile?
 
-### ❌ Not Recommended
+###  Not Recommended
 
 **Reasons**:
 1. **Upstream conflicts** - This is a fork, Makefile changes conflict with upstream
@@ -190,7 +190,7 @@ By using `make basic-checks` instead of reimplementing it, we now include:
 3. **Not necessary** - Scripts work fine, automations wrap them
 4. **Discoverability** - Automations are discoverable via `gitpod automations task list`
 
-### ✅ Alternative: Document Relationship
+###  Alternative: Document Relationship
 
 Instead of modifying Makefile, we:
 1. Use existing make targets in our scripts
@@ -208,11 +208,11 @@ Instead of modifying Makefile, we:
 
 ```bash
 # validate-changes.sh
-make license          # ❌ Duplicates basic-checks
-make spelling         # ❌ Duplicates basic-checks
-make trailing-spaces  # ❌ Duplicates basic-checks
-make linter           # ❌ Duplicates basic-checks
-make verify           # ✅ Correct
+make license          #  Duplicates basic-checks
+make spelling         #  Duplicates basic-checks
+make trailing-spaces  #  Duplicates basic-checks
+make linter           #  Duplicates basic-checks
+make verify           #  Correct
 ```
 
 **Issues**:
@@ -224,8 +224,8 @@ make verify           # ✅ Correct
 
 ```bash
 # validate-changes.sh
-make basic-checks     # ✅ Uses existing target (comprehensive)
-make verify           # ✅ Uses existing target
+make basic-checks     #  Uses existing target (comprehensive)
+make verify           #  Uses existing target
 ```
 
 **Benefits**:
@@ -279,7 +279,7 @@ These don't use make targets (not appropriate):
 
 ## Best Practices
 
-### ✅ Do This
+###  Do This
 
 1. **Use existing make targets** for validation, building, testing
 2. **Keep scripts separate** for auto-fixers, interactive tools, Ona-specific
@@ -287,7 +287,7 @@ These don't use make targets (not appropriate):
 4. **Wrap make targets** in automations for Ona UI
 5. **Add custom logic** in scripts when needed (commit message validation)
 
-### ❌ Don't Do This
+###  Don't Do This
 
 1. **Don't duplicate** make target logic in scripts
 2. **Don't modify** upstream Makefile (fork conflicts)
@@ -332,9 +332,9 @@ fix-typos: ## Auto-fix typos
 **Answer**: No - keep scripts separate to avoid upstream conflicts.
 
 **Approach**: Hybrid
-- ✅ Use make targets for validation, building, testing
-- ✅ Keep scripts for auto-fixers, interactive tools, Ona-specific
-- ✅ Automations wrap both for Ona UI
+-  Use make targets for validation, building, testing
+-  Keep scripts for auto-fixers, interactive tools, Ona-specific
+-  Automations wrap both for Ona UI
 
 **Result**: No duplication, standard interface, custom functionality where needed.
 

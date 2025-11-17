@@ -19,7 +19,7 @@ tasks:
       cd /workspaces/fabric
       echo "Building Fabric binaries..."
       make native
-      echo "✅ Build complete. Binaries available in build/bin/"
+      echo "Build complete. Binaries available in build/bin/"
       ls -lh build/bin/
 
   # ============================================================================
@@ -38,8 +38,8 @@ tasks:
       echo ""
       make desk-check
       echo ""
-      echo "✅ Quick check complete"
-      echo "💡 Run 'gitpod automations task start check-code' for full checks"
+      echo "Quick check complete"
+      echo "Run 'gitpod automations task start check-code' for full checks"
 
   verify-changes:
     name: "verify-changes"
@@ -51,8 +51,8 @@ tasks:
       echo "Testing changed packages..."
       make verify
       echo ""
-      echo "✅ Changed packages verified"
-      echo "💡 Run 'gitpod automations task start test-unit' for all unit tests"
+      echo "Changed packages verified"
+      echo "Run 'gitpod automations task start test-unit' for all unit tests"
 
   # ============================================================================
   # TEST NETWORK - BASIC (3) - For chaincode and API development
@@ -96,12 +96,12 @@ tasks:
       ./network.sh up createChannel
       
       echo ""
-      echo "✅ Test network running with channel 'mychannel'"
+      echo "Test network running with channel 'mychannel'"
       echo ""
       echo "Next steps:"
       echo "  📊 View containers: docker ps"
       echo "  🔧 Deploy chaincode: gitpod automations task start deploy-chaincode"
-      echo "  ✅ Validate network: gitpod automations task start validate-network"
+      echo "  Validate network: gitpod automations task start validate-network"
       echo "  🛑 Stop network: gitpod automations task start stop-network"
 
   stop-network:
@@ -111,7 +111,7 @@ tasks:
       - manual
     command: |
       if [ ! -d "/workspaces/fabric-samples/test-network" ]; then
-        echo "❌ Test network directory not found"
+        echo "Test network directory not found"
         echo "Run 'gitpod automations task start start-network' first"
         exit 1
       fi
@@ -119,7 +119,7 @@ tasks:
       cd /workspaces/fabric-samples/test-network
       echo "Stopping Fabric test network..."
       ./network.sh down
-      echo "✅ Test network stopped and cleaned up"
+      echo "Test network stopped and cleaned up"
 
   deploy-chaincode:
     name: "deploy-chaincode"
@@ -130,7 +130,7 @@ tasks:
       export PATH=/workspaces/fabric/build/bin:$PATH
       
       if [ ! -d "/workspaces/fabric-samples/test-network" ]; then
-        echo "❌ Test network not found"
+        echo "Test network not found"
         echo "Run 'gitpod automations task start start-network' first"
         exit 1
       fi
@@ -145,7 +145,7 @@ tasks:
       
       # Check if network is running
       if ! docker ps | grep -q "peer0.org1.example.com"; then
-        echo "❌ Test network is not running"
+        echo "Test network is not running"
         echo "Run 'gitpod automations task start start-network' first"
         exit 1
       fi
@@ -154,7 +154,7 @@ tasks:
       ./network.sh deployCC -ccn basic -ccp ../asset-transfer-basic/chaincode-go -ccl go
       
       echo ""
-      echo "✅ Chaincode deployed successfully"
+      echo "Chaincode deployed successfully"
       echo ""
       echo "Test chaincode:"
       echo "  cd /workspaces/fabric-samples/test-network"
@@ -214,7 +214,7 @@ tasks:
       ./network.sh up createChannel -s couchdb
       
       echo ""
-      echo "✅ Test network running with CouchDB state database"
+      echo "Test network running with CouchDB state database"
       echo ""
       echo "CouchDB Fauxton UI:"
       echo "  URL: http://localhost:5984/_utils"
@@ -234,7 +234,7 @@ tasks:
       export PATH=/workspaces/fabric/build/bin:$PATH
       
       if [ ! -d "/workspaces/fabric-samples/test-network" ]; then
-        echo "❌ Test network directory not found"
+        echo "Test network directory not found"
         echo "Run 'gitpod automations task start start-network' first"
         exit 1
       fi
@@ -247,7 +247,7 @@ tasks:
       echo "Starting network..."
       ./network.sh up createChannel
       
-      echo "✅ Network restarted"
+      echo "Network restarted"
 
   # ============================================================================
   # NETWORK VALIDATION (1) - Health checks
@@ -263,7 +263,7 @@ tasks:
       echo "Running comprehensive network validation..."
       .gitpod/validate-network.sh
       echo ""
-      echo "💡 Tip: Run 'gitpod automations task start validate-network' anytime to check network health"
+      echo "Tip: Run 'gitpod automations task start validate-network' anytime to check network health"
 
   # ============================================================================
   # TESTING - UNIT (2) - For all developers
@@ -278,11 +278,11 @@ tasks:
       cd /workspaces/fabric
       echo "Running all unit tests..."
       echo "⏱️  This will take 15-20 minutes"
-      echo "💡 For faster feedback, use 'verify-changes' to test only changed packages"
+      echo "For faster feedback, use 'verify-changes' to test only changed packages"
       echo ""
       make unit-test
       echo ""
-      echo "✅ All unit tests passed"
+      echo "All unit tests passed"
 
   # ============================================================================
   # TESTING - INTEGRATION SUITES (6) - Granular test execution
@@ -432,7 +432,7 @@ tasks:
       echo "Running ALL integration tests..."
       echo "⏱️  This will take 15-30 minutes"
       echo ""
-      echo "💡 Consider using specific test suites for faster feedback:"
+      echo "Consider using specific test suites for faster feedback:"
       echo "   - test-consensus (~5 min)  - Raft and SmartBFT consensus"
       echo "   - test-ledger (~8 min)     - Ledger and private data"
       echo "   - test-lifecycle (~6 min)  - Chaincode lifecycle"
@@ -465,7 +465,7 @@ tasks:
       echo ""
       make basic-checks
       echo ""
-      echo "✅ Code checks passed"
+      echo "Code checks passed"
 
   # ============================================================================
   # DOCKER (2) - Container image management
@@ -482,7 +482,7 @@ tasks:
       echo "⏱️  This will take 10-15 minutes"
       make docker
       echo ""
-      echo "✅ Docker images built"
+      echo "Docker images built"
       echo ""
       docker images | grep hyperledger/fabric
 
@@ -496,8 +496,8 @@ tasks:
       echo "Pulling CouchDB Docker image..."
       make docker-thirdparty-couchdb
       echo ""
-      echo "✅ CouchDB image ready"
-      echo "💡 Use 'start-network-couchdb' to start network with CouchDB"
+      echo "CouchDB image ready"
+      echo "Use 'start-network-couchdb' to start network with CouchDB"
 
   # ============================================================================
   # UTILITIES (2) - Cleanup operations
@@ -516,7 +516,7 @@ tasks:
         echo "Found $TEST_COUNT test binaries to clean..."
         find integration/ -name "*.test" -type f -delete 2>/dev/null || true
         find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
-        echo "✅ Cleaned $TEST_COUNT test binaries (~$(($TEST_COUNT * 25))MB freed)"
+        echo "Cleaned $TEST_COUNT test binaries (~$(($TEST_COUNT * 25))MB freed)"
       else
         echo "No integration test artifacts found"
       fi
@@ -545,7 +545,7 @@ tasks:
       docker system prune -f
       
       echo ""
-      echo "✅ Cleanup complete"
+      echo "Cleanup complete"
       echo "Run 'gitpod automations task start build-fabric' to rebuild binaries"
 
   # ============================================================================
@@ -561,7 +561,7 @@ tasks:
       cd /workspaces/fabric
       
       if [ -z "${GO_VERSION:-}" ]; then
-        echo "❌ This automation requires the GO_VERSION environment variable"
+        echo "This automation requires the GO_VERSION environment variable"
         echo ""
         echo "🖥️  CLI Usage:"
         echo "   GO_VERSION=1.25.4 gitpod automations task start update-go-version"
@@ -569,7 +569,7 @@ tasks:
         echo "📝 Or run the script directly with interactive prompts:"
         echo "   .gitpod/scripts/update-go-version.sh"
         echo ""
-        echo "⚠️  Note: This automation cannot be run from the Ona UI"
+        echo "Note: This automation cannot be run from the Ona UI"
         echo "   Use the CLI or run the script directly instead"
         exit 1
       fi
@@ -585,7 +585,7 @@ tasks:
       cd /workspaces/fabric
       
       if [ -z "${DEPENDENCY:-}" ] || [ -z "${VERSION:-}" ]; then
-        echo "❌ This automation requires DEPENDENCY and VERSION environment variables"
+        echo "This automation requires DEPENDENCY and VERSION environment variables"
         echo ""
         echo "🖥️  CLI Usage:"
         echo "   DEPENDENCY=github.com/pkg/errors VERSION=v0.9.1 gitpod automations task start update-dependency"
@@ -593,9 +593,9 @@ tasks:
         echo "📝 Or run the script directly with interactive prompts:"
         echo "   .gitpod/scripts/update-dependency.sh"
         echo ""
-        echo "💡 Alternative: Use 'check-outdated-deps' to see what needs updating"
+        echo "Alternative: Use 'check-outdated-deps' to see what needs updating"
         echo ""
-        echo "⚠️  Note: This automation cannot be run from the Ona UI"
+        echo "Note: This automation cannot be run from the Ona UI"
         echo "   Use the CLI or run the script directly instead"
         exit 1
       fi
@@ -638,7 +638,7 @@ tasks:
       cd /workspaces/fabric
       
       if [ -z "${VERSION:-}" ]; then
-        echo "❌ This automation requires the VERSION environment variable"
+        echo "This automation requires the VERSION environment variable"
         echo ""
         echo "🖥️  CLI Usage:"
         echo "   VERSION=3.1.4 gitpod automations task start prepare-release"
@@ -646,7 +646,7 @@ tasks:
         echo "📝 Or run the script directly with interactive prompts:"
         echo "   .gitpod/scripts/prepare-release.sh"
         echo ""
-        echo "⚠️  Note: This automation cannot be run from the Ona UI"
+        echo "Note: This automation cannot be run from the Ona UI"
         echo "   Use the CLI or run the script directly instead"
         exit 1
       fi
@@ -697,7 +697,7 @@ tasks:
       UNTIL="${UNTIL_TAG:-HEAD}"
       
       if [ -z "$SINCE" ]; then
-        echo "💡 Tip: Set SINCE_TAG to specify starting tag"
+        echo "Tip: Set SINCE_TAG to specify starting tag"
         echo "   Example: SINCE_TAG=v3.1.3 gitpod automations task start generate-changelog"
         echo ""
       fi
@@ -721,12 +721,12 @@ tasks:
     command: |
       cd /workspaces/fabric
       
-      echo "🔍 Checking for outdated Go dependencies..."
+      echo "Checking for outdated Go dependencies..."
       echo ""
       
       # Check if jq is available
       if ! command -v jq &> /dev/null; then
-        echo "❌ Error: jq is required but not installed"
+        echo "Error: jq is required but not installed"
         echo "   Install with: apt-get install jq"
         exit 1
       fi
@@ -735,11 +735,11 @@ tasks:
       OUTDATED=$(go list -u -m -json all 2>/dev/null | jq -r 'select(.Update) | "\(.Path)|\(.Version)|\(.Update.Version)"')
       
       if [ -z "$OUTDATED" ]; then
-        echo "✅ All dependencies are up to date!"
+        echo "All dependencies are up to date!"
         exit 0
       fi
       
-      echo "📦 Outdated dependencies found:"
+      echo "Outdated dependencies found:"
       echo ""
       
       echo "$OUTDATED" | while IFS='|' read -r path current latest; do
@@ -750,7 +750,7 @@ tasks:
         echo ""
       done
       
-      echo "💡 To update a dependency:"
+      echo "To update a dependency:"
       echo "   1. Copy the update command above"
       echo "   2. Run it in the CLI (not Ona UI)"
       echo "   3. Or run: .gitpod/scripts/update-dependency.sh <dependency> <version>"

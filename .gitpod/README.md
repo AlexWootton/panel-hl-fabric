@@ -1,52 +1,58 @@
 # Hyperledger Fabric Development Environment
 
-Complete guide for developing Hyperledger Fabric in Gitpod/Ona.
+Development guide for Hyperledger Fabric in Gitpod/Ona environments.
 
-## What's New ✨
+## Overview
 
-**Improved Automations** - Faster feedback and better experience:
-- ⚡ **Quick validation**: `quick-check` (2-5 min) and `verify-changes` (1-3 min) for fast feedback
-- 🎯 **Granular testing**: Run specific integration test suites (5-10 min) instead of all tests (30 min)
-- 🌐 **Better network management**: Clean restart (no more "channel exists" errors!), CouchDB support
-- 📊 **Time savings**: 67-83% reduction in test cycle time for most developers
+This environment provides automated workflows for building, testing, and developing Hyperledger Fabric. Key features include:
 
-See [AUTOMATION_ANALYSIS.md](AUTOMATION_ANALYSIS.md) for full details.
+- Automated build on environment startup
+- Quick validation workflows (2-5 minutes)
+- Granular integration test suites (5-10 minutes per suite)
+- Test network management with automatic cleanup
+- CouchDB state database support
+
+See [AUTOMATION_ANALYSIS.md](AUTOMATION_ANALYSIS.md) for detailed analysis.
 
 ## Quick Start
 
-### 1. Environment Startup
-When you start the environment, Fabric binaries are **automatically built** (~2-3 minutes).
+### Environment Startup
 
-### 2. Start Test Network
+Fabric binaries are automatically built on environment startup (approximately 2-3 minutes).
+
+### Start Test Network
+
 ```bash
-# One command to start everything (with clean restart):
 gitpod automations task start start-network
 ```
 
-This automatically:
-- Clones fabric-samples (if needed)
+This command performs the following operations:
+- Clones fabric-samples repository if not present
 - Pulls required Docker images
-- Cleans any existing network (no more "channel exists" errors!)
+- Cleans any existing network state
 - Starts the network with a channel
 
-### 3. Deploy Chaincode (Optional)
+### Deploy Chaincode
+
 ```bash
 gitpod automations task start deploy-chaincode
 ```
 
-### 4. Validate Network (Optional)
+### Validate Network
+
 ```bash
 gitpod automations task start validate-network
 ```
 
-### 5. Stop Test Network
+### Stop Test Network
+
 ```bash
 gitpod automations task start stop-network
 ```
 
 ## Available Automations
 
-### Quick Validation (NEW! ⚡)
+### Quick Validation
 | Task | Description | Time | Trigger |
 |------|-------------|------|---------|
 | `quick-check` | Linters + tests for changed packages | 2-5 min | Manual |
@@ -55,7 +61,7 @@ gitpod automations task start stop-network
 ### Network Management
 | Task | Description | Trigger |
 |------|-------------|---------|
-| `start-network` | Start test network (clean restart, no errors!) | Manual |
+| `start-network` | Start test network (clean restart) | Manual |
 | `start-network-couchdb` | Start network with CouchDB state database | Manual |
 | `restart-network` | Quick network restart | Manual |
 | `stop-network` | Stop and clean up test network | Manual |
@@ -68,7 +74,7 @@ gitpod automations task start stop-network
 |------|-------------|------|---------|
 | `test-unit` | Run all unit tests | 15-20 min | Manual |
 
-### Testing - Integration (NEW! 🎯)
+### Testing - Integration (New)
 | Task | Description | Time | Trigger |
 |------|-------------|------|---------|
 | `test-consensus` | Raft + SmartBFT consensus tests | ~5 min | Manual |
@@ -108,9 +114,9 @@ gitpod automations task list-executions <task-name>
 
 ## Development Workflow
 
-### Maintenance Automation (🔧 Phase 1 + 2A Complete)
+### Maintenance Automation
 
-**✅ Works from Ona UI** (no variables needed):
+** Works from Ona UI** (no variables needed):
 ```bash
 gitpod automations task start fix-typos
 gitpod automations task start fix-license-headers
@@ -123,7 +129,7 @@ gitpod automations task start install-git-hooks
 gitpod automations task start check-outdated-deps
 ```
 
-**🖥️ CLI Only** (requires variables):
+** CLI Only** (requires variables):
 ```bash
 GO_VERSION=1.25.4 gitpod automations task start update-go-version
 DEPENDENCY=github.com/pkg/errors VERSION=v0.9.1 gitpod automations task start update-dependency
@@ -132,14 +138,14 @@ VERSION=3.1.4 gitpod automations task start prepare-release
 
 **31 of 34 automations (91%)** work from Ona UI
 
-**New in Phase 2B**:
+Phase 2B additions::
 - `check-unused-deps` - Find unused vendored dependencies
 - `scan-vulnerabilities` - Security scanning with govulncheck
 - `check-test-coverage` - Test coverage reporting
 
 See [ONA_UI_COMPATIBILITY.md](ONA_UI_COMPATIBILITY.md) for workarounds and [MAINTENANCE_AUTOMATION.md](MAINTENANCE_AUTOMATION.md) for detailed usage.
 
-### Quick Iteration (⚡)
+### Quick Iteration
 ```bash
 # Fast feedback during development
 gitpod automations task start quick-check        # make desk-check: linters + changed packages
@@ -157,9 +163,9 @@ make native          # Build binaries
 make docker          # Build Docker images
 ```
 
-### Testing - Granular (NEW! 🎯)
+### Testing - Granular (New)
 ```bash
-# Run specific integration test suites (much faster!)
+# Run specific integration test suites (faster)
 gitpod automations task start test-consensus     # ~5 min: Raft + SmartBFT
 gitpod automations task start test-ledger        # ~8 min: Ledger + private data
 gitpod automations task start test-lifecycle     # ~6 min: Chaincode lifecycle
@@ -181,7 +187,7 @@ make basic-checks    # Run linting, license checks, etc.
 
 #### Option 1: Automation (Recommended)
 ```bash
-# Start network (clean restart, no errors!)
+# Start network (clean restart)
 gitpod automations task start start-network
 
 # Deploy chaincode
@@ -277,19 +283,19 @@ gitpod automations task start validate-network
 
 ### What It Tests
 
-✅ **Infrastructure**
+ **Infrastructure**
 - Docker containers are running (peers, orderer)
 - Chaincode containers are deployed
 
-✅ **Channel Operations**
+ **Channel Operations**
 - Channel exists and is accessible
 - Both organization peers can connect
 
-✅ **Chaincode Lifecycle**
+ **Chaincode Lifecycle**
 - Chaincode is installed on peers
 - Chaincode is committed to channel
 
-✅ **Transaction Operations**
+ **Transaction Operations**
 - Invoke transactions (InitLedger, CreateAsset)
 - Query operations (GetAllAssets, ReadAsset)
 - Data persistence and retrieval
@@ -301,16 +307,16 @@ gitpod automations task start validate-network
 Hyperledger Fabric Test Network Validation
 ========================================
 
-✅ PASS: All required Docker containers are running
-✅ PASS: Channel 'mychannel' exists
-✅ PASS: Chaincode 'basic' is installed
-✅ PASS: Chaincode 'basic' is committed to mychannel
-✅ PASS: Chaincode containers are running (2 found)
-✅ PASS: Both organization peers are responsive
-✅ PASS: Chaincode invocation successful (InitLedger)
-✅ PASS: Chaincode query successful (found assets)
-✅ PASS: Asset creation successful
-✅ PASS: Asset read successful (verified created asset)
+ PASS: All required Docker containers are running
+ PASS: Channel 'mychannel' exists
+ PASS: Chaincode 'basic' is installed
+ PASS: Chaincode 'basic' is committed to mychannel
+ PASS: Chaincode containers are running (2 found)
+ PASS: Both organization peers are responsive
+ PASS: Chaincode invocation successful (InitLedger)
+ PASS: Chaincode query successful (found assets)
+ PASS: Asset creation successful
+ PASS: Asset read successful (verified created asset)
 
 ========================================
 Validation Summary
@@ -320,7 +326,7 @@ Total Tests: 10
 Passed: 10
 Failed: 0
 
-🎉 All tests passed! The network is fully functional.
+🎉 All tests passed. The network is fully functional.
 ```
 
 ### When to Use

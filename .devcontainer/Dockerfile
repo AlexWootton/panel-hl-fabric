@@ -1,6 +1,7 @@
-# Copyright IBM Corp All Rights Reserved.
+# Copyright IBM Corp. All Rights Reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
+#
 
 FROM mcr.microsoft.com/devcontainers/base:ubuntu-24.04
 

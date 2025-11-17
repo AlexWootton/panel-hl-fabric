@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright IBM Corp All Rights Reserved.
+# Copyright IBM Corp. All Rights Reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -16,7 +16,7 @@ VERSION="${1:-}"
 if [ -z "$VERSION" ]; then
     # Check if running interactively
     if [ -t 0 ]; then
-        echo "🚀 Prepare Release"
+        echo "Prepare Release"
         echo ""
         
         # Show current version from Makefile
@@ -31,11 +31,11 @@ if [ -z "$VERSION" ]; then
         read -p "Enter new version (e.g., 3.1.4): " VERSION
         
         if [ -z "$VERSION" ]; then
-            echo "❌ Error: No version provided"
+            echo "Error: No version provided"
             exit 1
         fi
     else
-        echo "❌ Error: Version required"
+        echo "Error: Version required"
         echo ""
         echo "Usage: $0 <version>"
         echo "Example: $0 3.1.4"
@@ -47,30 +47,30 @@ fi
 
 # Validate version format (X.Y.Z)
 if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-    echo "❌ Error: Invalid version format. Expected X.Y.Z (e.g., 3.1.4)"
+    echo "Error: Invalid version format. Expected X.Y.Z (e.g., 3.1.4)"
     exit 1
 fi
 
 # Change to repository root
 cd "$(dirname "$0")/../.."
 
-echo "🚀 Preparing release v$VERSION"
+echo "Preparing release v$VERSION"
 echo ""
 
 # Check current branch
 CURRENT_BRANCH=$(git branch --show-current)
-echo "📋 Current branch: $CURRENT_BRANCH"
+echo "Current branch: $CURRENT_BRANCH"
 echo ""
 
 # Check for uncommitted changes
 if ! git diff-index --quiet HEAD --; then
-    echo "⚠️  Warning: You have uncommitted changes"
+    echo "Warning: You have uncommitted changes"
     echo "   Commit or stash them before proceeding"
     echo ""
 fi
 
 # Generate release checklist
-echo "📋 Release Checklist for v$VERSION"
+echo "Release Checklist for v$VERSION"
 echo "=================================="
 echo ""
 echo "Pre-Release Validation:"
@@ -114,9 +114,9 @@ echo ""
 
 # Check if version exists in Makefile
 if grep -q "FABRIC_VER ?= $VERSION" Makefile; then
-    echo "✅ Version $VERSION found in Makefile"
+    echo "Version $VERSION found in Makefile"
 else
-    echo "⚠️  Version $VERSION not found in Makefile"
+    echo "Version $VERSION not found in Makefile"
     echo "   Current version: $(grep 'FABRIC_VER ?=' Makefile | cut -d'=' -f2 | tr -d ' ')"
     echo ""
     echo "   Update with: sed -i 's/FABRIC_VER ?= .*/FABRIC_VER ?= $VERSION/' Makefile"
@@ -125,14 +125,14 @@ echo ""
 
 # Check for existing tag
 if git tag | grep -q "^v$VERSION$"; then
-    echo "⚠️  Tag v$VERSION already exists"
+    echo "Tag v$VERSION already exists"
     echo "   Use a different version or delete the tag"
 else
-    echo "✅ Tag v$VERSION is available"
+    echo "Tag v$VERSION is available"
 fi
 echo ""
 
-echo "📋 Next Steps:"
+echo "Next Steps:"
 echo "   1. Complete the checklist above"
 echo "   2. Run validation: make unit-test && make integration-test"
 echo "   3. Create release PR or tag"

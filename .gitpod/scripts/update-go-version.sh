@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright IBM Corp All Rights Reserved.
+# Copyright IBM Corp. All Rights Reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -24,11 +24,11 @@ if [ -z "$NEW_VERSION" ]; then
         read -p "Enter new Go version (e.g., 1.25.4): " NEW_VERSION
         
         if [ -z "$NEW_VERSION" ]; then
-            echo "❌ Error: No version provided"
+            echo "Error: No version provided"
             exit 1
         fi
     else
-        echo "❌ Error: Go version required"
+        echo "Error: Go version required"
         echo ""
         echo "Usage: $0 <go-version>"
         echo "Example: $0 1.25.4"
@@ -40,7 +40,7 @@ fi
 
 # Validate version format (X.Y.Z)
 if ! echo "$NEW_VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-    echo "❌ Error: Invalid version format. Expected X.Y.Z (e.g., 1.25.4)"
+    echo "Error: Invalid version format. Expected X.Y.Z (e.g., 1.25.4)"
     exit 1
 fi
 
@@ -62,7 +62,7 @@ REQUIRED_FILES=(
 
 for file in "${REQUIRED_FILES[@]}"; do
     if [ ! -f "$file" ]; then
-        echo "❌ Error: Required file not found: $file"
+        echo "Error: Required file not found: $file"
         exit 1
     fi
 done
@@ -92,17 +92,17 @@ sed -i "s/brew install go@[0-9.]*/brew install go@$MAJOR_MINOR/" docs/source/dev
 
 # Run go mod tidy
 echo ""
-echo "🔧 Running go mod tidy..."
+echo "Running go mod tidy..."
 go mod tidy
 (cd tools && go mod tidy)
 
 # Run go mod vendor
-echo "🔧 Running go mod vendor..."
+echo "Running go mod vendor..."
 go mod vendor
 
 # Verify workflows use go-version-file
 echo ""
-echo "🔍 Verifying GitHub workflows..."
+echo "Verifying GitHub workflows..."
 WORKFLOW_ISSUES=()
 
 for workflow in .github/workflows/*.yml; do
@@ -122,21 +122,21 @@ for workflow in .github/workflows/*.yml; do
 done
 
 if [ ${#WORKFLOW_ISSUES[@]} -gt 0 ]; then
-    echo "⚠️  Workflow issues found:"
+    echo "Workflow issues found:"
     for issue in "${WORKFLOW_ISSUES[@]}"; do
-        echo "   ⚠️  $issue"
+        echo "   $issue"
     done
     echo ""
     echo "   Workflows should use: go-version-file: go.mod"
     echo "   This automatically extracts the Go version from go.mod"
 else
-    echo "   ✅ All workflows use go-version-file: go.mod"
+    echo "   All workflows use go-version-file: go.mod"
 fi
 
 echo ""
-echo "✅ Go version updated to $NEW_VERSION"
+echo "Go version updated to $NEW_VERSION"
 echo ""
-echo "📋 Files updated:"
+echo "Files updated:"
 echo "   - go.mod"
 echo "   - tools/go.mod"
 echo "   - vagrant/golang.sh"
@@ -144,7 +144,7 @@ echo "   - .devcontainer/Dockerfile"
 echo "   - docs/source/prereqs.md"
 echo "   - docs/source/dev-setup/devenv.rst"
 echo ""
-echo "📋 Next steps:"
+echo "Next steps:"
 echo "   1. Review changes: git diff"
 echo "   2. Run validation: gitpod automations task start validate-changes"
 echo "   3. Commit: git commit -am 'bump go to $NEW_VERSION'"

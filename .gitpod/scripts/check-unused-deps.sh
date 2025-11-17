@@ -18,7 +18,7 @@ cd "$(dirname "$0")/../.."
 
 verifyRepoRoot || exit 1
 
-echo "🔍 Checking for unused vendored dependencies..."
+echo "Checking for unused vendored dependencies..."
 echo ""
 echo "This runs: make check-deps"
 echo ""
@@ -29,9 +29,9 @@ if make check-deps; then
     exit 0
 else
     echo ""
-    echo "❌ Unused dependencies detected"
+    echo "Unused dependencies detected"
     echo ""
-    echo "📋 Next steps:"
+    echo "Next steps:"
     echo "   1. Review the unused dependencies above"
     echo "   2. Remove them from go.mod if truly unused"
     echo "   3. Run: go mod tidy && go mod vendor"

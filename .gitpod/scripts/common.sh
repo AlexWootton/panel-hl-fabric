@@ -9,7 +9,7 @@
 # Verify we're in the Fabric repository root
 verifyRepoRoot() {
     if [[ ! -f "go.mod" ]] || ! grep -q "module github.com/hyperledger/fabric" go.mod 2>/dev/null; then
-        echo "❌ Error: Not in Fabric repository root"
+        echo "Error: Not in Fabric repository root"
         echo "   Current directory: $(pwd)"
         echo "   Expected: Directory containing go.mod with module github.com/hyperledger/fabric"
         return 1
@@ -23,7 +23,7 @@ requireCommand() {
     local install_hint="${2:-}"
     
     if ! command -v "$cmd" &> /dev/null; then
-        echo "❌ Error: Required command '$cmd' not found"
+        echo "Error: Required command '$cmd' not found"
         if [[ -n "$install_hint" ]]; then
             echo "   Install with: $install_hint"
         fi
@@ -39,21 +39,21 @@ isInteractive() {
 
 # Print error message and exit
 fatal() {
-    echo "❌ Error: $*" >&2
+    echo "Error: $*" >&2
     exit 1
 }
 
 # Print warning message
 warn() {
-    echo "⚠️  Warning: $*" >&2
+    echo "Warning: $*" >&2
 }
 
 # Print info message
 info() {
-    echo "ℹ️  $*"
+    echo "$*"
 }
 
 # Print success message
 success() {
-    echo "✅ $*"
+    echo "$*"
 }

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright IBM Corp All Rights Reserved.
+# Copyright IBM Corp. All Rights Reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -20,15 +20,15 @@ if [ -z "$SINCE_TAG" ]; then
     # Get the most recent tag
     SINCE_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
     if [ -z "$SINCE_TAG" ]; then
-        echo "❌ Error: No tags found. Please specify a starting tag."
+        echo "Error: No tags found. Please specify a starting tag."
         echo ""
         echo "Usage: $0 <since-tag> [until-tag]"
         echo "Example: $0 v3.1.3 HEAD"
         exit 1
     fi
-    echo "📋 Generating changelog from $SINCE_TAG to $UNTIL_TAG"
+    echo "Generating changelog from $SINCE_TAG to $UNTIL_TAG"
 else
-    echo "📋 Generating changelog from $SINCE_TAG to $UNTIL_TAG"
+    echo "Generating changelog from $SINCE_TAG to $UNTIL_TAG"
 fi
 echo ""
 
@@ -36,7 +36,7 @@ echo ""
 COMMITS=$(git log --pretty=format:"%h %s" "$SINCE_TAG..$UNTIL_TAG" 2>/dev/null)
 
 if [ -z "$COMMITS" ]; then
-    echo "⚠️  No commits found between $SINCE_TAG and $UNTIL_TAG"
+    echo "No commits found between $SINCE_TAG and $UNTIL_TAG"
     exit 0
 fi
 
@@ -154,7 +154,7 @@ fi
 TOTAL_COMMITS=$(echo "$COMMITS" | wc -l)
 echo "---"
 echo ""
-echo "📊 Statistics:"
+echo "Statistics:"
 echo "   - Total commits: $TOTAL_COMMITS"
 echo "   - Features: ${#FEATURES[@]}"
 echo "   - Bug fixes: ${#FIXES[@]}"
@@ -162,5 +162,5 @@ echo "   - Documentation: ${#DOCS[@]}"
 echo "   - Dependencies: ${#DEPS[@]}"
 echo "   - Other: $((${#REFACTORS[@]} + ${#TESTS[@]} + ${#CHORES[@]} + ${#OTHER[@]}))"
 echo ""
-echo "💡 Tip: Redirect output to a file:"
+echo "Tip: Redirect output to a file:"
 echo "   $0 $SINCE_TAG $UNTIL_TAG > CHANGELOG_ENTRY.md"

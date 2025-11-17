@@ -23,14 +23,14 @@ if [[ "${1:-}" == "--html" ]]; then
     HTML_MODE=true
 fi
 
-echo "📊 Generating test coverage report..."
+echo "Generating test coverage report..."
 echo ""
 
 # Generate coverage profile
 echo "Running tests with coverage..."
 if ! make profile 2>&1 | tail -20; then
     echo ""
-    echo "❌ Failed to generate coverage profile"
+    echo "Failed to generate coverage profile"
     exit 1
 fi
 
@@ -62,11 +62,11 @@ if [[ -f "coverage.txt" ]]; then
         go tool cover -html=coverage.txt -o coverage.html
         success "HTML report generated: coverage.html"
         echo ""
-        echo "💡 Open coverage.html in a browser to view detailed coverage"
+        echo "Open coverage.html in a browser to view detailed coverage"
     fi
     
     success "Coverage report generated"
 else
-    echo "❌ Coverage file not found"
+    echo "Coverage file not found"
     exit 1
 fi

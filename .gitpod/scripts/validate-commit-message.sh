@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright IBM Corp All Rights Reserved.
+# Copyright IBM Corp. All Rights Reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -20,7 +20,7 @@ else
     COMMIT_MSG=$(git log -1 --pretty=%B)
 fi
 
-echo "🔍 Validating commit message..."
+echo "Validating commit message..."
 echo ""
 echo "Message:"
 echo "---"
@@ -80,28 +80,28 @@ fi
 
 # Report results
 if [ ${#ERRORS[@]} -gt 0 ]; then
-    echo "❌ Commit message validation failed:"
+    echo "Commit message validation failed:"
     echo ""
     for error in "${ERRORS[@]}"; do
-        echo "   ❌ $error"
+        echo "   $error"
     done
     echo ""
     exit 1
 fi
 
 if [ ${#WARNINGS[@]} -gt 0 ]; then
-    echo "⚠️  Commit message has warnings:"
+    echo "Commit message has warnings:"
     echo ""
     for warning in "${WARNINGS[@]}"; do
-        echo "   ⚠️  $warning"
+        echo "   $warning"
     done
     echo ""
 fi
 
 if [ ${#WARNINGS[@]} -eq 0 ]; then
-    echo "✅ Commit message is valid"
+    echo "Commit message is valid"
     if [ "$CONVENTIONAL_COMMIT" = true ]; then
-        echo "   ✅ Uses conventional commit format"
+        echo "   Uses conventional commit format"
     fi
 fi
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright IBM Corp All Rights Reserved.
+# Copyright IBM Corp. All Rights Reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -17,7 +17,7 @@ fi
 # Change to repository root
 cd "$(dirname "$0")/../.."
 
-echo "🔍 Checking for trailing spaces..."
+echo "Checking for trailing spaces..."
 echo ""
 
 # Find files with trailing spaces
@@ -34,11 +34,11 @@ done < <(find . \( -name "*.go" -o -name "*.sh" -o -name "*.md" -o -name "*.yaml
     -type f)
 
 if [ ${#FILES_WITH_TRAILING[@]} -eq 0 ]; then
-    echo "✅ No trailing spaces found"
+    echo "No trailing spaces found"
     exit 0
 fi
 
-echo "⚠️  Found ${#FILES_WITH_TRAILING[@]} file(s) with trailing spaces"
+echo "Found ${#FILES_WITH_TRAILING[@]} file(s) with trailing spaces"
 echo ""
 
 if [ "$CHECK_ONLY" = true ]; then
@@ -51,21 +51,21 @@ if [ "$CHECK_ONLY" = true ]; then
     exit 1
 fi
 
-echo "🔧 Removing trailing spaces..."
+echo "Removing trailing spaces..."
 echo ""
 
 FIXED_COUNT=0
 for file in "${FILES_WITH_TRAILING[@]}"; do
     # Remove trailing spaces
     sed -i 's/[[:space:]]*$//' "$file"
-    echo "   ✅ Fixed: $file"
+    echo "   Fixed: $file"
     ((FIXED_COUNT++))
 done
 
 echo ""
-echo "✅ Removed trailing spaces from $FIXED_COUNT file(s)"
+echo "Removed trailing spaces from $FIXED_COUNT file(s)"
 echo ""
-echo "📋 Next steps:"
+echo "Next steps:"
 echo "   1. Review changes: git diff"
 echo "   2. Run checks: make trailing-spaces"
 echo "   3. Commit: git commit -am 'chore: remove trailing spaces'"

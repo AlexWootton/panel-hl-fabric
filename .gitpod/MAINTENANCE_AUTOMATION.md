@@ -2,7 +2,7 @@
 
 Quick reference for automated maintenance tasks in Hyperledger Fabric.
 
-**⚠️ Ona UI Limitation**: Some automations require environment variables and can only be run from CLI. See [ONA_UI_COMPATIBILITY.md](ONA_UI_COMPATIBILITY.md) for details.
+** Ona UI Limitation**: Some automations require environment variables and can only be run from CLI. See [ONA_UI_COMPATIBILITY.md](ONA_UI_COMPATIBILITY.md) for details.
 
 ---
 
@@ -10,11 +10,11 @@ Quick reference for automated maintenance tasks in Hyperledger Fabric.
 
 ### Core Maintenance (Phase 1)
 
-### 1. Update Go Version (ENHANCED) 🖥️ CLI Only
+### 1. Update Go Version (ENHANCED)  CLI Only
 
 **Purpose**: Update Go version across all Fabric files in one command.
 
-**⚠️ Requires CLI**: This automation needs the `GO_VERSION` variable and cannot be run from Ona UI.
+** Requires CLI**: This automation needs the `GO_VERSION` variable and cannot be run from Ona UI.
 
 **Usage**:
 ```bash
@@ -42,11 +42,11 @@ GO_VERSION=1.25.4 gitpod automations task start update-go-version
 
 ---
 
-### 2. Update Go Dependency 🖥️ CLI Only
+### 2. Update Go Dependency  CLI Only
 
 **Purpose**: Update a Go dependency and sync vendor directory.
 
-**⚠️ Requires CLI**: This automation needs `DEPENDENCY` and `VERSION` variables and cannot be run from Ona UI.
+** Requires CLI**: This automation needs `DEPENDENCY` and `VERSION` variables and cannot be run from Ona UI.
 
 **Usage**:
 ```bash
@@ -109,7 +109,7 @@ gitpod automations task start fix-typos
 
 ---
 
-### 4. Validate Changes ✅ Works from Ona UI
+### 4. Validate Changes  Works from Ona UI
 
 **Purpose**: Run pre-commit validation checks (same as CI).
 
@@ -123,12 +123,12 @@ gitpod automations task start validate-changes-quick
 ```
 
 **Checks performed**:
-1. ✅ `go.mod` is tidy
-2. ✅ `vendor/` is in sync
-3. ✅ License headers present
-4. ✅ No spelling errors
-5. ✅ Linting passes
-6. ✅ Unit tests pass (unless --quick)
+1.  `go.mod` is tidy
+2.  `vendor/` is in sync
+3.  License headers present
+4.  No spelling errors
+5.  Linting passes
+6.  Unit tests pass (unless --quick)
 
 **When to use**:
 - Before every commit
@@ -139,11 +139,11 @@ gitpod automations task start validate-changes-quick
 
 ---
 
-### 5. Prepare Release 🖥️ CLI Only
+### 5. Prepare Release  CLI Only
 
 **Purpose**: Generate release checklist and validate version.
 
-**⚠️ Requires CLI**: This automation needs the `VERSION` variable and cannot be run from Ona UI.
+** Requires CLI**: This automation needs the `VERSION` variable and cannot be run from Ona UI.
 
 **Usage**:
 ```bash
@@ -175,7 +175,7 @@ VERSION=3.1.4 gitpod automations task start prepare-release
 
 ### Quality Gates (Phase 2A)
 
-### 6. Check Outdated Dependencies ✅ Works from Ona UI (NEW!)
+### 6. Check Outdated Dependencies  Works from Ona UI (NEW!)
 
 **Purpose**: List outdated Go dependencies and show update commands.
 
@@ -192,7 +192,7 @@ gitpod automations task start check-outdated-deps
 
 **Output example**:
 ```
-📦 Outdated dependencies found:
+ Outdated dependencies found:
 
   📌 golang.org/x/crypto
      Current: v0.43.0

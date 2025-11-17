@@ -8,7 +8,7 @@
 
 ## Automation Compatibility Matrix
 
-### ✅ Fully Compatible with Ona UI (17 automations)
+###  Fully Compatible with Ona UI (17 automations)
 
 These automations work perfectly from the Ona UI with no variables required:
 
@@ -54,7 +54,7 @@ These automations work perfectly from the Ona UI with no variables required:
 
 ---
 
-### ❌ CLI Only - Require Variables (3 automations)
+###  CLI Only - Require Variables (3 automations)
 
 These automations require environment variables and **cannot** be run from Ona UI:
 
@@ -172,15 +172,15 @@ gitpod automations task start check-outdated-deps
 When CLI-only automations are run from Ona UI, they show helpful error messages:
 
 ```
-❌ This automation requires the GO_VERSION environment variable
+ This automation requires the GO_VERSION environment variable
 
-🖥️  CLI Usage:
+  CLI Usage:
    GO_VERSION=1.25.4 gitpod automations task start update-go-version
 
 📝 Or run the script directly with interactive prompts:
    .gitpod/scripts/update-go-version.sh
 
-⚠️  Note: This automation cannot be run from the Ona UI
+  Note: This automation cannot be run from the Ona UI
    Use the CLI or run the script directly instead
 ```
 
