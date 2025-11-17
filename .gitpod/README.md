@@ -108,7 +108,27 @@ gitpod automations task list-executions <task-name>
 
 ## Development Workflow
 
-### Quick Iteration (NEW! ⚡)
+### Maintenance Automation (NEW! 🔧)
+```bash
+# Update Go version across all files
+GO_VERSION=1.25.4 gitpod automations task start update-go-version
+
+# Update a Go dependency
+DEPENDENCY=github.com/pkg/errors VERSION=v0.9.1 gitpod automations task start update-dependency
+
+# Fix typos in comments and docs
+gitpod automations task start fix-typos
+
+# Validate changes before committing
+gitpod automations task start validate-changes
+
+# Prepare release checklist
+VERSION=3.1.4 gitpod automations task start prepare-release
+```
+
+See [MAINTENANCE_AUTOMATION.md](MAINTENANCE_AUTOMATION.md) for detailed usage guide.
+
+### Quick Iteration (⚡)
 ```bash
 # Fast feedback during development
 gitpod automations task start quick-check        # 2-5 min: linters + changed packages

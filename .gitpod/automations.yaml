@@ -547,3 +547,98 @@ tasks:
       echo ""
       echo "✅ Cleanup complete"
       echo "Run 'gitpod automations task start build-fabric' to rebuild binaries"
+
+  # ============================================================================
+  # MAINTENANCE AUTOMATION (5) - Reduce toil for common tasks
+  # ============================================================================
+  
+  update-go-version:
+    name: "update-go-version"
+    description: "Update Go version across all Fabric files (go.mod, docs, vagrant, devcontainer)"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      if [ -z "${GO_VERSION:-}" ]; then
+        echo "❌ Error: GO_VERSION environment variable required"
+        echo ""
+        echo "Usage: GO_VERSION=1.25.4 gitpod automations task start update-go-version"
+        echo ""
+        echo "This will update:"
+        echo "  - go.mod (root and tools/)"
+        echo "  - vagrant/golang.sh"
+        echo "  - .devcontainer/Dockerfile"
+        echo "  - docs/source/prereqs.md"
+        echo "  - docs/source/dev-setup/devenv.rst"
+        exit 1
+      fi
+      
+      .gitpod/scripts/update-go-version.sh "$GO_VERSION"
+
+  update-dependency:
+    name: "update-dependency"
+    description: "Update a Go dependency (runs go get + go mod tidy + go mod vendor)"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      if [ -z "${DEPENDENCY:-}" ] || [ -z "${VERSION:-}" ]; then
+        echo "❌ Error: DEPENDENCY and VERSION environment variables required"
+        echo ""
+        echo "Usage: DEPENDENCY=github.com/pkg/errors VERSION=v0.9.1 gitpod automations task start update-dependency"
+        echo ""
+        echo "Common dependencies:"
+        echo "  - github.com/consensys/gnark-crypto"
+        echo "  - github.com/docker/docker"
+        echo "  - golang.org/x/crypto"
+        echo "  - golang.org/x/net"
+        exit 1
+      fi
+      
+      .gitpod/scripts/update-dependency.sh "$DEPENDENCY" "$VERSION"
+
+  fix-typos:
+    name: "fix-typos"
+    description: "Detect and auto-fix typos in comments and documentation"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      .gitpod/scripts/fix-typos.sh
+
+  validate-changes:
+    name: "validate-changes"
+    description: "Validate changes before committing (go.mod, vendor, linting, tests)"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      QUICK_FLAG=""
+      if [ "${QUICK:-false}" = "true" ]; then
+        QUICK_FLAG="--quick"
+      fi
+      
+      .gitpod/scripts/validate-changes.sh $QUICK_FLAG
+      
+      echo ""
+      echo "💡 Tip: Set QUICK=true to skip unit tests for faster validation"
+
+  prepare-release:
+    name: "prepare-release"
+    description: "Generate release checklist and validate version"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      if [ -z "${VERSION:-}" ]; then
+        echo "❌ Error: VERSION environment variable required"
+        echo ""
+        echo "Usage: VERSION=3.1.4 gitpod automations task start prepare-release"
+        exit 1
+      fi
+      
+      .gitpod/scripts/prepare-release.sh "$VERSION"
