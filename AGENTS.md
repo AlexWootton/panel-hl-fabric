@@ -104,11 +104,6 @@ make basic-checks  # All quality checks
 make verify        # Test changed packages
 ```
 
-Or use git hooks for automatic validation:
-```bash
-gitpod automations task start install-git-hooks
-```
-
 ## Domain-Specific Guides
 
 - **integration/AGENTS.md** - Integration testing

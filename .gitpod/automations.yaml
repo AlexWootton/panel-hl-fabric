@@ -704,15 +704,6 @@ tasks:
       
       .gitpod/scripts/generate-changelog-entry.sh "$SINCE" "$UNTIL"
 
-  install-git-hooks:
-    name: "install-git-hooks"
-    description: "Install git hooks for pre-push and commit-msg validation"
-    triggeredBy:
-      - manual
-    command: |
-      cd /workspaces/fabric
-      .gitpod/scripts/install-git-hooks.sh
-
   check-outdated-deps:
     name: "check-outdated-deps"
     description: "Check for outdated Go dependencies and show update commands"

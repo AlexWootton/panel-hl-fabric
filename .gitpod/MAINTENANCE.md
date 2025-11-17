@@ -19,9 +19,8 @@ gitpod automations task start check-code
 gitpod automations task start validate-commit-message
 gitpod automations task start check-outdated-deps
 
-# Changelog and Hooks
+# Changelog
 gitpod automations task start generate-changelog
-gitpod automations task start install-git-hooks
 
 # Security and Quality
 gitpod automations task start scan-vulnerabilities
@@ -252,25 +251,6 @@ gitpod automations task start generate-changelog
 - Other Changes
 
 ## Git Hooks
-
-### Install Git Hooks
-
-Installs pre-push and commit-msg validation hooks.
-
-**Usage:**
-```bash
-gitpod automations task start install-git-hooks
-```
-
-**Hooks installed:**
-1. **pre-push**: Runs quick validation before pushing
-2. **commit-msg**: Validates commit message format
-
-**Bypass hooks:**
-```bash
-git push --no-verify
-git commit --no-verify
-```
 
 ## Workflow Examples
 
