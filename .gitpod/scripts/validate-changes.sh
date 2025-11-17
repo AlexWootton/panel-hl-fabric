@@ -43,11 +43,11 @@ fi
 echo ""
 
 if [ "$QUICK_MODE" = true ]; then
-    # Quick mode: Use make desk-check (linter + verify changed packages)
-    echo "Running quick checks (make desk-check)..."
+    # Quick mode: Only run linter (no tests)
+    echo "Running linter checks..."
     echo ""
-    if ! make desk-check; then
-        FAILURES+=("desk-check failed - see output above")
+    if ! make linter; then
+        FAILURES+=("linter failed - see output above")
         echo ""
         echo "Fix suggestions:"
         echo "   - License headers: .gitpod/scripts/fix-license-headers.sh"
@@ -55,7 +55,7 @@ if [ "$QUICK_MODE" = true ]; then
         echo "   - Trailing spaces: .gitpod/scripts/fix-trailing-spaces.sh"
     else
         echo ""
-        echo "   Quick checks passed"
+        echo "   Linter checks passed"
     fi
     echo ""
 else
