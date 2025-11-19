@@ -127,13 +127,9 @@ make basic-checks
 # Dependency management
 gitpod automations task start check-outdated-deps
 DEPENDENCY=golang.org/x/crypto VERSION=v0.44.0 gitpod automations task start update-dependency
-
-# Security and quality
-gitpod automations task start scan-vulnerabilities
-gitpod automations task start check-test-coverage
 ```
 
-**31 of 34 automations (91%)** work from Ona UI without variables.
+**26 of 29 automations (90%)** work from Ona UI without variables.
 
 See [MAINTENANCE.md](MAINTENANCE.md) for complete usage guide.
 

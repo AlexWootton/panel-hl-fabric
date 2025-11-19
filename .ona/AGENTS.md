@@ -22,9 +22,7 @@ gitpod automations task start fix-typos
 gitpod automations task start fix-license-headers
 gitpod automations task start fix-trailing-spaces
 
-# Security and quality
-gitpod automations task start scan-vulnerabilities
-gitpod automations task start check-test-coverage
+# Quality checks
 gitpod automations task start check-unused-deps
 ```
 

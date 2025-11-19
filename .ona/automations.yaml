@@ -653,20 +653,6 @@ tasks:
       cd /workspaces/fabric
       .ona/scripts/fix-trailing-spaces.sh
 
-  validate-commit-message:
-    name: "validate-commit-message"
-    description: "Validate commit message format (last commit or specified)"
-    triggeredBy:
-      - manual
-    command: |
-      cd /workspaces/fabric
-      
-      if [ -n "${MESSAGE:-}" ]; then
-        .ona/scripts/validate-commit-message.sh "$MESSAGE"
-      else
-        .ona/scripts/validate-commit-message.sh
-      fi
-
   generate-changelog:
     name: "generate-changelog"
     description: "Generate changelog entry from commits between tags"
@@ -736,21 +722,3 @@ tasks:
     command: |
       cd /workspaces/fabric
       .ona/scripts/check-unused-deps.sh
-
-  scan-vulnerabilities:
-    name: "scan-vulnerabilities"
-    description: "Scan for security vulnerabilities in Go dependencies"
-    triggeredBy:
-      - manual
-    command: |
-      cd /workspaces/fabric
-      .ona/scripts/scan-vulnerabilities.sh
-
-  check-test-coverage:
-    name: "check-test-coverage"
-    description: "Generate and display test coverage report"
-    triggeredBy:
-      - manual
-    command: |
-      cd /workspaces/fabric
-      .ona/scripts/check-test-coverage.sh

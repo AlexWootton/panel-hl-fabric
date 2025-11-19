@@ -14,16 +14,13 @@ gitpod automations task start fix-trailing-spaces
 gitpod automations task start check-code
 
 # Validation
-gitpod automations task start validate-commit-message
 gitpod automations task start check-outdated-deps
 
 # Changelog
 gitpod automations task start generate-changelog
 
-# Security and Quality
-gitpod automations task start scan-vulnerabilities
+# Quality
 gitpod automations task start check-unused-deps
-gitpod automations task start check-test-coverage
 ```
 
 ### CLI Only (Requires Variables)
@@ -137,51 +134,15 @@ git diff
 git commit -am "chore: remove trailing spaces"
 ```
 
-## Validation
-
-### Validate Commit Message
-
-Validates commit message format and conventions.
-
-**Usage:**
-```bash
-gitpod automations task start validate-commit-message
-```
-
-**Checks:**
-- Subject line length (max 72, recommended 50)
-- Subject does not end with period
-- Conventional commit format (optional)
-- Signed-off-by line presence
-- Co-authored-by for automation
-
-## Security and Quality
-
-### Scan Vulnerabilities
-
-Runs govulncheck for CVE scanning.
-
-**Usage:**
-```bash
-gitpod automations task start scan-vulnerabilities
-```
+## Quality
 
 ### Check Unused Dependencies
 
-Checks for unused vendored dependencies.
+Checks for unused vendored dependencies (wraps `make check-deps`).
 
 **Usage:**
 ```bash
 gitpod automations task start check-unused-deps
-```
-
-### Check Test Coverage
-
-Generates test coverage reports.
-
-**Usage:**
-```bash
-gitpod automations task start check-test-coverage
 ```
 
 ## Release Management
