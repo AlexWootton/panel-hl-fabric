@@ -261,7 +261,7 @@ tasks:
     command: |
       cd /workspaces/fabric
       echo "Running comprehensive network validation..."
-      .ona/validate-network.sh
+      .ona/scripts/validate-network.sh
       echo ""
       echo "Tip: Run 'gitpod automations task start validate-network' anytime to check network health"
 
@@ -310,7 +310,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      .ona/cleanup-test-artifacts.sh $EXIT_CODE "Consensus"
+      .ona/scripts/cleanup-test-artifacts.sh $EXIT_CODE "Consensus"
 
   test-ledger:
     name: "test-ledger"
@@ -340,7 +340,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      .ona/cleanup-test-artifacts.sh $EXIT_CODE "Ledger"
+      .ona/scripts/cleanup-test-artifacts.sh $EXIT_CODE "Ledger"
 
   test-lifecycle:
     name: "test-lifecycle"
@@ -363,7 +363,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      .ona/cleanup-test-artifacts.sh $EXIT_CODE "Lifecycle"
+      .ona/scripts/cleanup-test-artifacts.sh $EXIT_CODE "Lifecycle"
 
   test-gateway:
     name: "test-gateway"
@@ -386,7 +386,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      .ona/cleanup-test-artifacts.sh $EXIT_CODE "Gateway"
+      .ona/scripts/cleanup-test-artifacts.sh $EXIT_CODE "Gateway"
 
   test-e2e:
     name: "test-e2e"
@@ -409,7 +409,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      .ona/cleanup-test-artifacts.sh $EXIT_CODE "E2E"
+      .ona/scripts/cleanup-test-artifacts.sh $EXIT_CODE "E2E"
 
   test-integration-all:
     name: "test-integration-all"
@@ -444,7 +444,7 @@ tasks:
       EXIT_CODE=$?
       
       # Cleanup test artifacts
-      .ona/cleanup-test-artifacts.sh $EXIT_CODE "All integration"
+      .ona/scripts/cleanup-test-artifacts.sh $EXIT_CODE "All integration"
 
   # ============================================================================
   # CODE QUALITY (1) - Pre-commit checks

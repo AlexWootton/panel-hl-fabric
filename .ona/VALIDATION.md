@@ -2,11 +2,11 @@
 
 ## Purpose and Scope
 
-The `validate-network.sh` script provides **quick health checks** for deployed Fabric test networks. It complements but does not replace other testing infrastructure:
+The `.ona/scripts/validate-network.sh` script provides **quick health checks** for deployed Fabric test networks. It complements but does not replace other testing infrastructure:
 
 | Tool | Purpose | When to Use |
 |------|---------|-------------|
-| **validate-network.sh** | Post-deployment health check | After deployment, troubleshooting, quick validation |
+| **.ona/scripts/validate-network.sh** | Post-deployment health check | After deployment, troubleshooting, quick validation |
 | **Integration Tests** | Comprehensive CI/CD testing | Full feature validation, CI/CD pipelines |
 | **Test-Network Scripts** | Network deployment | Creating and configuring networks |
 
@@ -37,7 +37,7 @@ gitpod automations task start validate-network
 Or run the script directly:
 
 ```bash
-.ona/validate-network.sh
+.ona/scripts/validate-network.sh
 ```
 
 ## What Gets Tested
@@ -196,7 +196,7 @@ Chaincode invoke successful. result: status:200
 ## Validation Script Details
 
 ### Location
-`.ona/validate-network.sh`
+`.ona/scripts/validate-network.sh`
 
 ### Requirements
 - Fabric binaries built (`make native`)
@@ -226,7 +226,7 @@ The validation script can be integrated into CI/CD pipelines:
 # Example GitHub Actions
 - name: Validate Fabric Network
   run: |
-    .ona/validate-network.sh
+    .ona/scripts/validate-network.sh
   timeout-minutes: 5
 ```
 
@@ -234,7 +234,7 @@ The validation script can be integrated into CI/CD pipelines:
 # Example GitLab CI
 validate-network:
   script:
-    - .ona/validate-network.sh
+    - .ona/scripts/validate-network.sh
   timeout: 5m
 ```
 
@@ -247,7 +247,7 @@ validate-network:
 
 ### Permission Denied
 ```bash
-chmod +x .ona/validate-network.sh
+chmod +x .ona/scripts/validate-network.sh
 ```
 
 ### Peer Command Not Found
