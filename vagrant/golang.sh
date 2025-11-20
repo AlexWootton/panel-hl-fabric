@@ -5,7 +5,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 GOROOT='/opt/go'
-GO_VERSION=1.25.4
+# Extract Go version from go.mod
+# We assume the fabric repo is mounted at /home/vagrant/fabric
+GO_VERSION=$(grep '^go ' /home/vagrant/fabric/go.mod | awk '{print $2}')
 
 # ----------------------------------------------------------------
 # Install Golang
