@@ -1,0 +1,36 @@
+// The Dev Container format allows you to configure your environment. At the heart of it
+// is a Docker image or Dockerfile which controls the tools available in your environment.
+//
+// See https://aka.ms/devcontainer.json for more information.
+{
+	"name": "Hyperledger Fabric Dev",
+	"build": {
+		"context": ".",
+		"dockerfile": "Dockerfile"
+	},
+	// Features add additional features to your environment. See https://containers.dev/features
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"moby": true,
+			"dockerDashComposeVersion": "v2"
+		}
+	},
+	// Configure tool-specific properties
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"golang.go"
+			]
+		}
+	},
+	// Set environment variables
+	"remoteEnv": {
+		"FABRIC_CFG_PATH": "${containerWorkspaceFolder}/sampleconfig",
+		"GOPATH": "/home/vscode/go",
+		"PATH": "${containerEnv:PATH}:/home/vscode/go/bin:/usr/local/go/bin",
+		"PKCS11_PIN": "98765432",
+		"PKCS11_LABEL": "ForFabric"
+	},
+	// One-time setup on container creation (runs once per container lifecycle)
+	"postCreateCommand": "echo 'export PKCS11_LIB=\"$(find /usr/lib -name libsofthsm2.so | head -1)\"' >> ~/.bashrc && bash ${containerWorkspaceFolder}/.devcontainer/setup-gh-token.sh"
+}

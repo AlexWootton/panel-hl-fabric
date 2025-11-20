@@ -1,0 +1,724 @@
+# Copyright IBM Corp All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+# IMPROVED AUTOMATION DESIGN
+# See AUTOMATION_ANALYSIS.md for full rationale and design decisions
+
+tasks:
+  # ============================================================================
+  # CORE BUILD (1) - Essential for all development
+  # ============================================================================
+  
+  build-fabric:
+    name: "build-fabric"
+    description: "Build all Hyperledger Fabric native binaries"
+    triggeredBy:
+      - postDevcontainerStart
+    command: |
+      cd /workspaces/fabric
+      echo "Building Fabric binaries..."
+      make native
+      echo "Build complete. Binaries available in build/bin/"
+      ls -lh build/bin/
+
+  # ============================================================================
+  # QUICK VALIDATION (2) - Fast feedback for all developers
+  # ============================================================================
+  
+  quick-check:
+    name: "quick-check"
+    description: "Fast validation: make desk-check (linters + changed packages)"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Running quick validation checks..."
+      echo "This runs: make desk-check (linters + unit tests for changed packages)"
+      echo ""
+      make desk-check
+      echo ""
+      echo "Quick check complete"
+      echo "Run 'gitpod automations task start check-code' for full checks"
+
+  verify-changes:
+    name: "verify-changes"
+    description: "Run unit tests for changed packages only (~1-3 min)"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Testing changed packages..."
+      make verify
+      echo ""
+      echo "Changed packages verified"
+      echo "Run 'gitpod automations task start test-unit' for all unit tests"
+
+  # ============================================================================
+  # TEST NETWORK - BASIC (3) - For chaincode and API development
+  # ============================================================================
+  
+  start-network:
+    name: "start-network"
+    description: "Start Fabric test network with channel (clean restart)"
+    triggeredBy:
+      - manual
+    command: |
+      export PATH=/workspaces/fabric/build/bin:$PATH
+      
+      # Clone fabric-samples if needed
+      if [ ! -d "/workspaces/fabric-samples" ]; then
+        echo "Cloning fabric-samples..."
+        cd /workspaces
+        git clone https://github.com/hyperledger/fabric-samples.git
+      fi
+      
+      # Pull Docker images if needed
+      if ! docker images | grep -q "hyperledger/fabric-peer"; then
+        echo "Pulling Fabric Docker images..."
+        cd /workspaces/fabric
+        make docker-thirdparty
+      fi
+      
+      # Create config symlink
+      if [ ! -d "/workspaces/fabric-samples/config" ]; then
+        ln -s /workspaces/fabric/sampleconfig /workspaces/fabric-samples/config
+        echo "Created config symlink"
+      fi
+      
+      cd /workspaces/fabric-samples/test-network
+      
+      # Clean restart to avoid "channel already exists" errors
+      echo "Cleaning any existing network..."
+      ./network.sh down 2>/dev/null || true
+      
+      echo "Starting Fabric test network..."
+      ./network.sh up createChannel
+      
+      echo ""
+      echo "Test network running with channel 'mychannel'"
+      echo ""
+      echo "Next steps:"
+      echo "  📊 View containers: docker ps"
+      echo "  🔧 Deploy chaincode: gitpod automations task start deploy-chaincode"
+      echo "  Validate network: gitpod automations task start validate-network"
+      echo "  🛑 Stop network: gitpod automations task start stop-network"
+
+  stop-network:
+    name: "stop-network"
+    description: "Stop and clean up the Fabric test network"
+    triggeredBy:
+      - manual
+    command: |
+      if [ ! -d "/workspaces/fabric-samples/test-network" ]; then
+        echo "Test network directory not found"
+        echo "Run 'gitpod automations task start start-network' first"
+        exit 1
+      fi
+      
+      cd /workspaces/fabric-samples/test-network
+      echo "Stopping Fabric test network..."
+      ./network.sh down
+      echo "Test network stopped and cleaned up"
+
+  deploy-chaincode:
+    name: "deploy-chaincode"
+    description: "Deploy sample chaincode to the test network"
+    triggeredBy:
+      - manual
+    command: |
+      export PATH=/workspaces/fabric/build/bin:$PATH
+      
+      if [ ! -d "/workspaces/fabric-samples/test-network" ]; then
+        echo "Test network not found"
+        echo "Run 'gitpod automations task start start-network' first"
+        exit 1
+      fi
+      
+      # Ensure config symlink exists
+      if [ ! -d "/workspaces/fabric-samples/config" ]; then
+        ln -s /workspaces/fabric/sampleconfig /workspaces/fabric-samples/config
+        echo "Created config symlink"
+      fi
+      
+      cd /workspaces/fabric-samples/test-network
+      
+      # Check if network is running
+      if ! docker ps | grep -q "peer0.org1.example.com"; then
+        echo "Test network is not running"
+        echo "Run 'gitpod automations task start start-network' first"
+        exit 1
+      fi
+      
+      echo "Deploying asset-transfer-basic chaincode..."
+      ./network.sh deployCC -ccn basic -ccp ../asset-transfer-basic/chaincode-go -ccl go
+      
+      echo ""
+      echo "Chaincode deployed successfully"
+      echo ""
+      echo "Test chaincode:"
+      echo "  cd /workspaces/fabric-samples/test-network"
+      echo "  export PATH=/workspaces/fabric/build/bin:\$PATH"
+      echo "  peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com \\"
+      echo "    --tls --cafile \"\${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem\" \\"
+      echo "    -C mychannel -n basic --peerAddresses localhost:7051 --tlsRootCertFiles \"\${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt\" \\"
+      echo "    --peerAddresses localhost:9051 --tlsRootCertFiles \"\${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt\" \\"
+      echo "    -c '{\"function\":\"InitLedger\",\"Args\":[]}'"
+
+  # ============================================================================
+  # TEST NETWORK - ADVANCED (2) - For ledger and advanced testing
+  # ============================================================================
+  
+  start-network-couchdb:
+    name: "start-network-couchdb"
+    description: "Start Fabric test network with CouchDB state database"
+    triggeredBy:
+      - manual
+    command: |
+      export PATH=/workspaces/fabric/build/bin:$PATH
+      
+      # Clone fabric-samples if needed
+      if [ ! -d "/workspaces/fabric-samples" ]; then
+        echo "Cloning fabric-samples..."
+        cd /workspaces
+        git clone https://github.com/hyperledger/fabric-samples.git
+      fi
+      
+      # Pull CouchDB image
+      if ! docker images | grep -q "couchdb"; then
+        echo "Pulling CouchDB image..."
+        cd /workspaces/fabric
+        make docker-thirdparty-couchdb
+      fi
+      
+      # Pull Fabric images
+      if ! docker images | grep -q "hyperledger/fabric-peer"; then
+        echo "Pulling Fabric Docker images..."
+        cd /workspaces/fabric
+        make docker-thirdparty
+      fi
+      
+      # Create config symlink
+      if [ ! -d "/workspaces/fabric-samples/config" ]; then
+        ln -s /workspaces/fabric/sampleconfig /workspaces/fabric-samples/config
+        echo "Created config symlink"
+      fi
+      
+      cd /workspaces/fabric-samples/test-network
+      
+      # Clean restart
+      echo "Cleaning any existing network..."
+      ./network.sh down 2>/dev/null || true
+      
+      echo "Starting Fabric test network with CouchDB..."
+      ./network.sh up createChannel -s couchdb
+      
+      echo ""
+      echo "Test network running with CouchDB state database"
+      echo ""
+      echo "CouchDB Fauxton UI:"
+      echo "  URL: http://localhost:5984/_utils"
+      echo "  Username: admin"
+      echo "  Password: adminpw"
+      echo ""
+      echo "Next steps:"
+      echo "  🔧 Deploy chaincode: gitpod automations task start deploy-chaincode"
+      echo "  🛑 Stop network: gitpod automations task start stop-network"
+
+  restart-network:
+    name: "restart-network"
+    description: "Quick restart of test network (stop + start)"
+    triggeredBy:
+      - manual
+    command: |
+      export PATH=/workspaces/fabric/build/bin:$PATH
+      
+      if [ ! -d "/workspaces/fabric-samples/test-network" ]; then
+        echo "Test network directory not found"
+        echo "Run 'gitpod automations task start start-network' first"
+        exit 1
+      fi
+      
+      cd /workspaces/fabric-samples/test-network
+      
+      echo "Stopping network..."
+      ./network.sh down
+      
+      echo "Starting network..."
+      ./network.sh up createChannel
+      
+      echo "Network restarted"
+
+  # ============================================================================
+  # NETWORK VALIDATION (1) - Health checks
+  # ============================================================================
+  
+  validate-network:
+    name: "validate-network"
+    description: "Validate that the test network is fully functional"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Running comprehensive network validation..."
+      .ona/scripts/validate-network.sh
+      echo ""
+      echo "Tip: Run 'gitpod automations task start validate-network' anytime to check network health"
+
+  # ============================================================================
+  # TESTING - UNIT (2) - For all developers
+  # ============================================================================
+  
+  test-unit:
+    name: "test-unit"
+    description: "Run all Fabric unit tests (~15-20 min)"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Running all unit tests..."
+      echo "⏱️  This will take 15-20 minutes"
+      echo "For faster feedback, use 'verify-changes' to test only changed packages"
+      echo ""
+      make unit-test
+      echo ""
+      echo "All unit tests passed"
+
+  # ============================================================================
+  # TESTING - INTEGRATION SUITES (6) - Granular test execution
+  # ============================================================================
+  
+  test-consensus:
+    name: "test-consensus"
+    description: "Run consensus integration tests: raft + smartbft (~5 min)"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      # Ensure Docker images available
+      if ! docker images | grep -q "hyperledger/fabric-peer"; then
+        echo "Pulling Docker images..."
+        make docker-thirdparty
+      fi
+      
+      echo "Running consensus integration tests..."
+      echo "Suites: raft, smartbft"
+      echo "⏱️  Estimated time: ~5 minutes"
+      echo ""
+      make integration-test INTEGRATION_TEST_SUITE="raft smartbft"
+      EXIT_CODE=$?
+      
+      # Cleanup test artifacts
+      .ona/scripts/cleanup-test-artifacts.sh $EXIT_CODE "Consensus"
+
+  test-ledger:
+    name: "test-ledger"
+    description: "Run ledger integration tests: ledger + pvtdata + pvtdatapurge (~8 min)"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      # Ensure Docker images available
+      if ! docker images | grep -q "hyperledger/fabric-peer"; then
+        echo "Pulling Docker images..."
+        make docker-thirdparty
+      fi
+      
+      # Ensure CouchDB available
+      if ! docker images | grep -q "couchdb"; then
+        echo "Pulling CouchDB image..."
+        make docker-thirdparty-couchdb
+      fi
+      
+      echo "Running ledger integration tests..."
+      echo "Suites: ledger, pvtdata, pvtdatapurge"
+      echo "⏱️  Estimated time: ~8 minutes"
+      echo ""
+      make integration-test INTEGRATION_TEST_SUITE="ledger pvtdata pvtdatapurge"
+      EXIT_CODE=$?
+      
+      # Cleanup test artifacts
+      .ona/scripts/cleanup-test-artifacts.sh $EXIT_CODE "Ledger"
+
+  test-lifecycle:
+    name: "test-lifecycle"
+    description: "Run chaincode lifecycle tests: lifecycle + devmode + pluggable (~6 min)"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      if ! docker images | grep -q "hyperledger/fabric-peer"; then
+        echo "Pulling Docker images..."
+        make docker-thirdparty
+      fi
+      
+      echo "Running chaincode lifecycle integration tests..."
+      echo "Suites: lifecycle, devmode, pluggable"
+      echo "⏱️  Estimated time: ~6 minutes"
+      echo ""
+      make integration-test INTEGRATION_TEST_SUITE="lifecycle devmode pluggable"
+      EXIT_CODE=$?
+      
+      # Cleanup test artifacts
+      .ona/scripts/cleanup-test-artifacts.sh $EXIT_CODE "Lifecycle"
+
+  test-gateway:
+    name: "test-gateway"
+    description: "Run gateway integration tests: gateway + discovery + gossip (~5 min)"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      if ! docker images | grep -q "hyperledger/fabric-peer"; then
+        echo "Pulling Docker images..."
+        make docker-thirdparty
+      fi
+      
+      echo "Running gateway integration tests..."
+      echo "Suites: gateway, discovery, gossip"
+      echo "⏱️  Estimated time: ~5 minutes"
+      echo ""
+      make integration-test INTEGRATION_TEST_SUITE="gateway discovery gossip"
+      EXIT_CODE=$?
+      
+      # Cleanup test artifacts
+      .ona/scripts/cleanup-test-artifacts.sh $EXIT_CODE "Gateway"
+
+  test-e2e:
+    name: "test-e2e"
+    description: "Run end-to-end integration tests: e2e + nwo + sbe + msp (~10 min)"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      if ! docker images | grep -q "hyperledger/fabric-peer"; then
+        echo "Pulling Docker images..."
+        make docker-thirdparty
+      fi
+      
+      echo "Running end-to-end integration tests..."
+      echo "Suites: e2e, nwo, sbe, msp"
+      echo "⏱️  Estimated time: ~10 minutes"
+      echo ""
+      make integration-test INTEGRATION_TEST_SUITE="e2e nwo sbe msp"
+      EXIT_CODE=$?
+      
+      # Cleanup test artifacts
+      .ona/scripts/cleanup-test-artifacts.sh $EXIT_CODE "E2E"
+
+  test-integration-all:
+    name: "test-integration-all"
+    description: "Run ALL integration tests (~30 min) - use specific suites for faster feedback"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      if ! docker images | grep -q "hyperledger/fabric-peer"; then
+        echo "Pulling Docker images..."
+        make docker-thirdparty
+      fi
+      
+      if ! docker images | grep -q "couchdb"; then
+        echo "Pulling CouchDB image..."
+        make docker-thirdparty-couchdb
+      fi
+      
+      echo "Running ALL integration tests..."
+      echo "⏱️  This will take 15-30 minutes"
+      echo ""
+      echo "Consider using specific test suites for faster feedback:"
+      echo "   - test-consensus (~5 min)  - Raft and SmartBFT consensus"
+      echo "   - test-ledger (~8 min)     - Ledger and private data"
+      echo "   - test-lifecycle (~6 min)  - Chaincode lifecycle"
+      echo "   - test-gateway (~5 min)    - Gateway and discovery"
+      echo "   - test-e2e (~10 min)       - End-to-end scenarios"
+      echo ""
+      
+      make integration-test
+      EXIT_CODE=$?
+      
+      # Cleanup test artifacts
+      .ona/scripts/cleanup-test-artifacts.sh $EXIT_CODE "All integration"
+
+  # ============================================================================
+  # CODE QUALITY (1) - Pre-commit checks
+  # ============================================================================
+  
+  check-code:
+    name: "check-code"
+    description: "Run all code quality checks: make basic-checks"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Running all code quality checks..."
+      echo "This runs: make basic-checks"
+      echo "  - License headers, spelling, trailing spaces"
+      echo "  - Linting (gofumpt, goimports, staticcheck)"
+      echo "  - References, help docs, metrics doc, swagger"
+      echo ""
+      make basic-checks
+      echo ""
+      echo "Code checks passed"
+
+  # ============================================================================
+  # DOCKER (2) - Container image management
+  # ============================================================================
+  
+  build-docker:
+    name: "build-docker"
+    description: "Build Fabric Docker images (~10-15 min)"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Building Fabric Docker images..."
+      echo "⏱️  This will take 10-15 minutes"
+      make docker
+      echo ""
+      echo "Docker images built"
+      echo ""
+      docker images | grep hyperledger/fabric
+
+  setup-couchdb:
+    name: "setup-couchdb"
+    description: "Pull CouchDB Docker image for ledger integration tests"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Pulling CouchDB Docker image..."
+      make docker-thirdparty-couchdb
+      echo ""
+      echo "CouchDB image ready"
+      echo "Use 'start-network-couchdb' to start network with CouchDB"
+
+  # ============================================================================
+  # UTILITIES (2) - Cleanup operations
+  # ============================================================================
+  
+  clean-integration-tests:
+    name: "clean-integration-tests"
+    description: "Clean integration test artifacts (*.test binaries)"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Cleaning integration test artifacts..."
+      TEST_COUNT=$(find integration/ -name "*.test" -type f 2>/dev/null | wc -l)
+      if [ "$TEST_COUNT" -gt 0 ]; then
+        echo "Found $TEST_COUNT test binaries to clean..."
+        find integration/ -name "*.test" -type f -delete 2>/dev/null || true
+        find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
+        echo "Cleaned $TEST_COUNT test binaries (~$(($TEST_COUNT * 25))MB freed)"
+      else
+        echo "No integration test artifacts found"
+      fi
+
+  clean-all:
+    name: "clean-all"
+    description: "Clean all build artifacts, test binaries, and Docker resources"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      echo "Cleaning build artifacts..."
+      make clean-all
+      
+      echo "Cleaning integration test artifacts..."
+      find integration/ -name "*.test" -type f -delete 2>/dev/null || true
+      find core/chaincode/platforms/golang/testdata/pkg/ -type f -delete 2>/dev/null || true
+      
+      echo "Stopping any running test networks..."
+      if [ -d "/workspaces/fabric-samples/test-network" ]; then
+        cd /workspaces/fabric-samples/test-network
+        ./network.sh down 2>/dev/null || true
+      fi
+      
+      echo "Cleaning Docker resources..."
+      docker system prune -f
+      
+      echo ""
+      echo "Cleanup complete"
+      echo "Run 'gitpod automations task start build-fabric' to rebuild binaries"
+
+  # ============================================================================
+  # MAINTENANCE AUTOMATION (5) - Reduce toil for common tasks
+  # ============================================================================
+  
+  update-go-version:
+    name: "update-go-version"
+    description: "(CLI only) Update Go version across all files - requires GO_VERSION variable"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      if [ -z "${GO_VERSION:-}" ]; then
+        echo "This automation requires the GO_VERSION environment variable"
+        echo ""
+        echo "🖥️  CLI Usage:"
+        echo "   GO_VERSION=1.25.4 gitpod automations task start update-go-version"
+        echo ""
+        echo "📝 Or run the script directly with interactive prompts:"
+        echo "   .ona/scripts/update-go-version.sh"
+        echo ""
+        echo "Note: This automation cannot be run from the Ona UI"
+        echo "   Use the CLI or run the script directly instead"
+        exit 1
+      fi
+      
+      .ona/scripts/update-go-version.sh "$GO_VERSION"
+
+  update-dependency:
+    name: "update-dependency"
+    description: "(CLI only) Update a Go dependency - requires DEPENDENCY and VERSION variables"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      if [ -z "${DEPENDENCY:-}" ] || [ -z "${VERSION:-}" ]; then
+        echo "This automation requires DEPENDENCY and VERSION environment variables"
+        echo ""
+        echo "🖥️  CLI Usage:"
+        echo "   DEPENDENCY=github.com/pkg/errors VERSION=v0.9.1 gitpod automations task start update-dependency"
+        echo ""
+        echo "📝 Or run the script directly with interactive prompts:"
+        echo "   .ona/scripts/update-dependency.sh"
+        echo ""
+        echo "Alternative: Use 'check-outdated-deps' to see what needs updating"
+        echo ""
+        echo "Note: This automation cannot be run from the Ona UI"
+        echo "   Use the CLI or run the script directly instead"
+        exit 1
+      fi
+      
+      .ona/scripts/update-dependency.sh "$DEPENDENCY" "$VERSION"
+
+  fix-typos:
+    name: "fix-typos"
+    description: "Detect and auto-fix typos in comments and documentation"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      .ona/scripts/fix-typos.sh
+
+  prepare-release:
+    name: "prepare-release"
+    description: "(CLI only) Generate release checklist - requires VERSION variable"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      if [ -z "${VERSION:-}" ]; then
+        echo "This automation requires the VERSION environment variable"
+        echo ""
+        echo "🖥️  CLI Usage:"
+        echo "   VERSION=3.1.4 gitpod automations task start prepare-release"
+        echo ""
+        echo "📝 Or run the script directly with interactive prompts:"
+        echo "   .ona/scripts/prepare-release.sh"
+        echo ""
+        echo "Note: This automation cannot be run from the Ona UI"
+        echo "   Use the CLI or run the script directly instead"
+        exit 1
+      fi
+      
+      .ona/scripts/prepare-release.sh "$VERSION"
+
+  fix-license-headers:
+    name: "fix-license-headers"
+    description: "Add missing SPDX license headers to source files"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      .ona/scripts/fix-license-headers.sh
+
+  fix-trailing-spaces:
+    name: "fix-trailing-spaces"
+    description: "Remove trailing spaces from source files"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      .ona/scripts/fix-trailing-spaces.sh
+
+  generate-changelog:
+    name: "generate-changelog"
+    description: "Generate changelog entry from commits between tags"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      SINCE="${SINCE_TAG:-}"
+      UNTIL="${UNTIL_TAG:-HEAD}"
+      
+      if [ -z "$SINCE" ]; then
+        echo "Tip: Set SINCE_TAG to specify starting tag"
+        echo "   Example: SINCE_TAG=v3.1.3 gitpod automations task start generate-changelog"
+        echo ""
+      fi
+      
+      .ona/scripts/generate-changelog-entry.sh "$SINCE" "$UNTIL"
+
+  check-outdated-deps:
+    name: "check-outdated-deps"
+    description: "Check for outdated Go dependencies and show update commands"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      
+      echo "Checking for outdated Go dependencies..."
+      echo ""
+      
+      # Check if jq is available
+      if ! command -v jq &> /dev/null; then
+        echo "Error: jq is required but not installed"
+        echo "   Install with: apt-get install jq"
+        exit 1
+      fi
+      
+      # Get list of direct dependencies
+      OUTDATED=$(go list -u -m -json all 2>/dev/null | jq -r 'select(.Update) | "\(.Path)|\(.Version)|\(.Update.Version)"')
+      
+      if [ -z "$OUTDATED" ]; then
+        echo "All dependencies are up to date!"
+        exit 0
+      fi
+      
+      echo "Outdated dependencies found:"
+      echo ""
+      
+      echo "$OUTDATED" | while IFS='|' read -r path current latest; do
+        echo "  📌 $path"
+        echo "     Current: $current"
+        echo "     Latest:  $latest"
+        echo "     Update:  DEPENDENCY=$path VERSION=$latest gitpod automations task start update-dependency"
+        echo ""
+      done
+      
+      echo "To update a dependency:"
+      echo "   1. Copy the update command above"
+      echo "   2. Run it in the CLI (not Ona UI)"
+      echo "   3. Or run: .ona/scripts/update-dependency.sh <dependency> <version>"
+
+  check-unused-deps:
+    name: "check-unused-deps"
+    description: "Check for unused vendored dependencies: make check-deps"
+    triggeredBy:
+      - manual
+    command: |
+      cd /workspaces/fabric
+      .ona/scripts/check-unused-deps.sh

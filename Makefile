@@ -120,9 +120,8 @@ checks: ## Runs basic checks along with unit and integration tests
 basic-checks: check-go-version license spelling references trailing-spaces linter check-help-docs check-metrics-doc filename-spaces check-swagger ## Performs basic checks like license, spelling, trailing spaces and linter
 
 
-.PHONY: desk-checks
-desk-check: ## Runs linters and verify to test changed packages
-	checks verify
+.PHONY: desk-check
+desk-check: linter verify ## Runs linters and verify to test changed packages
 
 .PHONY: help-docs
 help-docs: native ## Generate the command reference docs
