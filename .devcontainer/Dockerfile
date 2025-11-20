@@ -25,7 +25,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 # Install Go from official source
 # IMPORTANT: Keep this version in sync with go.mod
 # When updating: 1) Update go.mod, 2) Update this ARG, 3) Ona will prompt to rebuild
-ARG GO_VERSION=1.25.3
+ARG GO_VERSION=1.25.4
 RUN echo "Installing Go ${GO_VERSION}" \
     && curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" | tar -xz -C /usr/local \
     && ln -sf /usr/local/go/bin/go /usr/local/bin/go \
